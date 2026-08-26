@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.vercel/
+.claude/
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+/oqueadicionar.md
+.DS_Store
+Thumbs.db

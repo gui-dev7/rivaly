@@ -1,0 +1,352 @@
+/* ============================================================
+   PAGE — DASHBOARD
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   GREETING
+   ------------------------------------------------------------ */
+.greeting {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+.greeting__title {
+    font-size: clamp(1.6rem, 3.4vw, 2.25rem);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tighter);
+}
+
+.greeting__sub {
+    margin-top: var(--space-2xs);
+    font-size: var(--text-md);
+    color: var(--color-text-muted);
+}
+
+.greeting__actions {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------
+   SETUP NUDGE
+   ------------------------------------------------------------ */
+.nudge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid rgba(var(--rgb-primary), 0.3);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(420px 160px at 6% 50%, rgba(var(--rgb-primary), 0.16), transparent 70%),
+        var(--color-surface);
+    animation: fade-up var(--duration-slow) var(--ease-out) 60ms both;
+}
+
+.nudge__icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    background: var(--color-primary-ghost);
+    color: var(--color-primary-strong);
+}
+
+.nudge__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.nudge__title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+}
+
+.nudge__text {
+    margin-top: 2px;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.nudge__meter {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-xs);
+    max-width: 320px;
+}
+
+.nudge__meter .progress {
+    flex: 1;
+}
+
+.nudge__meter .numeric {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    color: var(--color-primary-strong);
+}
+
+/* ------------------------------------------------------------
+   SPLIT
+   ------------------------------------------------------------ */
+.dashboard__split {
+    margin-top: var(--space-xl);
+    gap: var(--space-xl);
+}
+
+/* ------------------------------------------------------------
+   GAME ROWS
+   ------------------------------------------------------------ */
+.game-row-list,
+.squad-row-list,
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-xs);
+}
+
+.game-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.game-row:hover {
+    background: var(--color-surface-secondary);
+}
+
+.game-row__cover {
+    display: block;
+    width: 34px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.game-row__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.game-row__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.game-row__meta {
+    /* The platform glyph is an SVG (display:block via the reset), so the
+       row has to be a flex line or the icon breaks onto its own row. */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--text-2xs);
+    color: var(--color-text-muted);
+}
+
+/* ------------------------------------------------------------
+   SUGGESTED SQUAD
+   ------------------------------------------------------------ */
+.suggested__intro {
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.squad-row-list {
+    padding: 0;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-sm);
+}
+
+.squad-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border-soft);
+    border-left: 3px solid var(--tier-color, var(--color-border));
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+    transition: border-color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+.squad-row:hover {
+    transform: translateX(2px);
+    border-color: var(--color-border-strong);
+    border-left-color: var(--tier-color, var(--color-border));
+}
+
+.squad-row__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.squad-row__nick {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+}
+
+.squad-row__meta {
+    font-size: var(--text-2xs);
+    color: var(--color-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.squad-row__score {
+    font-size: var(--text-md);
+    font-weight: var(--font-bold);
+    color: var(--tier-color, var(--color-text));
+}
+
+/* ------------------------------------------------------------
+   ACTIVITY
+   ------------------------------------------------------------ */
+.activity-list {
+    gap: 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.activity-item:hover {
+    background: var(--color-surface-secondary);
+}
+
+.activity-item__icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-tertiary);
+    color: var(--color-text-muted);
+}
+
+.activity-item__icon--achievement { background: var(--color-secondary-soft); color: var(--color-secondary); }
+.activity-item__icon--level       { background: var(--color-secondary-soft); color: var(--color-secondary); }
+.activity-item__icon--dna         { background: var(--color-primary-soft);   color: var(--color-primary-strong); }
+.activity-item__icon--squad       { background: var(--color-accent-soft);    color: var(--color-accent); }
+.activity-item__icon--library     { background: rgba(255, 158, 31, 0.13);    color: var(--color-dna-collector); }
+
+.activity-item__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-item__text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.activity-item__time {
+    font-size: var(--text-2xs);
+    color: var(--color-text-faint);
+}
+
+.activity-item__xp {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    color: var(--color-secondary);
+}
+
+/* ------------------------------------------------------------
+   DNA SUMMARY
+   ------------------------------------------------------------ */
+.dna-summary__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.dna-summary__archetype {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.dna-summary__tagline {
+    margin-top: 2px;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.dna-summary__glyph {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+}
+
+.dna-summary__link {
+    display: inline-block;
+    margin-top: var(--space-lg);
+    font-size: var(--text-sm);
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 860px) {
+    .greeting {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-md);
+    }
+
+    .greeting__actions .btn {
+        flex: 1;
+    }
+
+    .nudge {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+
+    .nudge .btn {
+        width: 100%;
+    }
+
+    .dashboard__split {
+        gap: var(--space-lg);
+        margin-top: var(--space-lg);
+    }
+}

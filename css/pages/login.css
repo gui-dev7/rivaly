@@ -1,0 +1,316 @@
+/* ============================================================
+   PAGE — LOGIN / CREATE ACCOUNT
+   ============================================================ */
+
+.auth-body {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.auth {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ------------------------------------------------------------
+   NARRATIVE SIDE
+   ------------------------------------------------------------ */
+.auth__aside {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-2xl);
+    padding: var(--space-xl);
+    border-right: 1px solid var(--color-border-soft);
+    background:
+        radial-gradient(700px 460px at 20% 10%, rgba(var(--rgb-primary), 0.16), transparent 62%),
+        radial-gradient(620px 420px at 80% 92%, rgba(61, 220, 132, 0.09), transparent 60%),
+        var(--color-background-elevated);
+    overflow: hidden;
+}
+
+.auth__brand {
+    padding: 0;
+}
+
+.auth__aside-body {
+    max-width: 46ch;
+}
+
+.auth__aside-title {
+    font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+    font-weight: var(--font-black);
+    line-height: 1.06;
+    letter-spacing: var(--tracking-tighter);
+}
+
+.auth__aside-text {
+    margin-top: var(--space-md);
+    font-size: var(--text-md);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+}
+
+.auth__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-top: var(--space-xl);
+    counter-reset: auth-step;
+}
+
+.auth__steps li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-md);
+    background: rgba(20, 20, 20, 0.6);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.auth__steps .numeric {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-primary-strong);
+}
+
+.auth__aside-foot {
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+/* ------------------------------------------------------------
+   FORM SIDE
+   ------------------------------------------------------------ */
+.auth__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-xl) var(--space-lg);
+}
+
+/*
+   Auto margins centre the card but collapse once it is taller than the
+   viewport, so a short laptop screen scrolls instead of clipping the
+   top of the form. `justify-content: center` would clip it.
+*/
+.auth__card {
+    margin-top: auto;
+}
+
+.auth__back {
+    margin-bottom: auto;
+}
+
+.auth__card {
+    width: min(420px, 100%);
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+/* --- Tabs --- */
+.auth__tabs {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4px;
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+}
+
+.auth__tab {
+    position: relative;
+    z-index: var(--z-base);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    transition: color var(--duration-fast) var(--ease-out);
+}
+
+.auth__tab:hover {
+    color: var(--color-text-secondary);
+}
+
+.auth__tab[aria-selected="true"] {
+    color: var(--color-text);
+}
+
+.auth__tab-indicator {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-tertiary);
+    box-shadow: var(--shadow-xs);
+    transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.auth__tabs:has([data-tab="create"][aria-selected="true"]) .auth__tab-indicator {
+    transform: translateX(100%);
+}
+
+.auth__title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.auth__subtitle {
+    margin-top: 2px;
+    margin-bottom: var(--space-lg);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+/* --- Form --- */
+.auth__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.auth__reveal {
+    position: absolute;
+    right: var(--space-xs);
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    transform: translateY(-50%);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-faint);
+    transition: color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out);
+}
+
+.auth__reveal:hover {
+    color: var(--color-text);
+    background: var(--color-surface-tertiary);
+}
+
+.auth__switch {
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.auth__switch .link {
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* --- Disclaimer --- */
+.auth__notice {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid rgba(255, 158, 31, 0.28);
+    border-radius: var(--radius-md);
+    background: var(--color-warning-soft);
+}
+
+.auth__notice-icon {
+    flex-shrink: 0;
+    color: var(--color-warning);
+    margin-top: 2px;
+}
+
+.auth__notice p {
+    font-size: var(--text-xs);
+    line-height: var(--leading-snug);
+    color: var(--color-text-secondary);
+}
+
+.auth__notice strong {
+    color: var(--color-warning);
+}
+
+.auth__back {
+    font-size: var(--text-sm);
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 1080px) {
+    .auth {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .auth__aside {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border-soft);
+        gap: var(--space-lg);
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .auth__steps {
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-top: var(--space-lg);
+    }
+
+    .auth__steps li {
+        flex: 1 1 200px;
+    }
+
+    .auth__aside-foot {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .auth__panel {
+        padding: var(--space-lg) var(--space-md) var(--space-2xl);
+    }
+
+    .auth__card {
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .auth__steps li {
+        flex: 1 1 100%;
+    }
+}
+
+/* ------------------------------------------------------------
+   DEMO ENTRY POINT
+   ------------------------------------------------------------ */
+.auth__demo {
+    margin-top: var(--space-lg);
+}
+
+.auth__demo .divider--labelled {
+    margin-bottom: var(--space-md);
+}
+
+.auth__demo-hint {
+    margin-top: var(--space-xs);
+    font-size: var(--text-xs);
+    line-height: var(--leading-snug);
+    color: var(--color-text-faint);
+    text-align: center;
+}

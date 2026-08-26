@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-motion="full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your RIVALY dashboard — level, Gamer Score, DNA, current games, suggested squad and recent activity.">
+    <meta name="theme-color" content="#050505">
+    <title>Dashboard — RIVALY</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/dashboard.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <div class="protocol-warning" id="protocolWarning" hidden>
+        <div class="protocol-warning__inner">
+            <h2>Run RIVALY from a local server</h2>
+            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <pre>python -m http.server 5500
+# then open http://localhost:5500</pre>
+        </div>
+    </div>
+    <script>
+        if (window.location.protocol === 'file:') {
+            document.getElementById('protocolWarning').hidden = false;
+        }
+    </script>
+
+    <div class="app">
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+
+        <div class="main">
+            <header class="topbar" data-topbar></header>
+
+            <main class="page page-enter" id="main-content">
+                <!-- Greeting -->
+                <section class="greeting" aria-labelledby="greetingTitle">
+                    <div class="greeting__text">
+                        <h1 class="greeting__title" id="greetingTitle">Welcome back.</h1>
+                        <p class="greeting__sub" id="greetingSub">Ready to play?</p>
+                    </div>
+                    <div class="greeting__actions">
+                        <a class="btn btn--secondary" href="library.html?action=add">
+                            <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                            Add game
+                        </a>
+                        <a class="btn btn--primary" href="squads.html">Find a squad</a>
+                    </div>
+                </section>
+
+                <!-- Setup nudge, only rendered when the passport is incomplete -->
+                <div id="setupNudge"></div>
+
+                <!-- Overview -->
+                <section aria-labelledby="overviewTitle">
+                    <div class="section-head">
+                        <h2 class="section-head__title" id="overviewTitle">Overview</h2>
+                    </div>
+                    <div class="grid grid--stats stagger" id="overviewStats"></div>
+                </section>
+
+                <!-- Main split -->
+                <div class="grid grid--split dashboard__split">
+                    <div class="stack stack-lg">
+                        <!-- Currently playing -->
+                        <section aria-labelledby="playingTitle">
+                            <div class="section-head">
+                                <h2 class="section-head__title" id="playingTitle">Currently playing</h2>
+                                <a class="link" href="library.html">Open library</a>
+                            </div>
+                            <div id="currentlyPlaying"></div>
+                        </section>
+
+                        <!-- Suggested squad -->
+                        <section aria-labelledby="squadTitle">
+                            <div class="section-head">
+                                <h2 class="section-head__title" id="squadTitle">Suggested squad</h2>
+                                <a class="link" href="squads.html">Open squad finder</a>
+                            </div>
+                            <div id="suggestedSquad"></div>
+                        </section>
+
+                        <!-- Recent activity -->
+                        <section aria-labelledby="activityTitle">
+                            <div class="section-head">
+                                <h2 class="section-head__title" id="activityTitle">Recent activity</h2>
+                            </div>
+                            <div id="recentActivity"></div>
+                        </section>
+                    </div>
+
+                    <div class="stack stack-lg">
+                        <!-- Gamer DNA -->
+                        <section aria-labelledby="dnaTitle">
+                            <div class="section-head">
+                                <h2 class="section-head__title" id="dnaTitle">Gamer DNA</h2>
+                                <a class="link" href="passport.html">Full passport</a>
+                            </div>
+                            <div id="dnaSummary"></div>
+                        </section>
+
+                        <!-- Achievements -->
+                        <section aria-labelledby="badgesTitle">
+                            <div class="section-head">
+                                <h2 class="section-head__title" id="badgesTitle">Latest achievements</h2>
+                                <a class="link" href="achievements.html">See all</a>
+                            </div>
+                            <div id="latestBadges"></div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+
+    <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

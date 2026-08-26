@@ -1,0 +1,370 @@
+/* ============================================================
+   PAGE — GAMER PASSPORT
+   ============================================================ */
+
+.passport-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.passport-hero__card {
+    animation: pop-in var(--duration-slower) var(--ease-spring) both;
+}
+
+/* Identity + completion share the column beside the card, so the tall
+   passport card never leaves a dead gap next to it. */
+.passport-hero__side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.passport-hero__side > * {
+    min-width: 0;
+}
+
+/* XP block inside the card (Passport page only) */
+.passport-card__xp {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+}
+
+.passport-card__xp-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+/* ------------------------------------------------------------
+   IDENTITY PANEL
+   ------------------------------------------------------------ */
+.identity {
+    animation: fade-up var(--duration-slow) var(--ease-out) 80ms both;
+}
+
+.identity__nick {
+    margin-top: var(--space-xs);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-black);
+    letter-spacing: var(--tracking-tighter);
+}
+
+.identity__archetype {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+}
+
+.identity__bio {
+    margin-top: var(--space-sm);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+}
+
+.identity__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-md);
+    margin: var(--space-lg) 0;
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-border-soft);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.identity__facts dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.identity__facts dd {
+    margin-top: 3px;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text);
+}
+
+.identity__facts dd.numeric {
+    color: var(--color-primary-strong);
+    letter-spacing: var(--tracking-wide);
+}
+
+.identity__actions {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------
+   COMPLETION
+   ------------------------------------------------------------ */
+.completion {
+    margin-bottom: 0;
+}
+
+.completion__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.completion__title {
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+}
+
+.completion__text {
+    margin-top: 2px;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    max-width: 62ch;
+}
+
+.completion__value {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    line-height: 1;
+    color: var(--color-accent);
+}
+
+.completion__missing {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: var(--space-md) 0;
+}
+
+/* ------------------------------------------------------------
+   SPLIT
+   ------------------------------------------------------------ */
+.passport__split {
+    margin-top: var(--space-xl);
+    gap: var(--space-xl);
+}
+
+/* ------------------------------------------------------------
+   DNA FULL
+   ------------------------------------------------------------ */
+.dna-full__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.dna-full__glyph {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border: 1px solid var(--archetype-accent, var(--color-border));
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-inset);
+    color: var(--archetype-accent, var(--color-primary));
+}
+
+.dna-full__archetype {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.dna-full__tagline {
+    font-size: var(--text-sm);
+    color: var(--archetype-accent, var(--color-primary-strong));
+}
+
+.dna-full__description {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+}
+
+.dna-full__traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-lg);
+    margin: var(--space-md) 0 var(--space-lg);
+}
+
+.dna-full__traits li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.dna-full__traits svg {
+    color: var(--color-accent);
+}
+
+.dna-full__bars {
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-border-soft);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.dna-full__bars .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-md);
+}
+
+.dna-full__summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.dna-full__roles {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------
+   PREFERENCES
+   ------------------------------------------------------------ */
+.preferences__list {
+    display: flex;
+    flex-direction: column;
+}
+
+.preferences__row {
+    display: grid;
+    grid-template-columns: 116px minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.preferences__row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.preferences__row:first-child {
+    padding-top: 0;
+}
+
+.preferences__row dt {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding-top: 3px;
+}
+
+.preferences__row dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+}
+
+.preferences__empty {
+    font-size: var(--text-sm);
+    color: var(--color-text-faint);
+    font-style: italic;
+}
+
+/* ------------------------------------------------------------
+   LIBRARY SIGNATURE
+   ------------------------------------------------------------ */
+.signature__stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.signature__stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.signature__stats .numeric {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--color-text);
+}
+
+.signature__stats span:last-child {
+    font-size: 9px;
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.signature__label {
+    margin: var(--space-lg) 0 var(--space-sm);
+}
+
+.signature__label:first-of-type {
+    margin-top: 0;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 1080px) {
+    .passport-hero {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .passport-hero__card {
+        max-width: 420px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 860px) {
+    .passport__split {
+        gap: var(--space-lg);
+        margin-top: var(--space-lg);
+    }
+
+    .preferences__row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-2xs);
+    }
+
+    .signature__stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-md);
+    }
+
+    .identity__actions .btn {
+        flex: 1;
+    }
+}

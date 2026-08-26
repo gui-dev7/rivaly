@@ -1,0 +1,1964 @@
+/* ============================================================
+   RIVALY — COMPONENTS
+   Every block below maps 1:1 to a future React component.
+   The mapping is documented in README.md § Architecture.
+   ============================================================ */
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+.btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: 0 var(--space-lg);
+    height: 44px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+    user-select: none;
+    transition: transform var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out),
+        box-shadow var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out),
+        opacity var(--duration-fast) var(--ease-out);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(1px) scale(0.99);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.btn__icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* --- Variants --- */
+.btn--primary {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-weight: var(--font-bold);
+}
+
+.btn--primary:hover {
+    background: var(--color-primary-strong);
+}
+
+.btn--secondary {
+    background: var(--color-surface-secondary);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.btn--secondary:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-border-strong);
+    transform: translateY(-1px);
+}
+
+.btn--ghost {
+    background: transparent;
+    color: var(--color-text-secondary);
+}
+
+.btn--ghost:hover {
+    background: var(--color-surface-secondary);
+    color: var(--color-text);
+}
+
+.btn--outline {
+    background: transparent;
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+}
+
+.btn--outline:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary-strong);
+    background: var(--color-primary-ghost);
+}
+
+.btn--danger {
+    background: var(--color-danger-soft);
+    border-color: rgba(255, 77, 61, 0.4);
+    color: var(--color-danger);
+}
+
+.btn--danger:hover {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+    color: var(--color-text-inverse);
+}
+
+.btn--accent {
+    background: var(--color-accent);
+    color: var(--color-text-inverse);
+    font-weight: var(--font-bold);
+}
+
+.btn--accent:hover {
+    background: var(--color-accent-strong);
+}
+
+/* --- Sizes --- */
+.btn--sm {
+    height: 34px;
+    padding: 0 var(--space-md);
+    font-size: var(--text-2xs);
+}
+
+.btn--lg {
+    height: 54px;
+    padding: 0 var(--space-xl);
+    font-size: var(--text-base);
+}
+
+.btn--block {
+    display: flex;
+    width: 100%;
+}
+
+.btn--icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: var(--radius-md);
+}
+
+.btn--icon.btn--sm {
+    width: 32px;
+    height: 32px;
+}
+
+/* --- Loading state --- */
+.btn.is-loading {
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn.is-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: var(--radius-full);
+    color: var(--color-text);
+    animation: spin 700ms linear infinite;
+}
+
+.btn--primary.is-loading::after,
+.btn--accent.is-loading::after {
+    color: var(--color-text-inverse);
+}
+
+/* ============================================================
+   CARD
+   ============================================================ */
+.card {
+    position: relative;
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: none;
+}
+
+.card--interactive {
+    transition: transform var(--duration-normal) var(--ease-out),
+        border-color var(--duration-normal) var(--ease-out),
+        box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.card--interactive:hover {
+    transform: translateY(-4px) scale(1.006);
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-lg);
+}
+
+.card--flat {
+    background: var(--color-surface);
+    box-shadow: none;
+}
+
+.card--inset {
+    background: var(--color-surface-inset);
+    border-color: var(--color-border-soft);
+}
+
+.card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.card__title {
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.card__subtitle {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+/* A hairline of brand colour on the top edge — used on hero cards */
+.card--accented::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 40px;
+    height: 2px;
+    background: var(--color-primary);
+}
+
+/* ============================================================
+   SECTION HEADING
+   ============================================================ */
+.section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.section-head__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.section-head__title::before {
+    content: "";
+    width: 3px;
+    height: 13px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+}
+
+.section-head__meta {
+    font-size: var(--text-xs);
+}
+
+/* ============================================================
+   FORM CONTROLS
+   ============================================================ */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+}
+
+.field__label {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.field__hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+.field__error {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: 16px;
+    font-size: var(--text-xs);
+    color: var(--color-danger);
+}
+
+.input,
+.textarea,
+.select {
+    width: 100%;
+    padding: 0 var(--space-md);
+    height: 46px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+    color: var(--color-text);
+    font-size: var(--text-base);
+    transition: border-color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.textarea {
+    height: auto;
+    min-height: 104px;
+    padding: var(--space-sm) var(--space-md);
+    resize: vertical;
+    line-height: var(--leading-normal);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+    color: var(--color-text-faint);
+}
+
+.input:hover,
+.textarea:hover,
+.select:hover {
+    border-color: var(--color-border-strong);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--color-surface-secondary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible {
+    outline: none;
+}
+
+.input[aria-invalid="true"],
+.select[aria-invalid="true"] {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px var(--color-danger-soft);
+}
+
+/* Custom select — native element, custom chevron drawn in CSS */
+.select-wrap {
+    position: relative;
+}
+
+.select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: var(--space-2xl);
+    cursor: pointer;
+}
+
+.select option {
+    background: var(--color-surface-secondary);
+    color: var(--color-text);
+}
+
+.select-wrap::after {
+    content: "";
+    position: absolute;
+    right: var(--space-md);
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--color-text-muted);
+    border-bottom: 2px solid var(--color-text-muted);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+    transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.select-wrap:hover::after {
+    border-color: var(--color-text);
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-group .input {
+    padding-left: 44px;
+}
+
+.input-group__icon {
+    position: absolute;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--color-text-faint);
+    pointer-events: none;
+}
+
+/* Range slider */
+.range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-tertiary);
+    cursor: pointer;
+}
+
+.range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary-strong);
+    border: 3px solid var(--color-background);
+    box-shadow: 0 0 0 1px var(--color-primary);
+    transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.range::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.range::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary-strong);
+    border: 3px solid var(--color-background);
+    box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+/* ============================================================
+   CHOICE CHIPS (multi-select pills backed by real checkboxes)
+   ============================================================ */
+.chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface-secondary);
+    color: var(--color-text-secondary);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    user-select: none;
+    transition: transform var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
+}
+
+.chip:hover {
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+    transform: translateY(-1px);
+}
+
+.chip input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.chip:has(input:checked) {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary-strong);
+}
+
+.chip:has(input:focus-visible) {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+}
+
+/* Static, non-interactive tag */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: 3px var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-secondary);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.tag--primary {
+    border-color: rgba(var(--rgb-primary), 0.35);
+    background: var(--color-primary-soft);
+    color: var(--color-primary-strong);
+}
+
+.tag--accent {
+    border-color: rgba(61, 220, 132, 0.35);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+.tag--warning {
+    border-color: rgba(255, 158, 31, 0.35);
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+}
+
+.tag--danger {
+    border-color: rgba(255, 77, 61, 0.35);
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+}
+
+/* ============================================================
+   SEGMENTED CONTROL / TABS
+   ============================================================ */
+.segmented {
+    display: inline-flex;
+    padding: 4px;
+    gap: 2px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 100%;
+}
+
+.segmented::-webkit-scrollbar {
+    display: none;
+}
+
+.segmented__item {
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
+}
+
+.segmented__item:hover {
+    color: var(--color-text);
+    background: var(--color-surface-secondary);
+}
+
+.segmented__item[aria-selected="true"] {
+    background: var(--color-surface-tertiary);
+    color: var(--color-text);
+    box-shadow: var(--shadow-xs);
+}
+
+.segmented__count {
+    margin-left: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-text-faint);
+}
+
+.segmented__item[aria-selected="true"] .segmented__count {
+    color: var(--color-primary-strong);
+}
+
+/* ============================================================
+   TOGGLE SWITCH
+   ============================================================ */
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle__track {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    background: var(--color-surface-inset);
+    transition: background-color var(--duration-normal) var(--ease-out),
+        border-color var(--duration-normal) var(--ease-out);
+}
+
+.toggle__track::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: var(--radius-full);
+    background: var(--color-text-muted);
+    transition: transform var(--duration-normal) var(--ease-spring),
+        background-color var(--duration-normal) var(--ease-out);
+}
+
+.toggle input:checked + .toggle__track {
+    background: var(--color-primary-soft);
+    border-color: var(--color-primary);
+}
+
+.toggle input:checked + .toggle__track::after {
+    transform: translateX(18px);
+    background: var(--color-primary-strong);
+}
+
+.toggle input:focus-visible + .toggle__track {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   AVATAR
+   ============================================================ */
+.avatar {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-secondary);
+    overflow: hidden;
+}
+
+.avatar svg,
+.avatar img {
+    width: 100%;
+    height: 100%;
+}
+
+.avatar--sm { width: 32px; height: 32px; border-radius: var(--radius-sm); }
+.avatar--lg { width: 56px; height: 56px; border-radius: var(--radius-lg); }
+.avatar--xl { width: 88px; height: 88px; border-radius: var(--radius-xl); }
+.avatar--2xl { width: 120px; height: 120px; border-radius: var(--radius-xl); }
+
+.avatar--ring {
+    box-shadow: 0 0 0 2px var(--color-background), 0 0 0 3px var(--color-primary);
+}
+
+.avatar__status {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-background);
+    background: var(--color-text-faint);
+}
+
+.avatar__status--online { background: var(--color-success); }
+.avatar__status--away { background: var(--color-warning); }
+
+/* ============================================================
+   PROGRESS BAR
+   Animated with transform: scaleX to avoid layout thrash.
+
+   NOTE: both elements declare `display: block` on purpose. They are
+   authored as <span> in several templates, and an inline box ignores
+   `height` and cannot be transformed — the bar would silently render
+   as an empty track.
+   ============================================================ */
+.progress {
+    display: block;
+    position: relative;
+    height: 8px;
+    width: 100%;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-inset);
+    overflow: hidden;
+    border: 1px solid var(--color-border-soft);
+}
+
+.progress__fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    transition: transform var(--duration-cinematic) var(--ease-out);
+}
+
+.progress--xp .progress__fill {
+    background: var(--color-primary);
+}
+
+.progress--accent .progress__fill {
+    background: var(--color-accent);
+}
+
+.progress--thin { height: 5px; }
+.progress--thick { height: 12px; }
+
+/* Indeterminate loading bar (used by contextual loaders) */
+.progress--indeterminate .progress__fill {
+    transform: none;
+    animation: progress-indeterminate 1.3s var(--ease-in-out) infinite;
+}
+
+/* ============================================================
+   DNA BAR
+   ============================================================ */
+.dna-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.dna-bar {
+    display: grid;
+    grid-template-columns: 96px 1fr 38px;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.dna-bar__label {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.dna-bar__track {
+    display: block;
+    position: relative;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-inset);
+    overflow: hidden;
+}
+
+.dna-bar__fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    border-radius: var(--radius-full);
+    background: var(--dna-color, var(--color-primary));
+    transition: transform var(--duration-cinematic) var(--ease-out);
+}
+
+.dna-bar__value {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    text-align: right;
+    color: var(--color-text);
+}
+
+.dna-bar--lg {
+    grid-template-columns: 120px 1fr 46px;
+}
+
+.dna-bar--lg .dna-bar__label {
+    font-size: var(--text-xs);
+}
+
+.dna-bar--lg .dna-bar__track {
+    height: 8px;
+}
+
+.dna-bar--lg .dna-bar__value {
+    font-size: var(--text-md);
+}
+
+/* ============================================================
+   STAT TILE
+   ============================================================ */
+.stat {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    overflow: hidden;
+    transition: transform var(--duration-normal) var(--ease-out),
+        border-color var(--duration-normal) var(--ease-out);
+}
+
+.stat:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-border-strong);
+}
+
+.stat::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 26px;
+    height: 2px;
+    background: var(--stat-icon, var(--color-primary));
+    pointer-events: none;
+}
+
+.stat__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.stat__value {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1;
+    color: var(--color-text);
+}
+
+.stat__meta {
+    font-size: var(--text-2xs);
+    color: var(--color-text-faint);
+}
+
+.stat__icon {
+    width: 13px;
+    height: 13px;
+    color: var(--stat-icon, var(--color-primary));
+}
+
+/* ============================================================
+   BADGE / ACHIEVEMENT
+   ============================================================ */
+.badge {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-md) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    text-align: center;
+    transition: transform var(--duration-normal) var(--ease-out),
+        border-color var(--duration-normal) var(--ease-out),
+        box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.badge:hover {
+    transform: translateY(-4px);
+    border-color: var(--rarity-color, var(--color-border-strong));
+    box-shadow: 0 12px 32px -14px var(--rarity-color, transparent);
+}
+
+.badge__medal {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--rarity-color, var(--color-border));
+    background: radial-gradient(circle at 50% 30%, var(--rarity-glow, transparent), transparent 70%),
+        var(--color-surface-inset);
+    color: var(--rarity-color, var(--color-text-muted));
+}
+
+.badge__medal svg {
+    width: 24px;
+    height: 24px;
+}
+
+.badge__name {
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text);
+}
+
+.badge__desc {
+    font-size: var(--text-2xs);
+    line-height: var(--leading-snug);
+    color: var(--color-text-muted);
+}
+
+.badge__rarity {
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--rarity-color, var(--color-text-faint));
+}
+
+.badge__date {
+    font-size: 9px;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-faint);
+}
+
+.badge--locked {
+    opacity: 0.42;
+    filter: grayscale(0.85);
+}
+
+.badge--locked .badge__medal {
+    border-style: dashed;
+}
+
+.badge--locked:hover {
+    opacity: 0.68;
+    transform: translateY(-2px);
+}
+
+/* ============================================================
+   COMPATIBILITY TIERS
+   One token per tier, consumed by the Squad Finder cards, the
+   Dashboard suggestion rows and the saved squad list. Lives here
+   (not in a page file) because three different pages need it.
+   ============================================================ */
+.tier-excellent { --tier-color: var(--color-accent); }
+.tier-great     { --tier-color: var(--color-primary-strong); }
+.tier-good      { --tier-color: var(--color-secondary); }
+.tier-low       { --tier-color: var(--color-text-faint); }
+
+/* Rarity tokens — the only place rarity colours are resolved */
+.rarity-common    { --rarity-color: var(--color-rarity-common);    --rarity-glow: rgba(143, 143, 137, 0.22); }
+.rarity-uncommon  { --rarity-color: var(--color-rarity-uncommon);  --rarity-glow: rgba(61, 220, 132, 0.22); }
+.rarity-rare      { --rarity-color: var(--color-rarity-rare);      --rarity-glow: rgba(var(--rgb-primary), 0.24); }
+.rarity-epic      { --rarity-color: var(--color-rarity-epic);      --rarity-glow: rgba(199, 125, 255, 0.26); }
+.rarity-legendary { --rarity-color: var(--color-rarity-legendary); --rarity-glow: rgba(var(--rgb-primary), 0.28); }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-region {
+    position: fixed;
+    right: var(--space-lg);
+    bottom: var(--space-lg);
+    z-index: var(--z-toast);
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-xs);
+    width: min(360px, calc(100vw - var(--space-xl)));
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border-strong);
+    border-left: 3px solid var(--toast-color, var(--color-primary));
+    border-radius: var(--radius-md);
+    background: var(--color-background-elevated);
+    box-shadow: var(--shadow-lg);
+    pointer-events: auto;
+    animation: slide-in-right var(--duration-normal) var(--ease-spring) both;
+    overflow: hidden;
+}
+
+.toast.is-leaving {
+    animation: slide-out-right var(--duration-fast) var(--ease-in) both;
+}
+
+.toast__icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-sm);
+    background: var(--toast-soft, var(--color-primary-soft));
+    color: var(--toast-color, var(--color-primary));
+}
+
+.toast__icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+.toast__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+}
+
+.toast__message {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: var(--leading-snug);
+}
+
+.toast__close {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-xs);
+    color: var(--color-text-faint);
+    transition: color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out);
+}
+
+.toast__close:hover {
+    color: var(--color-text);
+    background: var(--color-surface-tertiary);
+}
+
+.toast__close svg {
+    width: 12px;
+    height: 12px;
+}
+
+.toast--success    { --toast-color: var(--color-success); --toast-soft: var(--color-success-soft); }
+.toast--info       { --toast-color: var(--color-info);    --toast-soft: var(--color-info-soft); }
+.toast--warning    { --toast-color: var(--color-warning); --toast-soft: var(--color-warning-soft); }
+.toast--error      { --toast-color: var(--color-danger);  --toast-soft: var(--color-danger-soft); }
+.toast--achievement{ --toast-color: var(--color-primary); --toast-soft: var(--color-primary-soft); }
+
+.toast__xp {
+    font-family: var(--font-display);
+    font-size: var(--text-2xs);
+    color: var(--color-primary);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: grid;
+    place-items: center;
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.74);
+    backdrop-filter: blur(var(--blur-sm));
+    -webkit-backdrop-filter: blur(var(--blur-sm));
+    animation: fade-in var(--duration-fast) var(--ease-out) both;
+    overflow-y: auto;
+}
+
+.modal-backdrop.is-leaving {
+    animation: fade-in var(--duration-fast) var(--ease-in) reverse both;
+}
+
+.modal {
+    position: relative;
+    width: min(560px, 100%);
+    max-height: calc(100vh - var(--space-xl));
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--color-background-elevated);
+    box-shadow: var(--shadow-xl);
+    animation: pop-in var(--duration-normal) var(--ease-spring) both;
+}
+
+.modal--wide {
+    width: min(760px, 100%);
+}
+
+.modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-lg) var(--space-md);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.modal__title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.modal__subtitle {
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.modal__close {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    transition: background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
+}
+
+.modal__close:hover {
+    background: var(--color-surface-tertiary);
+    color: var(--color-text);
+}
+
+.modal__close svg {
+    width: 15px;
+    height: 15px;
+}
+
+.modal__body {
+    padding: var(--space-lg);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-xs);
+    padding: var(--space-md) var(--space-lg);
+    border-top: 1px solid var(--color-border-soft);
+    background: var(--color-surface-inset);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+body.is-locked {
+    overflow: hidden;
+}
+
+/* ============================================================
+   TOOLTIP
+   Pure CSS positioning, content from data-tooltip.
+   Also reachable by keyboard (:focus-visible) and by tap
+   (the trigger is a real <button>).
+   ============================================================ */
+.tip {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 15px;
+    height: 15px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    color: var(--color-text-faint);
+    transition: color var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out);
+}
+
+.tip:hover,
+.tip:focus-visible {
+    color: var(--color-primary-strong);
+    border-color: var(--color-primary);
+}
+
+.tip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    z-index: var(--z-tooltip);
+    width: max-content;
+    max-width: 230px;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-background-elevated);
+    box-shadow: var(--shadow-md);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-snug);
+    letter-spacing: 0;
+    text-transform: none;
+    text-align: left;
+    color: var(--color-text-secondary);
+    opacity: 0;
+    transform: translate(-50%, 6px);
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+.tip:hover::after,
+.tip:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* Tooltips near the right edge flip their anchor */
+.tip--end::after {
+    left: auto;
+    right: 0;
+    transform: translate(0, 6px);
+}
+
+.tip--end:hover::after,
+.tip--end:focus-visible::after {
+    transform: translate(0, 0);
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-2xl) var(--space-lg);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-inset);
+    text-align: center;
+}
+
+.empty__glyph {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: var(--space-2xs);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-faint);
+}
+
+.empty__glyph svg {
+    width: 24px;
+    height: 24px;
+}
+
+.empty__title {
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+}
+
+.empty__text {
+    max-width: 42ch;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+}
+
+.empty__action {
+    margin-top: var(--space-xs);
+}
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.divider {
+    height: 1px;
+    border: none;
+    background: var(--color-border-soft);
+}
+
+.divider--labelled {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    height: auto;
+    background: none;
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.divider--labelled::before,
+.divider--labelled::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-border-soft);
+}
+
+/* ============================================================
+   LEVEL PILL
+   ============================================================ */
+.level-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: 3px var(--space-xs) 3px 3px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface-secondary);
+}
+
+.level-pill__num {
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: var(--text-2xs);
+    color: var(--color-text-inverse);
+}
+
+.level-pill__label {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+/* ============================================================
+   CONTEXTUAL LOADER
+   ============================================================ */
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-2xl) var(--space-lg);
+    text-align: center;
+}
+
+.loader__ring {
+    position: relative;
+    width: 44px;
+    height: 44px;
+}
+
+.loader__ring::before,
+.loader__ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    border: 2px solid transparent;
+}
+
+.loader__ring::before {
+    border-color: var(--color-border);
+}
+
+.loader__ring::after {
+    border-top-color: var(--color-primary);
+    animation: spin 850ms linear infinite;
+}
+
+.loader__label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+}
+
+/* ============================================================
+   COVER ART
+   Procedurally generated from the game's hue token — the reason
+   this project ships with zero image assets.
+   ============================================================ */
+.cover {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(150deg, var(--cover-a), var(--cover-b));
+}
+
+.cover::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: linear-gradient(115deg, transparent 42%, var(--cover-line) 50%, transparent 58%);
+}
+
+.cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 12%, rgba(255, 255, 255, 0.16), transparent 58%);
+}
+
+/* Real artwork sits on top of the gradient. If it fails to load, app.js
+   removes the node and the gradient + monogram below become the cover. */
+.cover__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Fades in on decode so a slow image never pops harshly. */
+    animation: fade-in var(--duration-normal) var(--ease-out) both;
+}
+
+.cover__glyph {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: clamp(1.5rem, 4.4vw, 2.25rem);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   STAR RATING
+   ============================================================ */
+.stars {
+    display: inline-flex;
+    gap: 1px;
+    color: var(--color-text-faint);
+}
+
+.stars__item.is-on {
+    color: var(--color-primary);
+}
+
+.stars__item.is-on svg {
+    fill: currentColor;
+}
+
+/* Interactive rating input (radio group styled as stars) */
+.rating-input {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 2px;
+}
+
+.rating-input input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.rating-input label {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-faint);
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-spring);
+}
+
+.rating-input label svg {
+    width: 18px;
+    height: 18px;
+}
+
+.rating-input input:checked ~ label,
+.rating-input label:hover,
+.rating-input label:hover ~ label {
+    color: var(--color-primary);
+}
+
+.rating-input input:checked ~ label svg,
+.rating-input label:hover svg,
+.rating-input label:hover ~ label svg {
+    fill: currentColor;
+}
+
+.rating-input label:hover {
+    transform: scale(1.12);
+}
+
+.rating-input input:focus-visible + label {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 1px;
+}
+
+/* ============================================================
+   PASSPORT CARD
+   The shareable player card. Used on the landing hero and on the
+   Passport page. Pointer lighting is driven by two custom
+   properties written from JS; the tilt is intentionally small.
+   ============================================================ */
+.passport-card {
+    --pointer-x: 50%;
+    --pointer-y: 0%;
+    --tilt-x: 0deg;
+    --tilt-y: 0deg;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background:
+        radial-gradient(460px 300px at var(--pointer-x) var(--pointer-y), rgba(var(--rgb-primary), 0.1), transparent 64%),
+        var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transform: perspective(1200px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    transition: transform var(--duration-normal) var(--ease-out),
+        box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.passport-card:hover {
+    box-shadow: var(--shadow-xl), var(--glow-primary);
+}
+
+/* Diagonal sheen that sweeps once when the card completes */
+.passport-card__sheen {
+    position: absolute;
+    inset: -40% -60%;
+    background: linear-gradient(104deg, transparent 44%, rgba(255, 255, 255, 0.09) 50%, transparent 56%);
+    transform: translateX(-60%);
+    pointer-events: none;
+}
+
+.passport-card.is-complete .passport-card__sheen {
+    animation: shimmer 2.4s var(--ease-in-out) 400ms 1;
+}
+
+.passport-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.passport-card__brand {
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+}
+
+.passport-card__type {
+    font-size: 9px;
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.passport-card__id {
+    padding: 3px var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-inset);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-primary-strong);
+}
+
+.passport-card__identity {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.passport-card__avatar {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity var(--duration-slow) var(--ease-out),
+        transform var(--duration-slow) var(--ease-spring);
+}
+
+.passport-card__avatar.is-in {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.passport-card__nick,
+.passport-card__archetype {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--duration-slow) var(--ease-out),
+        transform var(--duration-slow) var(--ease-out);
+}
+
+.passport-card__nick.is-in,
+.passport-card__archetype.is-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.passport-card__nick {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.passport-card__archetype {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-primary-strong);
+}
+
+.passport-card__level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: auto;
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+}
+
+.passport-card__level-value {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: 1;
+    color: var(--color-secondary);
+}
+
+.passport-card__level-label {
+    font-size: 8px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.passport-card__section-title {
+    margin-bottom: var(--space-xs);
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.passport-card__games {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+}
+
+.passport-card__game {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-inset);
+    animation: fade-right var(--duration-normal) var(--ease-out) both;
+}
+
+.passport-card__game-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: var(--radius-xs);
+    background: linear-gradient(150deg, var(--cover-a), var(--cover-b));
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: var(--font-bold);
+    color: rgba(255, 255, 255, 0.92);
+    overflow: hidden;
+}
+
+.passport-card__game-mark img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.passport-card__game-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+}
+
+.passport-card__foot {
+    display: flex;
+    gap: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-soft);
+}
+
+.passport-card__foot-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+}
+
+.passport-card__foot-item .numeric {
+    font-size: var(--text-md);
+    font-weight: var(--font-bold);
+    color: var(--color-text);
+}
+
+.passport-card__foot-label {
+    font-size: 8px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+/* ============================================================
+   CELEBRATION OVERLAY
+   Shared by the Achievement Unlock and Level Up moments.
+   ============================================================ */
+.celebration {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-celebration);
+    display: grid;
+    place-items: center;
+    padding: var(--space-lg);
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(var(--blur-md));
+    -webkit-backdrop-filter: blur(var(--blur-md));
+    animation: fade-in var(--duration-fast) var(--ease-out) both;
+}
+
+.celebration.is-leaving {
+    animation: fade-in var(--duration-fast) var(--ease-in) reverse both;
+}
+
+.celebration__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    width: min(340px, 100%);
+    padding: var(--space-xl) var(--space-lg) var(--space-lg);
+    border: 1px solid var(--rarity-color, var(--color-border-strong));
+    border-radius: var(--radius-xl);
+    background:
+        radial-gradient(300px 180px at 50% 0%, var(--rarity-glow, var(--color-primary-soft)), transparent 72%),
+        var(--color-background-elevated);
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+    animation: badge-unlock var(--duration-slower) var(--ease-spring) both;
+}
+
+.celebration__eyebrow {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.celebration__medal {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 78px;
+    height: 78px;
+    border: 1px solid var(--rarity-color, var(--color-primary));
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-inset);
+    color: var(--rarity-color, var(--color-primary));
+}
+
+.celebration__medal::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 1px solid var(--rarity-color, var(--color-primary));
+    border-radius: var(--radius-xl);
+    opacity: 0.4;
+    animation: pulse-ring 2.4s var(--ease-out) infinite;
+}
+
+.celebration__title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.celebration__text {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-snug);
+}
+
+.celebration__rarity {
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--rarity-color, var(--color-text-faint));
+}
+
+.celebration__levels {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin: var(--space-xs) 0;
+}
+
+.celebration__level {
+    font-family: var(--font-display);
+    font-size: var(--text-4xl);
+    line-height: 1;
+}
+
+.celebration__level--old {
+    color: var(--color-text-faint);
+}
+
+.celebration__level--new {
+    color: var(--color-primary);
+    animation: level-burst var(--duration-slower) var(--ease-spring) 180ms both;
+}
+
+.celebration__arrow {
+    color: var(--color-text-muted);
+}
+
+.celebration__card--level {
+    --rarity-glow: var(--color-primary-soft);
+    --rarity-color: var(--color-primary);
+}
+
+/* ============================================================
+   RESPONSIVE COMPONENT TWEAKS
+   ============================================================ */
+@media (max-width: 640px) {
+    .toast-region {
+        left: var(--space-sm);
+        right: var(--space-sm);
+        bottom: calc(var(--bottomnav-height) + var(--space-sm));
+        width: auto;
+    }
+
+    .modal {
+        max-height: calc(100dvh - var(--space-lg));
+    }
+
+    .modal__header,
+    .modal__body {
+        padding: var(--space-md);
+    }
+
+    .modal__footer {
+        padding: var(--space-sm) var(--space-md);
+        flex-direction: column-reverse;
+    }
+
+    .modal__footer .btn {
+        width: 100%;
+    }
+
+    .dna-bar {
+        grid-template-columns: 84px 1fr 34px;
+    }
+}
+
+/* Platform glyph shown beside library metadata */
+.platform-glyph {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+}
+
+/* ------------------------------------------------------------
+   PASSPORT CARD — key art strip
+   The banner sits behind the header, heavily dimmed and masked to
+   nothing by the identity block. The card stays black + yellow;
+   the art only gives the top edge some texture.
+   ------------------------------------------------------------ */
+.passport-card__banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 148px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.passport-card__banner .banner-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.24;
+    filter: saturate(0.7);
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.5) 45%, transparent 82%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.5) 45%, transparent 82%);
+}
+
+/* Keep every child above the artwork */
+.passport-card.has-banner > *:not(.passport-card__banner) {
+    position: relative;
+    z-index: var(--z-base);
+}

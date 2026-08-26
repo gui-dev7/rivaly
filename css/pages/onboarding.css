@@ -1,0 +1,726 @@
+/* ============================================================
+   PAGE — ONBOARDING (welcome → setup → DNA → reveal → passport)
+   ============================================================ */
+
+.onboarding-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ------------------------------------------------------------
+   HEADER + PROGRESS
+   ------------------------------------------------------------ */
+.ob-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-md) var(--space-xl);
+    border-bottom: 1px solid var(--color-border-soft);
+    background: rgba(var(--rgb-ink), 0.7);
+    backdrop-filter: blur(var(--blur-md));
+    -webkit-backdrop-filter: blur(var(--blur-md));
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+}
+
+.ob-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-left: auto;
+    width: min(320px, 46vw);
+}
+
+.ob-progress__label {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.ob-progress .progress {
+    flex: 1;
+}
+
+.ob-progress .progress__fill {
+    background: var(--color-primary);
+}
+
+/* ------------------------------------------------------------
+   STAGES
+   ------------------------------------------------------------ */
+.ob {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-2xl) var(--space-xl) var(--space-3xl);
+}
+
+.ob-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--content-narrow);
+    margin: 0 auto;
+}
+
+.ob-stage--center {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.ob-stage[hidden] {
+    display: none;
+}
+
+/*
+   Centres each stage in the remaining viewport height. `margin-block:auto`
+   is used instead of `justify-content:center` because auto margins collapse
+   when the content is taller than the container — so a long setup step can
+   still scroll instead of being clipped at the top.
+*/
+.ob-stage > .ob-panel,
+.ob-stage > .ob-reveal {
+    margin-block: auto;
+}
+
+/* ------------------------------------------------------------
+   WELCOME
+   ------------------------------------------------------------ */
+.ob-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    max-width: 52ch;
+}
+
+.ob-welcome__ring {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-full);
+    animation: pop-in var(--duration-slower) var(--ease-spring) both;
+}
+
+.ob-welcome__ring::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-full);
+    opacity: 0.35;
+    animation: pulse-ring 2.8s var(--ease-out) infinite;
+}
+
+.ob-welcome__ring-inner {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: radial-gradient(circle at 40% 30%, var(--color-primary-strong), var(--color-primary-dim));
+    box-shadow: 0 0 40px -6px var(--color-primary);
+    animation: float-y 5s var(--ease-in-out) infinite;
+}
+
+.ob-welcome__title {
+    font-size: clamp(1.9rem, 4.6vw, 2.9rem);
+    font-weight: var(--font-black);
+    letter-spacing: var(--tracking-tighter);
+    animation: fade-up var(--duration-slow) var(--ease-out) 120ms both;
+}
+
+.ob-welcome__title span {
+    background: var(--color-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.ob-welcome__text {
+    font-size: var(--text-md);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+    animation: fade-up var(--duration-slow) var(--ease-out) 220ms both;
+}
+
+.ob-welcome__xp {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid rgba(var(--rgb-primary), 0.32);
+    border-radius: var(--radius-full);
+    background: var(--color-secondary-soft);
+    animation: pop-in var(--duration-slow) var(--ease-spring) 420ms both;
+}
+
+.ob-welcome__xp-label {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+}
+
+.ob-welcome__xp-value {
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    color: var(--color-secondary);
+}
+
+.ob-welcome .btn {
+    margin-top: var(--space-md);
+    animation: fade-up var(--duration-slow) var(--ease-out) 520ms both;
+}
+
+.ob-welcome__hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+    animation: fade-in var(--duration-slow) var(--ease-out) 640ms both;
+}
+
+/* ------------------------------------------------------------
+   SETUP PANELS
+   ------------------------------------------------------------ */
+.ob-panel {
+    width: 100%;
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+}
+
+.ob-panel__title {
+    margin-top: var(--space-xs);
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.ob-panel__title:focus-visible {
+    outline: none;
+}
+
+.ob-panel__text {
+    margin-top: var(--space-2xs);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.ob-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+}
+
+.ob-form fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.ob-required,
+.ob-optional {
+    margin-left: var(--space-2xs);
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}
+
+.ob-required {
+    color: var(--color-primary-strong);
+}
+
+.ob-optional {
+    color: var(--color-text-faint);
+}
+
+.ob-scroll {
+    max-height: 190px;
+    overflow-y: auto;
+    padding: var(--space-2xs);
+    margin-top: var(--space-2xs);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+    align-content: flex-start;
+}
+
+.ob-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border-soft);
+    flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------
+   OPTION CARDS (radio)
+   ------------------------------------------------------------ */
+.ob-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.ob-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+.ob-option:hover {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-secondary);
+    transform: translateX(3px);
+}
+
+.ob-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ob-option__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ob-option__label {
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    color: var(--color-text);
+}
+
+.ob-option__hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.ob-option__key {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-secondary);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    color: var(--color-text-muted);
+    transition: background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out);
+}
+
+.ob-option__mark {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.ob-option__mark::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    transform: scale(0);
+    transition: transform var(--duration-fast) var(--ease-spring);
+}
+
+.ob-option:has(input:checked) {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+.ob-option:has(input:checked) .ob-option__mark {
+    border-color: var(--color-primary);
+}
+
+.ob-option:has(input:checked) .ob-option__mark::after {
+    transform: scale(1);
+}
+
+.ob-option:has(input:checked) .ob-option__key {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.ob-option:has(input:focus-visible) {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+}
+
+.ob-option--answer {
+    animation: fade-up var(--duration-normal) var(--ease-out) both;
+}
+
+/* ------------------------------------------------------------
+   DNA QUESTIONS
+   ------------------------------------------------------------ */
+.ob-panel--dna {
+    min-height: 460px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ob-dna__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.ob-dna__counter {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-primary-strong);
+}
+
+.ob-panel--dna .ob-panel__title {
+    margin-bottom: var(--space-xl);
+    min-height: 2.4em;
+}
+
+.ob-panel--dna .ob-options {
+    flex: 1;
+}
+
+.ob-dna__hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+    text-align: right;
+}
+
+/* ------------------------------------------------------------
+   ANALYSING
+   ------------------------------------------------------------ */
+.ob-analyse {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+.ob-analyse__scanner {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-inset);
+    overflow: hidden;
+}
+
+.ob-analyse__helix {
+    position: absolute;
+    inset: 18px;
+    border-radius: var(--radius-md);
+    background:
+        repeating-linear-gradient(115deg, transparent 0 9px, rgba(var(--rgb-primary), 0.35) 9px 11px),
+        repeating-linear-gradient(-115deg, transparent 0 9px, rgba(61, 220, 132, 0.28) 9px 11px);
+    animation: pulse-soft 2.4s var(--ease-in-out) infinite;
+}
+
+.ob-analyse__sweep {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 22px;
+    background: linear-gradient(180deg, transparent, rgba(var(--rgb-primary), 0.5), transparent);
+    animation: scan-sweep 2.1s var(--ease-in-out) infinite;
+}
+
+.ob-analyse__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.ob-analyse__log {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-height: 148px;
+    text-align: left;
+}
+
+.ob-analyse__line {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    animation: fade-right var(--duration-normal) var(--ease-out) both;
+}
+
+.ob-analyse__tick {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-full);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+/* ------------------------------------------------------------
+   REVEAL
+   ------------------------------------------------------------ */
+.ob-reveal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-2xl);
+    width: 100%;
+    max-width: var(--content-max);
+    margin: 0 auto;
+}
+
+.ob-reveal__scores {
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
+}
+
+.ob-reveal__scores .dna-list {
+    margin-top: var(--space-md);
+    gap: var(--space-md);
+}
+
+.ob-reveal__scores .dna-bar {
+    opacity: 0.35;
+    transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+.ob-reveal__scores .dna-bar.is-active {
+    opacity: 1;
+}
+
+.ob-reveal__identity {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--duration-slower) var(--ease-out),
+        transform var(--duration-slower) var(--ease-out);
+}
+
+.ob-reveal__identity.is-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.ob-reveal__found {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px solid var(--archetype-accent, var(--color-primary));
+    border-radius: var(--radius-full);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--archetype-accent, var(--color-primary));
+}
+
+.ob-reveal__archetype {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: var(--font-black);
+    line-height: 1.02;
+    letter-spacing: var(--tracking-tighter);
+    color: var(--color-text);
+    text-shadow: 0 0 60px var(--archetype-accent, transparent);
+    animation: level-burst var(--duration-slower) var(--ease-spring) both;
+}
+
+.ob-reveal__archetype:focus-visible {
+    outline: none;
+}
+
+.ob-reveal__tagline {
+    margin-top: var(--space-xs);
+    font-size: var(--text-lg);
+    font-weight: var(--font-medium);
+    color: var(--archetype-accent, var(--color-primary-strong));
+}
+
+.ob-reveal__description {
+    margin-top: var(--space-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+}
+
+.ob-reveal__traits {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    margin: var(--space-lg) 0 var(--space-xl);
+}
+
+.ob-reveal__traits li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.ob-reveal__traits svg {
+    color: var(--color-accent);
+}
+
+/* ------------------------------------------------------------
+   PASSPORT CREATED
+   ------------------------------------------------------------ */
+.ob-created {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.ob-created__title {
+    font-size: clamp(1.7rem, 4vw, 2.6rem);
+    font-weight: var(--font-black);
+    letter-spacing: var(--tracking-tighter);
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+.ob-created__text {
+    max-width: 48ch;
+    font-size: var(--text-md);
+    color: var(--color-text-muted);
+    animation: fade-up var(--duration-slow) var(--ease-out) 100ms both;
+}
+
+.ob-created__card {
+    width: min(420px, 100%);
+    margin: var(--space-lg) 0;
+    animation: pop-in var(--duration-slower) var(--ease-spring) 200ms both;
+}
+
+.ob-created__rewards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    width: min(420px, 100%);
+    margin-bottom: var(--space-md);
+}
+
+.ob-reward {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+    animation: fade-right var(--duration-normal) var(--ease-out) both;
+}
+
+.ob-reward__label {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.ob-reward__value {
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    color: var(--color-secondary);
+}
+
+.ob-created .btn {
+    animation: fade-up var(--duration-slow) var(--ease-out) 700ms both;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 1080px) {
+    .ob-reveal {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-xl);
+    }
+}
+
+@media (max-width: 860px) {
+    .ob-header {
+        padding: var(--space-sm) var(--space-md);
+        gap: var(--space-sm);
+    }
+
+    .ob-progress__label {
+        display: none;
+    }
+
+    .ob-progress {
+        width: 40vw;
+    }
+
+    .ob {
+        padding: var(--space-lg) var(--space-md) var(--space-2xl);
+    }
+
+    .ob-panel {
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .ob-actions {
+        flex-direction: column-reverse;
+    }
+
+    .ob-actions .btn {
+        width: 100%;
+    }
+
+    .ob-dna__hint {
+        text-align: center;
+    }
+
+    .ob-panel--dna .ob-panel__title {
+        margin-bottom: var(--space-lg);
+    }
+}

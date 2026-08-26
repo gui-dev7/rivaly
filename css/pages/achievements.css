@@ -1,0 +1,187 @@
+/* ============================================================
+   PAGE — ACHIEVEMENTS
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   COLLECTION PROGRESS
+   ------------------------------------------------------------ */
+.achv-progress {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+    align-items: center;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+.achv-progress__value {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    margin: var(--space-2xs) 0 var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-black);
+    line-height: 1;
+    color: var(--color-text);
+}
+
+.achv-progress__total {
+    font-size: var(--text-xl);
+    color: var(--color-text-faint);
+}
+
+.achv-progress__bar {
+    max-width: 460px;
+}
+
+.achv-progress__meta {
+    margin-top: var(--space-xs);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.achv-progress__rarities {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-xs);
+}
+
+.rarity-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--rarity-color, var(--color-border));
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+}
+
+.rarity-chip__dot {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: var(--radius-full);
+    background: var(--rarity-color, var(--color-text-faint));
+    box-shadow: 0 0 10px var(--rarity-color, transparent);
+}
+
+.rarity-chip__label {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+}
+
+.rarity-chip__count {
+    margin-left: auto;
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    color: var(--rarity-color, var(--color-text));
+}
+
+/* ------------------------------------------------------------
+   CLOSEST TO UNLOCKING
+   ------------------------------------------------------------ */
+.next-up {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-sm);
+}
+
+.next-up__item {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--rarity-color, var(--color-border));
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    transition: transform var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out);
+}
+
+.next-up__item:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-border-strong);
+    border-left-color: var(--rarity-color, var(--color-border));
+}
+
+.next-up__medal {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border: 1px solid var(--rarity-color, var(--color-border));
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+    color: var(--rarity-color, var(--color-text-muted));
+}
+
+.next-up__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.next-up__name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}
+
+.next-up__hint {
+    margin: 2px 0 var(--space-xs);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.next-up__meter {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.next-up__meter .progress {
+    flex: 1;
+}
+
+.next-up__meter .progress__fill {
+    background: var(--rarity-color, var(--color-primary));
+}
+
+.next-up__meter .numeric {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+/* ------------------------------------------------------------
+   TOOLBAR
+   ------------------------------------------------------------ */
+.achv-toolbar {
+    margin: var(--space-xl) 0 var(--space-lg);
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 1080px) {
+    .achv-progress {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-lg);
+    }
+}
+
+@media (max-width: 860px) {
+    .achv-progress__value {
+        font-size: var(--text-3xl);
+    }
+
+    .achv-toolbar {
+        margin: var(--space-lg) 0 var(--space-md);
+    }
+}

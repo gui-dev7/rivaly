@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-motion="full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RIVALY settings — motion, notifications, local data and demo reset.">
+    <meta name="theme-color" content="#050505">
+    <title>Settings — RIVALY</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/settings.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <div class="protocol-warning" id="protocolWarning" hidden>
+        <div class="protocol-warning__inner">
+            <h2>Run RIVALY from a local server</h2>
+            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <pre>python -m http.server 5500
+# then open http://localhost:5500</pre>
+        </div>
+    </div>
+    <script>
+        if (window.location.protocol === 'file:') {
+            document.getElementById('protocolWarning').hidden = false;
+        }
+    </script>
+
+    <div class="app">
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+
+        <div class="main">
+            <header class="topbar" data-topbar></header>
+
+            <main class="page page--narrow page-enter" id="main-content">
+                <div class="page__header">
+                    <div>
+                        <h1 class="page__title">Settings</h1>
+                        <p class="page__lede">
+                            Preferences, local data and everything this build stores about you.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Account -->
+                <section class="settings-block card" aria-labelledby="accountTitle">
+                    <h2 class="settings-block__title" id="accountTitle">Account</h2>
+                    <p class="settings-block__text">
+                        This is a local academic simulation. There is no server, no password
+                        recovery and no synchronisation between devices.
+                    </p>
+                    <div class="settings-account" id="accountInfo"></div>
+                    <div class="settings-block__actions">
+                        <a class="btn btn--secondary btn--sm" href="passport.html?edit=1">Edit passport</a>
+                        <button type="button" class="btn btn--ghost btn--sm" id="signOutBtn">Sign out</button>
+                    </div>
+                </section>
+
+                <!-- Preferences -->
+                <section class="settings-block card" aria-labelledby="prefsTitle">
+                    <h2 class="settings-block__title" id="prefsTitle">Interface</h2>
+
+                    <div class="settings-row">
+                        <div class="settings-row__body">
+                            <p class="settings-row__label">Reduce motion</p>
+                            <p class="settings-row__hint">
+                                Disables animations, transitions and the reveal sequences. Your
+                                system preference is respected automatically; this forces it on.
+                            </p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="reducedMotionToggle">
+                            <span class="toggle__track" aria-hidden="true"></span>
+                            <span class="visually-hidden">Reduce motion</span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-row__body">
+                            <p class="settings-row__label">Toast notifications</p>
+                            <p class="settings-row__hint">
+                                In-app feedback for XP, updates and errors. Achievement and level-up
+                                celebrations are not affected.
+                            </p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="toastsToggle">
+                            <span class="toggle__track" aria-hidden="true"></span>
+                            <span class="visually-hidden">Toast notifications</span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-row__body">
+                            <p class="settings-row__label">Compact density</p>
+                            <p class="settings-row__hint">
+                                Tightens spacing across the application. Useful on smaller laptops.
+                            </p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="densityToggle">
+                            <span class="toggle__track" aria-hidden="true"></span>
+                            <span class="visually-hidden">Compact density</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Storage -->
+                <section class="settings-block card" aria-labelledby="storageTitle">
+                    <h2 class="settings-block__title" id="storageTitle">Local data</h2>
+                    <p class="settings-block__text">
+                        Everything RIVALY knows about you lives under the
+                        <code>rivaly:</code> namespace in this browser's local storage.
+                    </p>
+                    <div class="storage-table" id="storageTable"></div>
+                    <div class="settings-block__actions">
+                        <button type="button" class="btn btn--secondary btn--sm" id="exportBtn">Export my data</button>
+                        <button type="button" class="btn btn--ghost btn--sm" id="clearActivityBtn">Clear activity history</button>
+                    </div>
+                </section>
+
+                <!-- Danger zone -->
+                <section class="settings-block card settings-block--danger" aria-labelledby="resetTitle">
+                    <h2 class="settings-block__title" id="resetTitle">Reset demo data</h2>
+                    <p class="settings-block__text">
+                        Deletes your Passport, Gamer DNA, Library, achievements, activity and saved
+                        squad from this browser. Your sign-in account is kept so you can start over
+                        with the same email.
+                    </p>
+                    <div class="settings-block__actions">
+                        <button type="button" class="btn btn--danger btn--sm" id="resetBtn">Reset demo data</button>
+                    </div>
+                </section>
+
+                <!-- About -->
+                <section class="settings-block card" aria-labelledby="aboutTitle">
+                    <h2 class="settings-block__title" id="aboutTitle">About this build</h2>
+                    <dl class="about-list" id="aboutList"></dl>
+                    <p class="settings-block__text">
+                        RIVALY V1 is built with HTML5, CSS3 and vanilla JavaScript only —
+                        no framework, no CSS library, no runtime dependency and no backend.
+                        Version 2 will remodel the same product using React and Tailwind CSS.
+                    </p>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+
+    <script type="module" src="js/settings.js"></script>
+</body>
+</html>

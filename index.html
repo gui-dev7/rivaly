@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" data-motion="full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RIVALY — your gamer identity in one place. Build your Gamer Passport, discover your Gamer DNA, track your library and find the squad that actually fits you.">
+    <meta name="theme-color" content="#050505">
+    <title>RIVALY — Your Gamer Identity</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/landing.css">
+    <link rel="stylesheet" href="css/loading.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <!-- ============================================================
+         INTRO
+         The wordmark is the progress indicator; at 100% the V and the Y
+         transform into the >< mark. Plays once per session.
+         ============================================================ -->
+    <div class="loader" id="loader" hidden
+         role="progressbar"
+         aria-label="Carregando RIVALY"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+         aria-describedby="loaderPct">
+      <div class="loader__stage">
+        <svg class="mark" id="mark" viewBox="-8 -12 519 124"
+             role="img" aria-label="RIVALY" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <clipPath id="levelClip" clipPathUnits="userSpaceOnUse">
+              <rect id="levelRect" x="-20" y="-16" width="560" height="132" transform="translate(0 132)"></rect>
+            </clipPath>
+          </defs>
+          <g class="mark__outline" aria-hidden="true">
+            <path class="ltr" data-ltr="R" d="M0,0 L52,0 L70,18 L70,42 L56,54 L70,100 L51,100 L39,57 L19,57 L19,100 L0,100 Z M19,17 L53,17 L53,41 L19,41 Z"/>
+            <path class="ltr" data-ltr="I" d="M100,0 L119,0 L119,100 L100,100 Z"/>
+            <path class="ltr" data-ltr="V1" d="M149,0 L170,0 L187,100 L179,100 Z"/>
+            <path class="ltr" data-ltr="V2" d="M196,0 L217,0 L187,100 L179,100 Z"/>
+            <path class="ltr" data-ltr="A" d="M273,0 L291,0 L317,100 L298,100 L293,80 L271,80 L266,100 L247,100 Z M282,24 L274,63 L290,63 Z"/>
+            <path class="ltr" data-ltr="L" d="M347,0 L366,0 L366,81 L407,81 L407,100 L347,100 Z"/>
+            <path class="ltr" data-ltr="Y1" d="M437,0 L458,0 L480,60 L461,60 Z"/>
+            <path class="ltr" data-ltr="Y2" d="M482,0 L503,0 L480,60 L461,60 Z"/>
+            <path class="ltr" data-ltr="Y3" d="M461,58 L480,58 L480,100 L461,100 Z"/>
+          </g>
+          <g class="mark__fill" clip-path="url(#levelClip)" aria-hidden="true">
+            <path class="ltr" data-ltr="R" d="M0,0 L52,0 L70,18 L70,42 L56,54 L70,100 L51,100 L39,57 L19,57 L19,100 L0,100 Z M19,17 L53,17 L53,41 L19,41 Z"/>
+            <path class="ltr" data-ltr="I" d="M100,0 L119,0 L119,100 L100,100 Z"/>
+            <path class="ltr" data-ltr="V1" d="M149,0 L170,0 L187,100 L179,100 Z"/>
+            <path class="ltr" data-ltr="V2" d="M196,0 L217,0 L187,100 L179,100 Z"/>
+            <path class="ltr" data-ltr="A" d="M273,0 L291,0 L317,100 L298,100 L293,80 L271,80 L266,100 L247,100 Z M282,24 L274,63 L290,63 Z"/>
+            <path class="ltr" data-ltr="L" d="M347,0 L366,0 L366,81 L407,81 L407,100 L347,100 Z"/>
+            <path class="ltr" data-ltr="Y1" d="M437,0 L458,0 L480,60 L461,60 Z"/>
+            <path class="ltr" data-ltr="Y2" d="M482,0 L503,0 L480,60 L461,60 Z"/>
+            <path class="ltr" data-ltr="Y3" d="M461,58 L480,58 L480,100 L461,100 Z"/>
+          </g>
+          <g class="mark__morph" id="markMorph" aria-hidden="true">
+            <g class="piece" id="pieceR"><path d="M0,0 L52,0 L70,18 L70,42 L56,54 L70,100 L51,100 L39,57 L19,57 L19,100 L0,100 Z M19,17 L53,17 L53,41 L19,41 Z"/></g>
+            <g class="piece" id="pieceI"><path d="M100,0 L119,0 L119,100 L100,100 Z"/></g>
+            <g class="piece" id="pieceA"><path d="M273,0 L291,0 L317,100 L298,100 L293,80 L271,80 L266,100 L247,100 Z M282,24 L274,63 L290,63 Z"/></g>
+            <g class="piece" id="pieceL"><path d="M347,0 L366,0 L366,81 L407,81 L407,100 L347,100 Z"/></g>
+            <g class="chevron" id="chevronV">
+              <path id="vLimb1" d="M149,0 L170,0 L187,100 L179,100 Z"/>
+              <path id="vLimb2" d="M196,0 L217,0 L187,100 L179,100 Z"/>
+            </g>
+            <g class="chevron" id="chevronY">
+              <path id="yArm1" d="M437,0 L458,0 L480,60 L461,60 Z"/>
+              <path id="yArm2" d="M482,0 L503,0 L480,60 L461,60 Z"/>
+            </g>
+            <g class="piece" id="yStem"><path d="M461,58 L480,58 L480,100 L461,100 Z"/></g>
+          </g>
+          <rect class="mark__spark" id="markSpark" x="251.5" y="49" width="0" height="2"></rect>
+        </svg>
+        <p class="loader__pct" id="loaderPct"><span id="pctValue">00</span>%</p>
+        <div class="loader__brand" id="loaderBrand" aria-hidden="true">
+          <p class="loader__brand-name">RIVALY</p>
+          <p class="loader__brand-tag">RIVAL + ALLY</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ES Modules are blocked by CORS under file://. Explain it instead of failing silently. -->
+    <div class="protocol-warning" id="protocolWarning" hidden>
+        <div class="protocol-warning__inner">
+            <h2>Run RIVALY from a local server</h2>
+            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <pre>python -m http.server 5500
+# then open http://localhost:5500</pre>
+        </div>
+    </div>
+    <script>
+        if (window.location.protocol === 'file:') {
+            document.getElementById('protocolWarning').hidden = false;
+        }
+    </script>
+
+    <div class="page-root" data-app-root>
+    <header class="site-header" id="siteHeader">
+        <a class="sidebar__brand" href="index.html" style="padding:0" aria-label="RIVALY home">
+            <span class="brand-mark" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z"/><path d="M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z"/></svg>
+            </span>
+            <span class="brand-name">
+                <span class="brand-name__top">RIVALY</span>
+                <span class="brand-name__sub">Rival + Ally</span>
+            </span>
+        </a>
+
+        <nav class="site-header__nav" aria-label="Page sections">
+            <a class="site-header__link" href="#features">Platform</a>
+            <a class="site-header__link" href="#journey">How it works</a>
+            <a class="site-header__link" href="#engine">Compatibility</a>
+            <a class="site-header__link" href="#roadmap">Roadmap</a>
+        </nav>
+
+        <div class="site-header__actions">
+            <a class="btn btn--ghost btn--sm" href="login.html?mode=signin">Sign in</a>
+            <a class="btn btn--primary btn--sm" href="login.html?mode=create">Create passport</a>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- ============================================================
+             HERO
+             ============================================================ -->
+        <section class="hero">
+            <div class="hero__inner">
+                <div class="hero__copy">
+                    <p class="hero__eyebrow anim-fade-down">The gamer identity platform</p>
+
+                    <h1 class="hero__title">
+                        <span class="hero__line anim-fade-right" style="animation-delay:80ms">Your game.</span>
+                        <span class="hero__line anim-fade-right" style="animation-delay:200ms">Your identity.</span>
+                        <span class="hero__line hero__line--accent anim-fade-right" style="animation-delay:320ms">Your squad.</span>
+                    </h1>
+
+                    <p class="hero__lede anim-fade-up" style="animation-delay:460ms">
+                        One profile for everything you play. Ten questions map how you actually
+                        play, and the <strong>Gamer Passport</strong> that comes out drives the rest:
+                        your library, your badges, and who the engine puts on your team.
+                    </p>
+
+                    <div class="hero__actions anim-fade-up" style="animation-delay:580ms">
+                        <a class="btn btn--primary btn--lg" href="login.html?mode=create">
+                            Create my Gamer Passport
+                            <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg>
+                        </a>
+                        <a class="btn btn--outline btn--lg" href="#features">Explore the platform</a>
+                    </div>
+
+                    <dl class="hero__facts anim-fade-up" style="animation-delay:700ms">
+                        <div class="hero__fact">
+                            <dt>6</dt>
+                            <dd>DNA attributes</dd>
+                        </div>
+                        <div class="hero__fact">
+                            <dt>11</dt>
+                            <dd>Archetypes</dd>
+                        </div>
+                        <div class="hero__fact">
+                            <dt>7</dt>
+                            <dd>Match factors</dd>
+                        </div>
+                        <div class="hero__fact">
+                            <dt>20</dt>
+                            <dd>Achievements</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- The animated Gamer Passport. Populated by js/landing.js -->
+                <div class="hero__visual">
+                    <div class="hero__glow" aria-hidden="true"></div>
+                    <article class="passport-card passport-card--hero" id="heroPassport" aria-label="Example Gamer Passport">
+                        <div class="passport-card__sheen" aria-hidden="true"></div>
+
+                        <header class="passport-card__head">
+                            <div>
+                                <p class="passport-card__brand">RIVALY</p>
+                                <p class="passport-card__type">Gamer Passport</p>
+                            </div>
+                            <p class="passport-card__id numeric" data-hero="id">HG-••••-••</p>
+                        </header>
+
+                        <div class="passport-card__identity">
+                            <span class="passport-card__avatar" data-hero="avatar"></span>
+                            <div>
+                                <p class="passport-card__nick" data-hero="nick">—</p>
+                                <p class="passport-card__archetype" data-hero="archetype">Analysing…</p>
+                            </div>
+                            <div class="passport-card__level">
+                                <span class="passport-card__level-value numeric" data-hero="level">0</span>
+                                <span class="passport-card__level-label">Level</span>
+                            </div>
+                        </div>
+
+                        <div class="passport-card__section">
+                            <p class="passport-card__section-title">Currently playing</p>
+                            <ul class="passport-card__games" data-hero="games"></ul>
+                        </div>
+
+                        <div class="passport-card__section">
+                            <p class="passport-card__section-title">Gamer DNA</p>
+                            <div class="dna-list" data-hero="dna"></div>
+                        </div>
+
+                        <footer class="passport-card__foot">
+                            <span class="passport-card__foot-item">
+                                <span class="passport-card__foot-label">Reputation</span>
+                                <span class="numeric" data-hero="reputation">0</span>
+                            </span>
+                            <span class="passport-card__foot-item">
+                                <span class="passport-card__foot-label">Gamer Score</span>
+                                <span class="numeric" data-hero="score">0</span>
+                            </span>
+                            <span class="passport-card__foot-item">
+                                <span class="passport-card__foot-label">Badges</span>
+                                <span class="numeric" data-hero="badges">0</span>
+                            </span>
+                        </footer>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             FEATURES
+             ============================================================ -->
+        <section class="section" id="features">
+            <div class="section__inner">
+                <header class="section__head" data-reveal>
+                    <p class="eyebrow">The platform</p>
+                    <h2 class="section__title">Six systems.<br>One record.</h2>
+                    <p class="section__lede">
+                        Everything you do here writes back to the Passport, and the Passport
+                        makes the next thing sharper.
+                    </p>
+                </header>
+
+                <div class="feature-grid" id="featureGrid"></div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             JOURNEY
+             ============================================================ -->
+        <section class="section section--alt" id="journey">
+            <div class="section__inner">
+                <header class="section__head" data-reveal>
+                    <p class="eyebrow">How it works</p>
+                    <h2 class="section__title">Four steps.<br>Two minutes.</h2>
+                </header>
+
+                <ol class="journey" id="journeySteps"></ol>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             COMPATIBILITY ENGINE
+             ============================================================ -->
+        <section class="section" id="engine">
+            <div class="section__inner engine">
+                <div class="engine__copy" data-reveal>
+                    <p class="eyebrow">Compatibility Engine</p>
+                    <h2 class="section__title">Every score,<br>shown as maths.</h2>
+                    <p class="section__lede">
+                        Seven factors, scored separately and added up. You see where a player
+                        gained points and where they lost them.
+                    </p>
+                    <ul class="engine__points">
+                        <li>Same search, same ranking. Every time.</li>
+                        <li>Every result prints its own arithmetic.</li>
+                        <li>A role you are missing outscores a role you already have.</li>
+                    </ul>
+                    <a class="btn btn--outline" href="login.html?mode=create">Try the engine</a>
+                </div>
+
+                <div class="engine__visual" data-reveal data-reveal-delay="120">
+                    <div class="weights" id="weightList"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             ROADMAP — honest about what V1 does not do
+             ============================================================ -->
+        <section class="section section--alt" id="roadmap">
+            <div class="section__inner">
+                <header class="section__head" data-reveal>
+                    <p class="eyebrow">Roadmap</p>
+                    <h2 class="section__title">Not in V1.</h2>
+                    <p class="section__lede">
+                        V1 is the identity core. The rest is planned, not faked. You will not find
+                        a dead button for any of it.
+                    </p>
+                </header>
+
+                <div class="roadmap" id="roadmapList"></div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             CTA
+             ============================================================ -->
+        <section class="cta">
+            <div class="cta__inner" data-reveal>
+                <h2 class="cta__title">Two minutes.<br>Then it is yours.</h2>
+                <p class="cta__text">
+                    Ten questions in, an archetype out. Everything after that is yours to build.
+                </p>
+                <div class="cta__actions">
+                    <a class="btn btn--primary btn--lg" href="login.html?mode=create">Create my Gamer Passport</a>
+                    <a class="btn btn--ghost btn--lg" href="login.html?mode=signin">I already have one</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer__inner">
+            <p class="site-footer__note">
+                <strong>RIVALY V1 (Vanilla).</strong> Academic project. HTML5, CSS3 and vanilla
+                JavaScript only. No frameworks, no dependencies, no backend. Your data stays in this
+                browser.
+            </p>
+            <nav class="site-footer__links" aria-label="Footer">
+                <a href="#features">Platform</a>
+                <a href="#journey">How it works</a>
+                <a href="#engine">Compatibility</a>
+                <a href="#roadmap">Roadmap</a>
+                <a href="login.html?mode=create">Get started</a>
+            </nav>
+        </div>
+    </footer>
+    </div>
+
+    <script type="module" src="js/loading.js"></script>
+    <script type="module" src="js/landing.js"></script>
+</body>
+</html>

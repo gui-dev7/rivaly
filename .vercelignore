@@ -1,0 +1,12 @@
+.git/
+.claude/
+.vercel/
+node_modules/
+dist/
+RivalBRAND/
+tools/
+*.md
+*.log
+.env
+.env.*
+!.env.example

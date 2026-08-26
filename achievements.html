@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-motion="full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your RIVALY achievements — twenty badges across five rarities, all unlocked by real actions.">
+    <meta name="theme-color" content="#050505">
+    <title>Achievements — RIVALY</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/achievements.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <div class="protocol-warning" id="protocolWarning" hidden>
+        <div class="protocol-warning__inner">
+            <h2>Run RIVALY from a local server</h2>
+            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <pre>python -m http.server 5500
+# then open http://localhost:5500</pre>
+        </div>
+    </div>
+    <script>
+        if (window.location.protocol === 'file:') {
+            document.getElementById('protocolWarning').hidden = false;
+        }
+    </script>
+
+    <div class="app">
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+
+        <div class="main">
+            <header class="topbar" data-topbar></header>
+
+            <main class="page page-enter" id="main-content">
+                <div class="page__header">
+                    <div>
+                        <h1 class="page__title">Achievements</h1>
+                        <p class="page__lede">
+                            Twenty badges, five rarities. Each one is tied to something you did.
+                            None are granted for free.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <section class="achv-progress card card--accented" aria-labelledby="progressTitle">
+                    <div class="achv-progress__main">
+                        <p class="eyebrow" id="progressTitle">Collection progress</p>
+                        <p class="achv-progress__value">
+                            <span class="numeric" id="unlockedCount">0</span><span class="achv-progress__total" id="totalCount">/20</span>
+                        </p>
+                        <span class="progress progress--accent achv-progress__bar">
+                            <span class="progress__fill" id="collectionBar"></span>
+                        </span>
+                        <p class="achv-progress__meta" id="progressMeta"></p>
+                    </div>
+                    <div class="achv-progress__rarities" id="rarityBreakdown"></div>
+                </section>
+
+                <!-- Next up -->
+                <section aria-labelledby="nextTitle">
+                    <div class="section-head">
+                        <h2 class="section-head__title" id="nextTitle">Closest to unlocking</h2>
+                    </div>
+                    <div id="nextUp"></div>
+                </section>
+
+                <!-- Filters -->
+                <section class="achv-toolbar" aria-label="Achievement filters">
+                    <div class="segmented" id="achvTabs" role="tablist" aria-label="Filter achievements"></div>
+                </section>
+
+                <!-- Grid -->
+                <section aria-labelledby="badgeGridTitle">
+                    <h2 class="visually-hidden" id="badgeGridTitle">All achievements</h2>
+                    <div id="badgeGrid" aria-live="polite"></div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+
+    <script type="module" src="js/achievements.js"></script>
+</body>
+</html>

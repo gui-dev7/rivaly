@@ -1,0 +1,296 @@
+/* ============================================================
+   PAGE — GAME LIBRARY
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   TOOLBAR
+   ------------------------------------------------------------ */
+.library-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin: var(--space-xl) 0 var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.library-toolbar__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-left: auto;
+}
+
+.library-search {
+    width: 240px;
+}
+
+.library-search .input,
+.library-sort .select {
+    height: 40px;
+    font-size: var(--text-sm);
+}
+
+.library-sort {
+    width: 176px;
+}
+
+.library-hint {
+    margin-bottom: var(--space-lg);
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+/* --- Drop-target states on the status tabs --- */
+.segmented.is-drop-target {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.segmented.is-drop-target .segmented__item[data-status="all"] {
+    opacity: 0.35;
+}
+
+.segmented__item.is-drop-hover {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    transform: translateY(-1px);
+}
+
+.segmented__item.is-drop-hover .segmented__count {
+    color: var(--color-text-inverse);
+}
+
+/* ------------------------------------------------------------
+   GAME CARD
+   ------------------------------------------------------------ */
+.game-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    overflow: hidden;
+    transition: transform var(--duration-normal) var(--ease-out),
+        border-color var(--duration-normal) var(--ease-out),
+        box-shadow var(--duration-normal) var(--ease-out),
+        opacity var(--duration-fast) var(--ease-out);
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--status-color, var(--color-border-strong));
+    box-shadow: var(--shadow-lg);
+}
+
+.game-card.is-dragging {
+    opacity: 0.4;
+    transform: scale(0.97);
+}
+
+.game-card__cover {
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card__cover .cover {
+    transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.game-card:hover .cover {
+    transform: scale(1.04);
+}
+
+.game-card__status {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    padding: 3px var(--space-xs);
+    border: 1px solid var(--status-color, var(--color-border-strong));
+    border-radius: var(--radius-sm);
+    background: rgba(var(--rgb-ink), 0.78);
+    backdrop-filter: blur(var(--blur-sm));
+    -webkit-backdrop-filter: blur(var(--blur-sm));
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--status-color, var(--color-text-secondary));
+}
+
+.game-card__grip {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    background: rgba(var(--rgb-ink), 0.7);
+    color: var(--color-text-faint);
+    opacity: 0;
+    cursor: grab;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.game-card:hover .game-card__grip {
+    opacity: 1;
+}
+
+.game-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-sm) var(--space-md) var(--space-md);
+    flex: 1;
+}
+
+.game-card__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-tight);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.game-card__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--text-2xs);
+    color: var(--color-text-muted);
+}
+
+.game-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    margin-top: auto;
+    padding-top: var(--space-xs);
+}
+
+.game-card__unrated {
+    font-size: var(--text-2xs);
+    color: var(--color-text-faint);
+}
+
+.game-card__genre {
+    font-size: 9px;
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.game-card__actions {
+    position: absolute;
+    right: var(--space-xs);
+    bottom: var(--space-xs);
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+/* The cover is the anchor, so the actions never overlap the metadata. */
+.game-card__actions .btn {
+    background: rgba(var(--rgb-ink), 0.82);
+    backdrop-filter: blur(var(--blur-sm));
+    -webkit-backdrop-filter: blur(var(--blur-sm));
+}
+
+.game-card:hover .game-card__actions,
+.game-card:focus-within .game-card__actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Status colouring, resolved once per status class */
+.status-playing   { --status-color: var(--color-accent); }
+.status-completed { --status-color: var(--color-primary-strong); }
+.status-backlog   { --status-color: var(--color-text-muted); }
+.status-dropped   { --status-color: var(--color-danger); }
+.status-wishlist  { --status-color: var(--color-secondary); }
+
+/* ------------------------------------------------------------
+   ADD / EDIT DIALOG
+   ------------------------------------------------------------ */
+.game-dialog__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.game-dialog__cover {
+    display: block;
+    width: 56px;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.game-dialog__title {
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+}
+
+.game-dialog__meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 860px) {
+    .library-toolbar {
+        margin-top: var(--space-lg);
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .library-toolbar__controls {
+        margin-left: 0;
+    }
+
+    .library-search {
+        flex: 1;
+        width: auto;
+    }
+
+    .library-sort {
+        width: 150px;
+    }
+
+    /* Touch has no hover: keep the actions permanently visible. */
+    .game-card__actions {
+        opacity: 1;
+        transform: none;
+    }
+
+    .game-card__grip {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .library-toolbar__controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .library-sort {
+        width: 100%;
+    }
+}

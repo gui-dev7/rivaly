@@ -1,0 +1,274 @@
+/* ============================================================
+   RIVALY — ANIMATIONS
+   Only `transform`, `opacity`, `filter`, `clip-path` and
+   `box-shadow` are animated. Layout-triggering properties
+   (width/height/top/left) are avoided everywhere except the
+   progress bars, which use `transform: scaleX()` instead.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   KEYFRAMES
+   ------------------------------------------------------------ */
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fade-up {
+    from { opacity: 0; transform: translate3d(0, 18px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fade-down {
+    from { opacity: 0; transform: translate3d(0, -14px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fade-left {
+    from { opacity: 0; transform: translate3d(28px, 0, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fade-right {
+    from { opacity: 0; transform: translate3d(-28px, 0, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes pop-in {
+    0%   { opacity: 0; transform: scale(0.9); }
+    60%  { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scale-out {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(0.96); }
+}
+
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translate3d(110%, 0, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slide-out-right {
+    from { opacity: 1; transform: translate3d(0, 0, 0); }
+    to   { opacity: 0; transform: translate3d(110%, 0, 0); }
+}
+
+@keyframes slide-in-up {
+    from { opacity: 0; transform: translate3d(0, 110%, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.45; }
+}
+
+@keyframes pulse-ring {
+    0%   { transform: scale(0.85); opacity: 0.7; }
+    70%  { transform: scale(1.5); opacity: 0; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+}
+
+@keyframes bar-grow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@keyframes float-y {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50%      { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes drift {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    50%  { transform: translate3d(14px, -18px, 0) scale(1.06); }
+    100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes scan-sweep {
+    0%   { transform: translateY(-120%); opacity: 0; }
+    12%  { opacity: 1; }
+    88%  { opacity: 1; }
+    100% { transform: translateY(520%); opacity: 0; }
+}
+
+@keyframes glow-breathe {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--rgb-primary), 0); }
+    50%      { box-shadow: 0 0 34px -6px rgba(var(--rgb-primary), 0.55); }
+}
+
+@keyframes shake-x {
+    0%, 100%   { transform: translateX(0); }
+    20%, 60%   { transform: translateX(-5px); }
+    40%, 80%   { transform: translateX(5px); }
+}
+
+@keyframes reveal-clip {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes level-burst {
+    0%   { opacity: 0; transform: scale(0.6); filter: blur(8px); }
+    45%  { opacity: 1; transform: scale(1.08); filter: blur(0); }
+    100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes badge-unlock {
+    0%   { opacity: 0; transform: translateY(24px) scale(0.86) rotate(-6deg); }
+    55%  { opacity: 1; transform: translateY(-4px) scale(1.04) rotate(2deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+
+@keyframes ticker {
+    0%   { opacity: 0.3; transform: translateY(4px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes caret-blink {
+    0%, 45%   { opacity: 1; }
+    55%, 100% { opacity: 0; }
+}
+
+@keyframes progress-indeterminate {
+    0%   { transform: translateX(-100%) scaleX(0.4); }
+    50%  { transform: translateX(20%) scaleX(0.7); }
+    100% { transform: translateX(100%) scaleX(0.4); }
+}
+
+/* ------------------------------------------------------------
+   ANIMATION UTILITIES
+   ------------------------------------------------------------ */
+.anim-fade-in   { animation: fade-in var(--duration-normal) var(--ease-out) both; }
+.anim-fade-up   { animation: fade-up var(--duration-slow) var(--ease-out) both; }
+.anim-fade-down { animation: fade-down var(--duration-slow) var(--ease-out) both; }
+.anim-fade-left { animation: fade-left var(--duration-slow) var(--ease-out) both; }
+.anim-fade-right{ animation: fade-right var(--duration-slow) var(--ease-out) both; }
+.anim-pop       { animation: pop-in var(--duration-slow) var(--ease-spring) both; }
+.anim-float     { animation: float-y 6s var(--ease-in-out) infinite; }
+.anim-shake     { animation: shake-x 380ms var(--ease-out); }
+.anim-spin      { animation: spin 900ms linear infinite; }
+
+/* ------------------------------------------------------------
+   STAGGER
+   Applied by adding .stagger to a container; children animate
+   in sequence. Depth of 14 covers every grid in the product.
+   ------------------------------------------------------------ */
+.stagger > * {
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+.stagger > *:nth-child(1)  { animation-delay: 40ms; }
+.stagger > *:nth-child(2)  { animation-delay: 90ms; }
+.stagger > *:nth-child(3)  { animation-delay: 140ms; }
+.stagger > *:nth-child(4)  { animation-delay: 190ms; }
+.stagger > *:nth-child(5)  { animation-delay: 240ms; }
+.stagger > *:nth-child(6)  { animation-delay: 290ms; }
+.stagger > *:nth-child(7)  { animation-delay: 340ms; }
+.stagger > *:nth-child(8)  { animation-delay: 390ms; }
+.stagger > *:nth-child(9)  { animation-delay: 440ms; }
+.stagger > *:nth-child(10) { animation-delay: 490ms; }
+.stagger > *:nth-child(11) { animation-delay: 540ms; }
+.stagger > *:nth-child(12) { animation-delay: 590ms; }
+.stagger > *:nth-child(13) { animation-delay: 640ms; }
+.stagger > *:nth-child(n + 14) { animation-delay: 690ms; }
+
+/* ------------------------------------------------------------
+   SCROLL REVEAL
+   Driven by IntersectionObserver in js/animations.js.
+   Elements are visible by default if JS never runs — the
+   observer adds `.reveal` (hiding them) only when it is ready.
+   ------------------------------------------------------------ */
+.reveal {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+    transition: opacity var(--duration-slower) var(--ease-out),
+        transform var(--duration-slower) var(--ease-out);
+    will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+}
+
+/* ------------------------------------------------------------
+   PAGE TRANSITION
+   A discreet fade-up applied to the main content of every page.
+   ------------------------------------------------------------ */
+.page-enter {
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+/* ------------------------------------------------------------
+   SKELETON
+   ------------------------------------------------------------ */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface-secondary);
+    border-radius: var(--radius-md);
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.055),
+        transparent
+    );
+    animation: shimmer 1.4s var(--ease-in-out) infinite;
+}
+
+.skeleton--text {
+    height: 12px;
+    border-radius: var(--radius-full);
+}
+
+.skeleton--title {
+    height: 20px;
+    width: 55%;
+    border-radius: var(--radius-full);
+}
+
+.skeleton--card {
+    height: 168px;
+}
+
+.skeleton--avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+}
+
+/* ------------------------------------------------------------
+   MOTION OVERRIDES
+   Reduced motion neutralises animation but never hides content:
+   reveal elements snap to their final state.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+[data-motion="reduced"] .reveal {
+    opacity: 1;
+    transform: none;
+}

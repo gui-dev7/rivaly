@@ -1,0 +1,239 @@
+/* ============================================================
+   RIVALY — INTRO LOADER
+   The wordmark is the progress indicator: a hard-edged yellow level
+   rises inside the letters, then the V and the Y transform into ><.
+
+   Layered on top of the existing app. It reuses the project's design
+   tokens (variables.css) rather than redeclaring the palette.
+   ============================================================ */
+
+/* ============================================================
+   RIVALY — LOADING
+   HTML5 + CSS3 + vanilla JS only. No framework, no CDN.
+   ============================================================ */
+
+/* ============================================================
+   LOADER SHELL
+   ============================================================ */
+.loader {
+    --progress: 0;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+    background: var(--color-background);
+    /* A single, very restrained vignette. Not a glow, not a gradient wash. */
+    background-image: radial-gradient(
+        120% 90% at 50% 46%,
+        var(--color-background-elevated) 0%,
+        var(--color-background) 62%
+    );
+    transition: opacity 480ms var(--ease-out);
+}
+
+.loader.is-leaving {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader__stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(18px, 3.2vh, 34px);
+    width: min(100%, 1180px);
+}
+
+/* ============================================================
+   THE WORDMARK
+   ============================================================ */
+.mark {
+    display: block;
+    width: min(88vw, 1040px);
+    height: auto;
+    /* clamp() keeps the mark readable from 360px to 1920px without
+       ever touching the safe side margin. */
+    max-height: clamp(96px, 30vh, 300px);
+    overflow: visible;
+}
+
+/* --- Layer 1: outline, present from frame one --- */
+.mark__outline .ltr {
+    fill: none;
+    stroke: var(--color-primary);
+    /* Scales with the viewBox, so the stroke stays proportional at
+       every breakpoint instead of getting hairline on mobile. */
+    stroke-width: 2.2;
+    stroke-linejoin: miter;
+    vector-effect: non-scaling-stroke;
+    /* The outline firms up as the level rises: 0.72 at 0%, 1 at 100%.
+       This is the one place --progress is consumed directly by CSS. */
+    opacity: calc(0.72 + var(--progress) * 0.0028);
+}
+
+/* --- Layer 2: solid fill, revealed by the rising level --- */
+.mark__fill .ltr {
+    fill: var(--color-primary);
+    stroke: none;
+}
+
+/* Past 75% the yellow firms up very slightly. No bloom, no glow. */
+.mark.is-hot .mark__fill .ltr {
+    filter: saturate(1.12) brightness(1.04);
+}
+
+/* 50% milestone: a micro-pulse, deliberately almost imperceptible. */
+.mark.is-pulse {
+    animation: mark-pulse 460ms var(--ease-out);
+}
+
+@keyframes mark-pulse {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.015); }
+    100% { transform: scale(1); }
+}
+
+/* --- Layer 3: the morph stage --- */
+.mark__morph {
+    visibility: hidden;
+    fill: var(--color-primary);
+}
+
+.mark.is-morphing .mark__morph {
+    visibility: visible;
+}
+
+/* Once the morph owns the picture, the static layers step aside. */
+.mark.is-morphing .mark__outline,
+.mark.is-morphing .mark__fill {
+    opacity: 0;
+    transition: opacity 200ms linear;
+}
+
+/*
+   Every animated group shares one transform contract:
+   translate -> rotate -> scale, around its own centre.
+   JS writes --tx/--ty/--rot/--sc and --ox/--oy (the centre, in
+   user units), so the CSS never has to hard-code geometry.
+*/
+.piece,
+.chevron {
+    transform-box: view-box;
+    transform-origin: calc(var(--ox, 0) * 1px) calc(var(--oy, 0) * 1px);
+    transform:
+        translate(calc(var(--tx, 0) * 1px), calc(var(--ty, 0) * 1px))
+        rotate(var(--rot, 0deg))
+        scale(var(--scx, 1), var(--scy, 1));
+    opacity: var(--op, 1);
+    transition:
+        transform var(--dur, 900ms) var(--ease-spring) var(--delay, 0ms),
+        opacity var(--dur, 900ms) var(--ease-out) var(--delay, 0ms);
+    will-change: transform, opacity;
+}
+
+/* Impact accent */
+.mark__spark {
+    fill: var(--color-primary);
+    opacity: 0;
+}
+
+/* ============================================================
+   PERCENTAGE
+   Small, technical, tracked out. Never competes with the mark.
+   ============================================================ */
+.loader__pct {
+    font-family: var(--font-mono);
+    font-size: clamp(0.66rem, 1.5vw, 0.82rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.42em;
+    /* letter-spacing adds a trailing gap; pull it back so the block
+       stays optically centred. */
+    text-indent: 0.42em;
+    color: var(--color-text-faint);
+    transition: opacity 300ms var(--ease-out);
+}
+
+.loader__pct.is-done {
+    opacity: 0;
+}
+
+/* ============================================================
+   FINAL LOCKUP
+   ============================================================ */
+.loader__brand {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + clamp(66px, 14vh, 132px));
+    transform: translate(-50%, 8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 420ms var(--ease-out),
+        transform 420ms var(--ease-out);
+}
+
+.loader__brand.is-in {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.loader__brand-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 3.8vw, 2.3rem);
+    line-height: 1;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+    color: var(--color-text);
+}
+
+.loader__brand-tag {
+    font-family: var(--font-mono);
+    font-size: clamp(0.6rem, 1.4vw, 0.74rem);
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    color: var(--color-text-faint);
+}
+
+
+/* ============================================================
+   PAGE REVEAL
+   The landing renders underneath the opaque loader, so this is a
+   reveal rather than a mount — no layout is built after the fact.
+   ============================================================ */
+/*
+   Visible by default on purpose. If the module never runs — JS disabled,
+   a network hiccup, a syntax error — the landing is simply there, with
+   no loader on top of it. Only loading.js opts the page into being
+   hidden, and only for as long as it can also reveal it again.
+*/
+.page-root {
+    opacity: 1;
+    transform: none;
+    transition:
+        opacity 520ms var(--ease-out),
+        transform 520ms var(--ease-out);
+}
+
+.page-root.is-pending {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.page-root.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-root {
+        transform: none;
+        transition-duration: 200ms;
+    }
+}
