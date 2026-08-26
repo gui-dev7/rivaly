@@ -7,7 +7,7 @@ populated library. Nothing here is redistributed commercially.
 All files are stored locally so the application makes **zero external network
 requests at runtime**. They were downloaded once by `tools/fetch-assets.mjs`.
 
-## Game covers — `assets/covers/` (32 files)
+## Game covers — `public/assets/covers/` (32 files)
 
 | Source | Count | Notes |
 | --- | --- | --- |
@@ -15,7 +15,7 @@ requests at runtime**. They were downloaded once by `tools/fetch-assets.mjs`.
 | Wikipedia box art | 3 | `zelda-totk`, `gran-turismo`, `wow`. Low-resolution cover scans, used under fair use for identification in an educational context. |
 | Composited wordmarks | 4 | `valorant`, `lol`, `fortnite`, `minecraft`. Official wordmarks from Wikimedia Commons (see licence per file below), composited by us onto the game's own generated gradient. The background is original work. |
 
-## Game banners — `assets/banners/` (25 files)
+## Game banners — `public/assets/banners/` (25 files)
 
 Steam CDN `header.jpg`. © the respective publishers.
 
@@ -49,7 +49,7 @@ Latin subsets, self-hosted.
 
 ## Removing the artwork
 
-The application degrades cleanly without it. Delete `assets/covers/` and
-`assets/banners/` and every card falls back to its generated gradient and
+The application degrades cleanly without it. Delete `public/assets/covers/` and
+`public/assets/banners/` and every card falls back to its generated gradient and
 monogram — no broken images, no console errors. Run
 `node tools/fetch-assets.mjs` to fetch them again.

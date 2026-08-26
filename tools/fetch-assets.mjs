@@ -2,7 +2,7 @@
  * tools/fetch-assets.mjs — DEV TOOL, run once. Not part of the product.
  *
  * Downloads the artwork for every game in the catalogue and writes
- * optimised WebP into assets/. The application never fetches anything at
+ * optimised WebP into public/assets/. The application never fetches anything at
  * runtime: it loads these local files, exactly like the fonts.
  *
  * Sources, in order of preference per game (declared in js/data.js):
@@ -24,8 +24,8 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const COVERS = join(ROOT, 'assets', 'covers');
-const BANNERS = join(ROOT, 'assets', 'banners');
+const COVERS = join(ROOT, 'public', 'assets', 'covers');
+const BANNERS = join(ROOT, 'public', 'assets', 'banners');
 const TMP = join(ROOT, 'assets', '.tmp');
 
 const FORCE = process.argv.includes('--force');

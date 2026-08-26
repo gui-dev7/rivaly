@@ -95,7 +95,7 @@ export function gameMarkMarkup(game) {
     const hue2 = (game.hue + 34) % 360;
     return `<span class="passport-card__game-mark"
         style="--cover-a:hsl(${game.hue} 62% 30%);--cover-b:hsl(${hue2} 58% 14%)">${escapeHtml(game.glyph)}<img
-        src="assets/covers/${encodeURIComponent(game.id)}.webp" alt="" decoding="async" loading="lazy" data-fallback></span>`;
+        src="/assets/covers/${encodeURIComponent(game.id)}.webp" alt="" decoding="async" loading="lazy" data-fallback></span>`;
 }
 
 /* ============================================================

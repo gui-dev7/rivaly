@@ -169,10 +169,12 @@ rivaly/
 ├── tools/
 │   └── fetch-assets.mjs    DEV ONLY — downloads + optimises the game artwork
 │
+├── public/assets/
+│   ├── covers/             32 game covers, WebP 360x540 (~700 KB)
+│   └── banners/            25 wide key-art banners, WebP 480x224 (~550 KB)
+│
 ├── assets/
 │   ├── fonts/              Anton + Chakra Petch (latin subset, 45 KB)
-│   ├── covers/             32 game covers, WebP 360x540 (~700 KB)
-│   ├── banners/            25 wide key-art banners, WebP 480x224 (~550 KB)
 │   └── ATTRIBUTION.md      Where every asset came from, and its licence
 │
 ├── css/
@@ -305,7 +307,7 @@ renders as an `<img>` layered over the gradient and monogram, and every generate
 image carries `data-fallback`. A capture-phase `error` listener in `js/app.js`
 removes any image that fails, revealing the gradient.
 
-Delete `assets/covers/` entirely and the product still renders correctly: no
+Delete `public/assets/covers/` entirely and the product still renders correctly: no
 broken-image icons, no layout shift, no console errors. This is covered by a
 test that hides a file and asserts the gradient takes over.
 

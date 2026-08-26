@@ -247,7 +247,7 @@ export function coverArt(game, { className = '', eager = false } = {}) {
     // artwork is missing or fails to decode, app.js strips the <img> and this
     // is what shows — no broken-image icon, no visible 404.
     const art = game?.id
-        ? `<img class="cover__img" src="assets/covers/${encodeURIComponent(game.id)}.webp"
+        ? `<img class="cover__img" src="/assets/covers/${encodeURIComponent(game.id)}.webp"
                 alt="" decoding="async" ${eager ? '' : 'loading="lazy"'} data-fallback>`
         : '';
 
@@ -264,7 +264,7 @@ export function coverArt(game, { className = '', eager = false } = {}) {
 export function bannerArt(game, { className = '' } = {}) {
     if (!game?.steamAppId) return '';
     return `<img class="banner-art ${escapeHtml(className)}"
-        src="assets/banners/${encodeURIComponent(game.id)}.webp"
+        src="/assets/banners/${encodeURIComponent(game.id)}.webp"
         alt="" decoding="async" loading="lazy" data-fallback>`;
 }
 
