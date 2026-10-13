@@ -133,13 +133,15 @@ tree.addEventListener('click', (event) => {
     if (event.target.closest('[data-clear]')) $('#sitemapSearchForm').reset();
 });
 
-// Esc limpa a busca enquanto o campo tem foco.
+// Esc limpa a busca enquanto o campo tem foco. O "search" cobre o X
+// nativo do campo de busca, que limpa sem disparar "input".
 input.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && input.value) {
-        event.preventDefault();
-        $('#sitemapSearchForm').reset();
-    }
+    if (event.key !== 'Escape' || !input.value) return;
+    event.preventDefault();
+    input.value = '';
+    render();
 });
+input.addEventListener('search', render);
 
 if (!signedIn) {
     const note = $('#authNote');

@@ -10,7 +10,7 @@
 import { bootApp, afterRender, haltModule } from './app.js';
 import { REACTIONS, getGameById } from './data.js';
 import {
-    buildFeed, filterFeed, publishPost, toggleReaction, addComment, postRules, commentRules,
+    buildFeed, filterFeed, groupActivity, publishPost, toggleReaction, addComment, postRules, commentRules,
     dailyXpLeft, FEED_TABS, POST_MAX, COMMENT_MAX,
 } from './feed-store.js';
 import { myClan } from './clans-store.js';
@@ -164,6 +164,21 @@ function buildActivityElement(item) {
     return card;
 }
 
+/** Várias atividades seguidas: um bloco com a mais recente e o resto expansível. */
+function buildActivityGroupElement(group) {
+    const box = el('details', { className: 'feed-digest' });
+    const summary = el('summary', { className: 'feed-digest__summary' });
+    summary.append(
+        el('span', { className: 'feed-digest__title', text: `Você · ${group.items.length} atividades` }),
+        el('span', { className: 'feed-digest__latest', text: group.items[0].text }),
+        timeNode(group.at),
+    );
+    const list = el('div', { className: 'feed-digest__list' });
+    group.items.forEach((item) => list.append(buildActivityElement(item)));
+    box.append(summary, list);
+    return box;
+}
+
 /* ============================================================
    ABAS E LISTA
    ============================================================ */
@@ -211,9 +226,14 @@ function renderList() {
         return;
     }
 
-    const nodes = filtered.slice(0, state.visible).map((item) => (item.type === 'post' ? buildPostElement(item) : buildActivityElement(item)));
+    const grouped = groupActivity(filtered);
+    const nodes = grouped.slice(0, state.visible).map((item) => {
+        if (item.type === 'post') return buildPostElement(item);
+        if (item.type === 'activity-group') return buildActivityGroupElement(item);
+        return buildActivityElement(item);
+    });
     listHost.replaceChildren(...nodes);
-    moreButton.hidden = filtered.length <= state.visible;
+    moreButton.hidden = grouped.length <= state.visible;
 }
 
 function refresh({ keepVisible = false } = {}) {

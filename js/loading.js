@@ -8,6 +8,8 @@
  * Vanilla ES modules only. No framework, no animation library, no CDN.
  */
 
+import { sessionRead, sessionWrite } from './storage.js';
+
 /* ============================================================
    GEOMETRY
    These mirror the SVG paths in index.html. Keeping them here as
@@ -92,7 +94,8 @@ const morph = {
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* Session behaviour: full show once, short version afterwards. */
-const SESSION_KEY = 'rivaly:intro-seen';
+// Guardado via storage.js (sessionStorage), como rivaly:intro-seen.
+const SESSION_KEY = 'intro-seen';
 const SKIP_LONG_INTRO = true; // flip to false to always play the full sequence
 
 /* ============================================================
@@ -402,19 +405,14 @@ function initLoading() {
         return;
     }
 
-    const seen = SKIP_LONG_INTRO && window.sessionStorage?.getItem(SESSION_KEY) === '1';
+    const seen = SKIP_LONG_INTRO && Boolean(sessionRead(SESSION_KEY, false));
 
     const run = seen
         ? runShortIntro()
         : simulateLoading().then(completeLoading);
 
-    run.then(() => {
-        try {
-            window.sessionStorage?.setItem(SESSION_KEY, '1');
-        } catch {
-            /* Private mode: the intro simply plays again. Not worth failing over. */
-        }
-    });
+    // Em modo privado a gravação falha em silêncio e a intro só toca de novo.
+    run.then(() => sessionWrite(SESSION_KEY, true));
 }
 
 /* ============================================================
@@ -433,8 +431,6 @@ window.setLoadingProgress = setLoadingProgress;
 /* Lets the landing offer a "replay intro" control without importing this
    module twice. */
 window.replayRivalyIntro = () => {
-    try {
-        window.sessionStorage?.removeItem(SESSION_KEY);
-    } catch { /* ignore */ }
+    sessionWrite(SESSION_KEY, null);
     window.location.reload();
 };

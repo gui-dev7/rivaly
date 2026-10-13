@@ -1,21 +1,23 @@
 /**
  * tour.js — tutorial guiado da RIVALY.
  *
- * O tour atravessa varias paginas, entao ele nao pode viver na memoria de
- * uma so. O progresso fica em sessionStorage: cada pagina que carrega
- * pergunta "o tour esta ativo e ha passo meu aqui?" e continua de onde
- * parou. Terminar ou pular grava a conclusao nas configuracoes, para o
- * tutorial nao reaparecer a cada login.
+ * O tour atravessa várias páginas, então ele não pode viver na memória de
+ * uma só. O progresso fica no sessionStorage (via storage.js): cada página
+ * que carrega pergunta "o tour está ativo e há passo meu aqui?" e continua
+ * de onde parou. Terminar ou pular grava a conclusão nas configurações,
+ * para o tutorial não reaparecer a cada login.
  *
- * Passos cujo alvo nao existe sao pulados em silencio: a Biblioteca vazia
- * nao tem card de jogo, e travar o tutorial por causa disso seria pior do
- * que omitir uma explicacao.
+ * Passos cujo alvo não existe ficam centralizados: a Biblioteca vazia não
+ * tem card de jogo, e travar o tutorial por causa disso seria pior do que
+ * explicar sem apontar.
  */
 
-import { getSettings, saveSettings } from './storage.js';
+import { getSettings, saveSettings, sessionRead, sessionWrite } from './storage.js';
+import { ACHIEVEMENTS, ROADMAP } from './data.js';
 import { prefersReducedMotion } from './animations.js';
+import { escapeHtml } from './ui.js';
 
-const STATE_KEY = 'rivaly:tour';
+const STATE_KEY = 'tour';
 
 /* ============================================================
    ROTEIRO
@@ -30,12 +32,12 @@ export const TOUR_STEPS = [
     {
         page: 'dashboard.html', target: null,
         title: 'Bem-vindo à RIVALY',
-        text: 'Este é um tour completo pelo produto. São alguns passos, e você pode sair quando quiser — vamos começar pelo Início, que resume tudo o que o seu Passaporte já sabe sobre você.',
+        text: 'Um tour rápido pelo produto. Você pode sair quando quiser. Começamos pelo Início, que resume tudo o que o seu Passaporte já sabe sobre você.',
     },
     {
         page: 'dashboard.html', target: '.sidebar__nav',
         title: 'A navegação',
-        text: 'Todas as áreas ficam aqui: Passaporte, Biblioteca, Descobrir, Squads, Conquistas e Configurações. A seção atual aparece destacada.',
+        text: 'As áreas estão agrupadas em Você, Comunidade, Explorar e Conta. A página atual aparece destacada. No celular, o botão Mais da barra inferior abre este mesmo menu.',
     },
     {
         page: 'dashboard.html', target: '[data-topbar] .level-pill, .level-pill',
@@ -43,9 +45,19 @@ export const TOUR_STEPS = [
         text: 'Quase tudo o que você faz rende XP: montar o Passaporte, adicionar jogos, zerar títulos e buscar squad. A barra mostra quanto falta para o próximo nível.',
     },
     {
+        page: 'dashboard.html', target: '#nextStep',
+        title: 'Próximo passo',
+        text: 'Uma ação só: a que mais faz o seu Passaporte avançar agora. A regra é fixa e aparece no próprio card.',
+    },
+    {
+        page: 'dashboard.html', target: '.invites__toggle',
+        title: 'Centro de convites',
+        text: 'Convites de clã, respostas de candidatura e desafios da Arena chegam neste sino, com o número de pendências.',
+    },
+    {
         page: 'dashboard.html', target: '#overviewStats',
         title: 'Visão geral',
-        text: 'Seis indicadores do seu perfil: nível, experiência, Pontuação Gamer, reputação, jogos registrados e medalhas. Todos são calculados a partir dos seus dados reais — nada aqui é enfeite.',
+        text: 'Seis indicadores do seu perfil: nível, experiência, Pontuação Gamer, reputação, jogos e medalhas. Todos saem dos seus dados; nada aqui é enfeite.',
     },
     {
         page: 'dashboard.html', target: '.dna-summary',
@@ -62,12 +74,17 @@ export const TOUR_STEPS = [
     {
         page: 'passport.html', target: '.passport-card',
         title: 'Seu Passaporte Gamer',
-        text: 'Este cartão é a sua identidade dentro da RIVALY: apelido, arquétipo, nível e os jogos do momento. Todo o resto do produto lê ou escreve neste registro.',
+        text: 'Este cartão é a sua identidade na RIVALY: apelido, arquétipo, nível, Arena e clã. Todo o resto do produto lê ou escreve neste registro.',
     },
     {
         page: 'passport.html', target: '.identity__actions, #editPassportBtn',
         title: 'Editar e trocar o avatar',
-        text: 'Aqui você ajusta apelido, rank, região, plataformas, idiomas, horários e função. O botão de avatar abre a galeria do DiceBear, com centenas de opções ou o envio da sua própria imagem.',
+        text: 'Aqui você ajusta apelido, rank, região, plataformas, idiomas, horários e função. O botão de avatar abre a galeria do DiceBear ou o envio da sua própria imagem.',
+    },
+    {
+        page: 'passport.html', target: '#passportCommunity',
+        title: 'Comunidade no Passaporte',
+        text: 'Clã, rating de Arena, aliados e rivais. Tudo o que você faz na comunidade volta para cá.',
     },
     {
         page: 'passport.html', target: '.dna-full',
@@ -89,10 +106,10 @@ export const TOUR_STEPS = [
     {
         page: 'library.html', target: '.game-card',
         title: 'Um jogo na prática',
-        text: 'Cada card guarda plataforma, horas e sua nota. Passe o mouse para editar ou remover — e você também pode arrastar o card para outra aba para trocar o status.',
+        text: 'Cada card guarda plataforma, horas e nota. Passe o mouse para editar ou remover, ou arraste o card até outra aba para trocar o status.',
     },
     {
-        page: 'library.html', target: '#addGameBtn, .page__header .btn--primary',
+        page: 'library.html', target: '#addGameBtn',
         title: 'Adicionar do catálogo',
         text: 'Adicione um título do catálogo selecionado pela RIVALY. Para qualquer outro jogo do mundo, o próximo passo mostra o caminho.',
     },
@@ -106,26 +123,52 @@ export const TOUR_STEPS = [
     {
         page: 'discover.html', target: '.discover-saved',
         title: 'Do Descobrir para a Biblioteca',
-        text: 'Cada resultado da busca traz três botões: Já joguei, Jogando e Quero jogar. Marcar um deles cria uma entrada diretamente na sua Biblioteca, valendo XP e conquistas como qualquer outro jogo — e o que você registrou aparece resumido aqui.',
+        text: 'Cada resultado traz três botões: Já joguei, Jogando e Quero jogar. Marcar um deles cria a entrada direto na Biblioteca, valendo XP e conquistas, e o que você registrou aparece resumido aqui.',
     },
 
     /* ---------- SQUADS ---------- */
     {
         page: 'squads.html', target: '#squadForm',
         title: 'Encontrar squad',
-        text: 'Escolha o jogo, o rank, o horário e a função que falta no seu time. Deixe em "Complementar meu Passaporte" para o motor usar as suas próprias preferências.',
+        text: 'Escolha o jogo, o rank, o horário e a função que falta no seu time. Em "Completar meu Passaporte", o motor usa as suas próprias funções.',
     },
     {
-        page: 'squads.html', target: '.squad-card, .squads__results',
-        title: 'Como a nota é calculada',
-        text: 'Sete fatores ponderados formam a compatibilidade, e cada resultado mostra a conta inteira. Sem aleatoriedade: a mesma busca devolve sempre o mesmo ranking.',
+        page: 'squads.html', target: '#sessionBar',
+        title: 'Jogar uma sessão',
+        text: 'Marque de 2 a 4 jogadores ou peça um squad aleatório. Depois da partida você marca cada colega como Aliado, Rival ou Neutro, e um colega com clã pode convidar você.',
+    },
+
+    /* ---------- ARENA ---------- */
+    {
+        page: 'arena.html', target: '#arenaSummary',
+        title: 'Arena',
+        text: 'Seu rating começa em 1.000. Antes de cada partida você vê a chance de vitória e quanto o rating sobe ou cai. Depois, a conta do resultado.',
+    },
+    {
+        page: 'arena.html', target: '#rankingPanel',
+        title: 'Ranking da temporada',
+        text: 'Cada semana é uma temporada. A tabela mostra jogadores e clãs, com filtro por jogo e a sua linha destacada.',
+    },
+
+    /* ---------- CLÃS ---------- */
+    {
+        page: 'clans.html', target: '#clanGrid',
+        title: 'Clãs',
+        text: 'Cada card mostra quanto o clã combina com você. Clãs abertos aceitam na hora; os de candidatura leem a sua mensagem e respondem com o motivo.',
+    },
+
+    /* ---------- FEED ---------- */
+    {
+        page: 'feed.html', target: '#composer',
+        title: 'Feed',
+        text: 'Publique em até 280 caracteres, reaja com GG, Respeito ou Rivalidade e comente. As abas filtram por clã, aliados, rivais e Arena.',
     },
 
     /* ---------- CONQUISTAS ---------- */
     {
         page: 'achievements.html', target: '.achv-progress, .badge',
         title: 'Conquistas',
-        text: 'Vinte medalhas em cinco raridades. Cada uma está ligada a algo que você realmente fez — nenhuma é dada de graça, e as bloqueadas mostram o que falta.',
+        text: `${ACHIEVEMENTS.length} medalhas em cinco raridades. Cada uma está ligada a algo que você fez; as bloqueadas mostram o que falta.`,
     },
 
     /* ---------- CONFIGURACOES ---------- */
@@ -137,15 +180,15 @@ export const TOUR_STEPS = [
     {
         page: 'settings.html', target: '#storageTable, .storage-table',
         title: 'Seus dados',
-        text: 'Tudo o que a RIVALY sabe sobre você fica neste navegador, e aqui você vê exatamente o que está guardado. Dá para exportar ou apagar quando quiser.',
+        text: 'Tudo o que a RIVALY sabe sobre você fica neste navegador, e aqui você vê exatamente o que está guardado. Dá para baixar ou apagar quando quiser.',
     },
 
-    /* ---------- EM BREVE ---------- */
+    /* ---------- ENCERRAMENTO ---------- */
     {
         page: 'settings.html', target: null,
-        title: 'O que vem por aí',
+        title: 'Uma comunidade simulada, e o que ainda não existe',
         soon: true,
-        text: 'Estas áreas ainda não existem — e, por isso, aparecem marcadas como "em breve" no menu, nunca como botão que não faz nada.',
+        text: 'Os outros jogadores são perfis semeados e todo comportamento deles sai de um motor determinístico que mostra o motivo. O que depende de servidor ainda não existe, e por isso não aparece como botão:',
     },
 ];
 
@@ -153,20 +196,9 @@ export const TOUR_STEPS = [
    ESTADO
    ============================================================ */
 
-const readState = () => {
-    try {
-        return JSON.parse(window.sessionStorage.getItem(STATE_KEY) ?? 'null');
-    } catch {
-        return null;
-    }
-};
-
-const writeState = (state) => {
-    try {
-        if (state) window.sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
-        else window.sessionStorage.removeItem(STATE_KEY);
-    } catch { /* modo privado: o tour so nao sobrevive a navegacao */ }
-};
+// Em modo privado a gravação falha e o tour só não sobrevive à navegação.
+const readState = () => sessionRead(STATE_KEY, null);
+const writeState = (state) => sessionWrite(STATE_KEY, state ?? null);
 
 /** Marca o tour como comecado no passo zero. */
 export function startTour() {
@@ -195,21 +227,14 @@ const currentPage = () =>
    RENDER
    ============================================================ */
 
-const SOON = [
-    ['Arena', 'Torneios, chaveamento e acompanhamento de partidas ao vivo.'],
-    ['Feed de destaques', 'Clipes, posts e os melhores momentos de quem joga com você.'],
-    ['Clãs', 'Times permanentes, com identidade, elenco e estatísticas próprias.'],
-    ['IA contextual', 'Recomendações que leem o seu Passaporte e sugerem o próximo jogo.'],
-    ['Sincronização de plataformas', 'Importe sua biblioteca real da Steam, PlayStation e Xbox.'],
-];
-
+/** O que ainda não existe vem do mesmo ROADMAP da landing. */
 function soonMarkup() {
     return `
         <ul class="tour__soon">
-            ${SOON.map(([name, text]) => `
+            ${ROADMAP.map((item) => `
                 <li class="tour__soon-item">
-                    <span class="tour__soon-name">${name}</span>
-                    <span class="tour__soon-text">${text}</span>
+                    <span class="tour__soon-name">${escapeHtml(item.title)}</span>
+                    <span class="tour__soon-text">${escapeHtml(item.text)}</span>
                 </li>
             `).join('')}
         </ul>
@@ -244,10 +269,10 @@ function buildShell() {
             <h2 class="tour__title" id="tourTitle" data-tour-title></h2>
             <div class="tour__text" data-tour-text></div>
             <div class="tour__actions">
-                <button type="button" class="btn btn--ghost btn--sm" data-tour-skip>Pular tutorial</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-tour-skip>Pular tutorial</button>
                 <div class="tour__nav">
-                    <button type="button" class="btn btn--secondary btn--sm" data-tour-prev>Voltar</button>
-                    <button type="button" class="btn btn--primary btn--sm" data-tour-next>Próximo</button>
+                    <button type="button" class="btn btn-outline-light btn-sm" data-tour-prev>Voltar</button>
+                    <button type="button" class="btn btn-primary btn-sm" data-tour-next>Próximo</button>
                 </div>
             </div>
         </div>
@@ -331,7 +356,7 @@ function mount() {
         writeState({ index });
 
         title.textContent = step.title;
-        text.innerHTML = `<p>${step.text}</p>${step.soon ? soonMarkup() : ''}`;
+        text.innerHTML = `<p>${escapeHtml(step.text)}</p>${step.soon ? soonMarkup() : ''}`;
         count.textContent = `Passo ${index + 1} de ${TOUR_STEPS.length}`;
         prev.disabled = index === 0;
         next.textContent = index === TOUR_STEPS.length - 1 ? 'Concluir' : 'Próximo';

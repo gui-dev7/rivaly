@@ -168,6 +168,26 @@ export function filterFeed(items, tab) {
     }
 }
 
+/**
+ * Junta atividades seguidas do usuário num bloco só, para os posts da
+ * comunidade não sumirem embaixo de uma sequência de "você fez X".
+ * Uma atividade isolada continua sozinha.
+ */
+export function groupActivity(items) {
+    const out = [];
+    items.forEach((item) => {
+        const last = out[out.length - 1];
+        if (item.type === 'activity' && last?.type === 'activity') {
+            out[out.length - 1] = { type: 'activity-group', id: `grp-${last.id}`, at: last.at, items: [last, item] };
+        } else if (item.type === 'activity' && last?.type === 'activity-group') {
+            last.items.push(item);
+        } else {
+            out.push(item);
+        }
+    });
+    return out;
+}
+
 /* ============================================================
    XP COM LIMITE DIÁRIO
    ============================================================ */

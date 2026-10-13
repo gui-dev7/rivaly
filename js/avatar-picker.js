@@ -49,8 +49,8 @@ export function openAvatarPicker(user, onConfirm, { onCancel } = {}) {
     const body = `
         <div class="picker">
             <div class="picker__tabs" role="tablist" aria-label="Origem do avatar">
-                <button type="button" class="picker__tab" role="tab" data-tab="library">Avatars</button>
-                <button type="button" class="picker__tab" role="tab" data-tab="upload">Enviar a sua</button>
+                <button type="button" class="picker__tab" role="tab" data-tab="library">Biblioteca</button>
+                <button type="button" class="picker__tab" role="tab" data-tab="upload">Enviar imagem</button>
             </div>
 
             <section class="picker__panel" data-panel="library">
@@ -67,9 +67,9 @@ export function openAvatarPicker(user, onConfirm, { onCancel } = {}) {
                      aria-label="Biblioteca de avatares" tabindex="0"></div>
 
                 <div class="picker__actions">
-                    <button type="button" class="btn btn--ghost btn--sm" id="pickerMore">Carregar mais</button>
-                    <button type="button" class="btn btn--secondary btn--sm" id="pickerGenerate">
-                        ${icon('spark', { size: 14 })} Gerar mais
+                    <button type="button" class="btn btn-ghost btn-sm" id="pickerMore">Mostrar mais avatares</button>
+                    <button type="button" class="btn btn-outline-light btn-sm" id="pickerGenerate">
+                        ${icon('spark', { size: 14 })} Gerar novos
                     </button>
                 </div>
                 <p class="picker__count" id="pickerCount" aria-live="polite"></p>
@@ -111,8 +111,8 @@ export function openAvatarPicker(user, onConfirm, { onCancel } = {}) {
         wide: true,
         body,
         footer: `
-            <button type="button" class="btn btn--ghost" data-modal-close>Cancelar</button>
-            <button type="button" class="btn btn--primary" id="pickerConfirm">Confirmar avatar</button>
+            <button type="button" class="btn btn-ghost" data-modal-close>Cancelar</button>
+            <button type="button" class="btn btn-primary" id="pickerConfirm">Usar este avatar</button>
         `,
         onClose: () => { if (!confirmed) onCancel?.(); },
     });
@@ -321,8 +321,8 @@ export function openAvatarPicker(user, onConfirm, { onCancel } = {}) {
                     <img class="avatar__img" src="${escapeHtml(state.upload.src)}" alt="Seu avatar enviado">
                 </span>
                 <div class="upload__preview-actions">
-                    <button type="button" class="btn btn--ghost btn--sm" data-upload-remove>Remover</button>
-                    <button type="button" class="btn btn--ghost btn--sm" data-tab="library">Usar a biblioteca</button>
+                    <button type="button" class="btn btn-ghost btn-sm" data-upload-remove>Remover imagem</button>
+                    <button type="button" class="btn btn-ghost btn-sm" data-tab="library">Voltar para a biblioteca</button>
                 </div>
             </div>
         `);
@@ -366,8 +366,14 @@ export function openAvatarPicker(user, onConfirm, { onCancel } = {}) {
     setTab(state.tab);
 }
 
-/** Stable-enough unique token, with a fallback for non-secure contexts. */
+/**
+ * Semente nova para o DiceBear. Não é regra de negócio nem precisa ser
+ * reproduzível, mas também não usa Math.random(): crypto está disponível
+ * até fora de contexto seguro (getRandomValues).
+ */
 function newSeedToken() {
     if (window.crypto?.randomUUID) return window.crypto.randomUUID().slice(0, 8);
-    return Math.random().toString(36).slice(2, 10);
+    const bytes = new Uint8Array(5);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, (byte) => byte.toString(36).padStart(2, '0')).join('').slice(0, 8);
 }
