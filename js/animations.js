@@ -27,7 +27,7 @@ export const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, 
  * Uses requestAnimationFrame with an eased curve, and always lands
  * exactly on `to` (no floating point drift on the final frame).
  */
-export function countUp(element, to, { from = 0, duration = 1100, format = (value) => Math.round(value).toLocaleString('en-US'), suffix = '' } = {}) {
+export function countUp(element, to, { from = 0, duration = 1100, format = (value) => Math.round(value).toLocaleString('pt-BR'), suffix = '' } = {}) {
     if (!element) return Promise.resolve();
 
     const target = Number(to) || 0;

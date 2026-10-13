@@ -1,132 +1,185 @@
 /**
- * modal.js — one accessible dialog implementation, used everywhere.
+ * modal.js — o diálogo da RIVALY, agora sobre o bootstrap.Modal.
  *
- * Handles: focus capture, focus restoration, Tab trapping, Escape to
- * close, backdrop click, body scroll lock, and cleanup of every
- * listener it adds. Only one modal can be open at a time.
+ * A API pública é a mesma da V1, então nenhum chamador mudou:
+ *   openModal({ title, subtitle, body, footer, wide, onMount, onClose })
+ *   closeModal()
+ *   confirmDialog({ title, message, confirmLabel, cancelLabel, danger })
+ *
+ * O que mudou por baixo: foco preso no diálogo, Esc, clique no fundo e a
+ * trava de rolagem do body agora são do Bootstrap.
+ *
+ * Por que um único elemento: a RIVALY encadeia diálogos (Editar Passaporte
+ * abre a galeria de avatar, que devolve para o Editar). Dois .modal do
+ * Bootstrap em transição ao mesmo tempo brigam pelo backdrop e pelo foco;
+ * um .modal só, que troca de conteúdo, não tem essa corrida. Se o diálogo
+ * já está aberto, o conteúdo é trocado no lugar; se está fechando, o novo
+ * conteúdo espera o fim da animação e abre em seguida.
  */
 
-import { icon, escapeHtml } from './ui.js';
+import { escapeHtml } from './ui.js';
 
-const FOCUSABLE = [
-    'a[href]', 'button:not([disabled])', 'input:not([disabled]):not([type="hidden"])',
-    'select:not([disabled])', 'textarea:not([disabled])', '[tabindex]:not([tabindex="-1"])',
-].join(',');
+let shell = null;        // o elemento .modal (criado uma vez)
+let instance = null;     // bootstrap.Modal
+let state = 'hidden';    // hidden | showing | shown | hiding
+let current = null;      // { token, onClose } do conteúdo ativo
+let pendingShow = false; // um openModal chegou durante o "hiding"
+let returnFocus = null;  // quem tinha o foco antes de o diálogo abrir
+let tokenSeq = 0;
 
-let active = null;
+const FIRST_FIELD = '.modal-body input:not([disabled]):not([type="hidden"]), .modal-body select, .modal-body textarea, .modal-body button';
+
+function ensureShell() {
+    if (shell && document.body.contains(shell)) return shell;
+
+    shell = document.createElement('div');
+    shell.className = 'modal fade rv-modal';
+    shell.id = 'rvModal';
+    shell.tabIndex = -1;
+    shell.setAttribute('aria-labelledby', 'rvModalTitle');
+    shell.setAttribute('aria-hidden', 'true');
+    shell.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" data-modal-content></div>
+        </div>
+    `;
+    document.body.appendChild(shell);
+
+    instance = window.bootstrap.Modal.getOrCreateInstance(shell, { backdrop: true, keyboard: true, focus: true });
+
+    shell.addEventListener('show.bs.modal', () => { state = 'showing'; });
+    shell.addEventListener('shown.bs.modal', () => {
+        state = 'shown';
+        focusInitial();
+    });
+
+    // Esc, clique no fundo ou o X: o Bootstrap começa a esconder. Se a
+    // iniciativa não foi nossa, o conteúdo ativo é avisado aqui.
+    shell.addEventListener('hide.bs.modal', (event) => {
+        const previous = state;
+        state = 'hiding';
+        const closing = current;
+        current = null;
+        closing?.onClose?.();
+
+        // O onClose abriu outro conteúdo (ex.: cancelar a galeria de avatar
+        // devolve o formulário do Passaporte): cancela o fechamento e fica.
+        if (current !== null) {
+            event.preventDefault();
+            state = previous === 'showing' ? 'showing' : 'shown';
+            pendingShow = false;
+            focusInitial();
+        }
+    });
+
+    shell.addEventListener('hidden.bs.modal', () => {
+        state = 'hidden';
+        if (pendingShow) {
+            pendingShow = false;
+            instance.show();
+            return;
+        }
+        shell.querySelector('[data-modal-content]').innerHTML = '';
+        if (returnFocus instanceof HTMLElement && document.body.contains(returnFocus)) {
+            returnFocus.focus();
+        }
+        returnFocus = null;
+    });
+
+    // Qualquer [data-modal-close] fecha, como na V1.
+    shell.addEventListener('click', (event) => {
+        if (event.target.closest('[data-modal-close]')) {
+            event.preventDefault();
+            closeModal();
+        }
+    });
+
+    return shell;
+}
+
+function focusInitial() {
+    const content = shell.querySelector('[data-modal-content]');
+    const target = content.querySelector('[data-autofocus]')
+        ?? content.querySelector(FIRST_FIELD)
+        ?? content.querySelector('.btn-close');
+    target?.focus?.({ preventScroll: true });
+}
 
 /**
  * @param {object} options
  * @param {string} options.title
  * @param {string} [options.subtitle]
- * @param {string} options.body      HTML string for the dialog body.
- * @param {string} [options.footer]  HTML string for the footer.
+ * @param {string} options.body      HTML do corpo (já escapado pelo chamador).
+ * @param {string} [options.footer]  HTML do rodapé.
  * @param {boolean} [options.wide]
  * @param {(context:{close:Function, root:HTMLElement}) => void} [options.onMount]
+ * @param {() => void} [options.onClose]
  * @returns {{close: Function, root: HTMLElement}}
  */
 export function openModal({ title, subtitle = '', body, footer = '', wide = false, onMount, onClose }) {
-    closeModal();
+    ensureShell();
 
-    const previouslyFocused = document.activeElement;
+    // Um conteúdo que é substituído conta como fechado para quem o abriu.
+    const replaced = current;
+    current = null;
+    replaced?.onClose?.();
 
-    const backdrop = document.createElement('div');
-    backdrop.className = 'modal-backdrop';
-    backdrop.innerHTML = `
-        <div class="modal ${wide ? 'modal--wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <header class="modal__header">
-                <div>
-                    <h2 class="modal__title" id="modal-title">${escapeHtml(title)}</h2>
-                    ${subtitle ? `<p class="modal__subtitle">${escapeHtml(subtitle)}</p>` : ''}
-                </div>
-                <button type="button" class="modal__close" data-modal-close aria-label="Fechar janela">${icon('close', { size: 15 })}</button>
-            </header>
-            <div class="modal__body">${body}</div>
-            ${footer ? `<footer class="modal__footer">${footer}</footer>` : ''}
+    const token = ++tokenSeq;
+    const content = shell.querySelector('[data-modal-content]');
+    const dialog = shell.querySelector('.modal-dialog');
+    dialog.classList.toggle('modal-lg', wide);
+
+    content.innerHTML = `
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="rvModalTitle">${escapeHtml(title)}</h2>
+                ${subtitle ? `<p class="modal-subtitle">${escapeHtml(subtitle)}</p>` : ''}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar janela"></button>
         </div>
+        <div class="modal-body">${body}</div>
+        ${footer ? `<div class="modal-footer">${footer}</div>` : ''}
     `;
 
-    const dialog = backdrop.querySelector('.modal');
-
     const close = () => {
-        if (active?.backdrop !== backdrop) return;
-
-        // Release the slot immediately. The removal is animated, so a
-        // modal opened during that 160ms window must not be clobbered
-        // when this one's timeout finally fires.
-        active = null;
-        document.removeEventListener('keydown', onKeyDown, true);
-        backdrop.classList.add('is-leaving');
-
-        // Avisado so agora, com o slot ja livre: um onClose que abre outro
-        // dialogo entra sem reentrar neste close.
-        onClose?.();
-
-        window.setTimeout(() => {
-            backdrop.remove();
-            // Only give the page back its scroll and focus if no other
-            // dialog took over in the meantime.
-            if (!document.querySelector('.modal-backdrop')) {
-                document.body.classList.remove('is-locked');
-                if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
-            }
-        }, 160);
+        if (!current || current.token !== token) return;
+        const closing = current;
+        current = null;
+        closing.onClose?.();
+        // Se o onClose abriu outro diálogo, ele assumiu o lugar: não esconder.
+        if (current === null) instance.hide();
     };
 
-    function onKeyDown(event) {
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            close();
-            return;
-        }
-        if (event.key !== 'Tab') return;
+    current = { token, onClose };
 
-        const focusable = Array.from(dialog.querySelectorAll(FOCUSABLE))
-            .filter((element) => element.offsetParent !== null || element === document.activeElement);
-        if (focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-        }
+    if (state === 'hidden') {
+        returnFocus = document.activeElement;
+        instance.show();
+    } else if (state === 'hiding') {
+        pendingShow = true;
+    } else {
+        // Já aberto (ou abrindo): o conteúdo foi trocado no lugar.
+        focusInitial();
     }
 
-    backdrop.addEventListener('click', (event) => {
-        if (event.target === backdrop) close();
-        if (event.target.closest('[data-modal-close]')) close();
-    });
-
-    document.addEventListener('keydown', onKeyDown, true);
-    document.body.classList.add('is-locked');
-    document.body.appendChild(backdrop);
-
-    active = { backdrop, close };
-
-    // Focus the first meaningful control, not the close button when a
-    // better candidate exists.
-    const target = dialog.querySelector('[data-autofocus]')
-        ?? dialog.querySelector('.modal__body input:not([disabled]):not([type="hidden"]), .modal__body select, .modal__body textarea, .modal__body button')
-        ?? dialog.querySelector(FOCUSABLE);
-    (target ?? dialog).focus?.();
-
-    onMount?.({ close, root: dialog });
-
-    return { close, root: dialog };
+    onMount?.({ close, root: content });
+    return { close, root: content };
 }
 
 export function closeModal() {
-    active?.close();
+    if (!instance || state === 'hidden' || state === 'hiding') return;
+    if (current) {
+        const closing = current;
+        current = null;
+        closing.onClose?.();
+        if (current !== null) return;
+    }
+    instance.hide();
 }
 
 /**
- * Confirmation dialog. Resolves to true/false.
- * Replaces `window.confirm` everywhere in the product.
+ * Diálogo de confirmação. Resolve true ou false.
+ * Substitui o window.confirm em todo o produto.
  */
 export function confirmDialog({
     title,
@@ -145,27 +198,20 @@ export function confirmDialog({
 
         const { close, root } = openModal({
             title,
-            body: `<p class="text-secondary">${escapeHtml(message)}</p>`,
+            body: `<p class="text-secondary mb-0">${escapeHtml(message)}</p>`,
             footer: `
-                <button type="button" class="btn btn--ghost" data-action="cancel">${escapeHtml(cancelLabel)}</button>
-                <button type="button" class="btn ${danger ? 'btn--danger' : 'btn--primary'}" data-action="confirm" data-autofocus>${escapeHtml(confirmLabel)}</button>
+                <button type="button" class="btn btn-ghost" data-action="cancel">${escapeHtml(cancelLabel)}</button>
+                <button type="button" class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-action="confirm" data-autofocus>${escapeHtml(confirmLabel)}</button>
             `,
+            // Esc, fundo, X ou outro diálogo por cima: tudo conta como "não".
+            onClose: () => settle(false),
         });
 
         root.addEventListener('click', (event) => {
             const action = event.target.closest('[data-action]')?.dataset.action;
-            if (!action) return;
+            if (action !== 'confirm' && action !== 'cancel') return;
             settle(action === 'confirm');
             close();
         });
-
-        // Escape / backdrop / close button all resolve false.
-        const observer = new MutationObserver(() => {
-            if (!document.body.contains(root)) {
-                observer.disconnect();
-                settle(false);
-            }
-        });
-        observer.observe(document.body, { childList: true });
     });
 }

@@ -41,6 +41,9 @@ export function render(container, html) {
     container.innerHTML = Array.isArray(html) ? html.join('') : html;
 }
 
+/** Wraps a block in a Bootstrap grid column (`col` by default). */
+export const colWrap = (html, className = 'col') => `<div class="${className}">${html}</div>`;
+
 /** Builds a detached fragment from an array of HTML strings. */
 export function fragmentFrom(htmlList) {
     const template = document.createElement('template');
@@ -66,13 +69,13 @@ export function formatRelativeTime(isoString) {
     const seconds = Math.round((Date.now() - then) / 1000);
 
     if (seconds < 45) return 'agora mesmo';
-    if (seconds < 90) return 'ha um minuto';
+    if (seconds < 90) return 'há um minuto';
     const minutes = Math.round(seconds / 60);
-    if (minutes < 60) return `ha ${minutes} min`;
+    if (minutes < 60) return `há ${minutes} min`;
     const hours = Math.round(minutes / 60);
-    if (hours < 24) return `ha ${hours}h`;
+    if (hours < 24) return `há ${hours} h`;
     const days = Math.round(hours / 24);
-    if (days < 7) return `ha ${days}d`;
+    if (days < 7) return `há ${days} ${days === 1 ? 'dia' : 'dias'}`;
     return new Date(then).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 
@@ -197,13 +200,20 @@ export function icon(name, { size = 20, className = '', title = '' } = {}) {
 
 const AVATAR_SHAPES = ['circle', 'diamond', 'blade', 'ring', 'chevron', 'hexagon'];
 
+/*
+ * Só a paleta da marca: fundo quase preto em três tons e a forma em
+ * amarelo, osso ou cinza. As cores saem dos tokens (style inline com
+ * var()), então o avatar acompanha o tema escolhido nas Configurações.
+ */
+const AVATAR_INKS = ['var(--color-primary)', 'var(--color-text)', 'var(--color-text-muted)'];
+const AVATAR_GROUNDS = ['var(--color-surface)', 'var(--color-surface-secondary)', 'var(--color-surface-tertiary)'];
+
 export function avatarSvg(seed, { size = 64 } = {}) {
     const hash = hashString(seed || 'rivaly');
-    const hueA = hash % 360;
-    const hueB = (hueA + 40 + (hash % 70)) % 360;
     const shape = AVATAR_SHAPES[hash % AVATAR_SHAPES.length];
     const rotation = (hash % 4) * 90;
-    const gradientId = `av-${hash.toString(36)}`;
+    const ink = AVATAR_INKS[(hash >> 4) % AVATAR_INKS.length];
+    const ground = AVATAR_GROUNDS[(hash >> 7) % AVATAR_GROUNDS.length];
 
     const shapes = {
         circle: '<circle cx="32" cy="32" r="15"/>',
@@ -215,15 +225,9 @@ export function avatarSvg(seed, { size = 64 } = {}) {
     };
 
     return `<svg viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true" focusable="false">
-        <defs>
-            <linearGradient id="${gradientId}" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="hsl(${hueA} 72% 58%)"/>
-                <stop offset="100%" stop-color="hsl(${hueB} 68% 42%)"/>
-            </linearGradient>
-        </defs>
-        <rect width="64" height="64" fill="hsl(${hueA} 34% 13%)"/>
-        <g fill="url(#${gradientId})" transform="rotate(${rotation} 32 32)">${shapes[shape]}</g>
-        <rect width="64" height="64" fill="none" stroke="hsl(${hueA} 60% 60% / 0.28)" stroke-width="2"/>
+        <rect width="64" height="64" style="fill:${ground}"/>
+        <g style="fill:${ink}" transform="rotate(${rotation} 32 32)">${shapes[shape]}</g>
+        <rect x="1" y="1" width="62" height="62" fill="none" style="stroke:var(--color-border-strong)" stroke-width="2"/>
     </svg>`;
 }
 

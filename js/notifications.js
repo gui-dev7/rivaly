@@ -31,7 +31,7 @@ let region = null;
 function ensureRegion() {
     if (region && document.body.contains(region)) return region;
     region = document.createElement('div');
-    region.className = 'toast-region';
+    region.className = 'rv-toast-region';
     region.setAttribute('role', 'status');
     region.setAttribute('aria-live', 'polite');
     region.setAttribute('aria-atomic', 'false');
@@ -67,18 +67,18 @@ export function toast({ title, message = '', type = 'info', xp = 0, duration = D
     if (live.length >= MAX_VISIBLE) dismiss(live[0]);
 
     const node = document.createElement('div');
-    node.className = `toast toast--${type}`;
+    node.className = `rv-toast rv-toast--${type}`;
     node.innerHTML = `
-        <span class="toast__icon">${icon(TOAST_ICONS[type] ?? 'info', { size: 14 })}</span>
-        <div class="toast__body">
-            <p class="toast__title">${escapeHtml(title)}</p>
-            ${message ? `<p class="toast__message">${escapeHtml(message)}</p>` : ''}
-            ${xp ? `<p class="toast__xp">+${xp} XP</p>` : ''}
+        <span class="rv-toast__icon">${icon(TOAST_ICONS[type] ?? 'info', { size: 14 })}</span>
+        <div class="rv-toast__body">
+            <p class="rv-toast__title">${escapeHtml(title)}</p>
+            ${message ? `<p class="rv-toast__message">${escapeHtml(message)}</p>` : ''}
+            ${xp ? `<p class="rv-toast__xp">+${xp} XP</p>` : ''}
         </div>
-        <button type="button" class="toast__close" aria-label="Fechar notificação">${icon('close', { size: 12 })}</button>
+        <button type="button" class="rv-toast__close" aria-label="Fechar notificação">${icon('close', { size: 12 })}</button>
     `;
 
-    node.querySelector('.toast__close').addEventListener('click', () => dismiss(node));
+    node.querySelector('.rv-toast__close').addEventListener('click', () => dismiss(node));
 
     const timer = window.setTimeout(() => dismiss(node), duration);
     // Pausing on hover keeps long messages readable.
@@ -154,7 +154,7 @@ export function showAchievement(achievement, context = '') {
                 <p class="celebration__title">${escapeHtml(achievement.name)}</p>
                 <p class="celebration__text">${escapeHtml(context || achievement.description)}</p>
                 <p class="celebration__rarity">${escapeHtml(RARITIES[achievement.rarity]?.label ?? achievement.rarity)}</p>
-                <button type="button" class="btn btn--secondary btn--sm" data-dismiss>Fechar</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss>Continuar</button>
             </div>
         `;
         return overlay;
@@ -178,7 +178,7 @@ export function showLevelUp(from, to) {
                     <span class="celebration__level celebration__level--new numeric">${to}</span>
                 </div>
                 <p class="celebration__text">Seu Passaporte Gamer ficou mais pesado.</p>
-                <button type="button" class="btn btn--primary btn--sm" data-dismiss>Continuar</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss>Continuar</button>
             </div>
         `;
         return overlay;

@@ -287,21 +287,8 @@ kbd {
 .stack-lg { gap: var(--space-lg); }
 .stack-xl { gap: var(--space-xl); }
 
-.row {
-    display: flex;
-    align-items: center;
-}
-.row-xs { gap: var(--space-xs); }
-.row-sm { gap: var(--space-sm); }
-.row-md { gap: var(--space-md); }
-.row-lg { gap: var(--space-lg); }
-
-.row-between {
-    justify-content: space-between;
-}
-.row-wrap {
-    flex-wrap: wrap;
-}
+/* O utilitário .row da V1 saiu: na V2 .row é o grid do Bootstrap.
+   Para alinhar em linha, use .d-flex / .hstack do Bootstrap. */
 .push-right {
     margin-left: auto;
 }

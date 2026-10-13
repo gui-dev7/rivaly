@@ -1,0 +1,666 @@
+/* ============================================================
+   RIVALY — PONTE ENTRE OS TOKENS E O BOOTSTRAP 5.3
+
+   O Bootstrap é a infraestrutura (grid, navbar, offcanvas, modal,
+   dropdown, formulários, tabela). A identidade continua sendo da
+   RIVALY: preto, amarelo e neutros, cantos retos, sem sombra
+   padrão e sem o azul de fábrica.
+
+   Este arquivo não inventa cor nenhuma. Toda variável --bs-* abaixo
+   aponta para um token que já existe em css/variables.css, então os
+   temas alternativos das Configurações continuam funcionando: trocar
+   --rgb-primary troca também o "primary" do Bootstrap.
+
+   Ordem de carregamento (ver cada página):
+     vendor/bootstrap/bootstrap.min.css
+     css/fonts.css
+     css/bootstrap-theme.css   <- este arquivo
+     css/variables.css
+     demais CSS próprios
+   ============================================================ */
+
+:root,
+[data-bs-theme="dark"] {
+    color-scheme: dark;
+
+    /* --- Cores de marca e de estado --- */
+    --bs-primary: var(--color-primary);
+    --bs-primary-rgb: var(--rgb-primary);
+    --bs-primary-text-emphasis: var(--color-primary-strong);
+    --bs-primary-bg-subtle: var(--color-primary-soft);
+    --bs-primary-border-subtle: var(--color-primary-line);
+
+    --bs-secondary: var(--color-text-secondary);
+    --bs-secondary-rgb: 198, 198, 193;
+
+    --bs-success: var(--color-success);
+    --bs-success-rgb: 61, 220, 132;
+    --bs-success-text-emphasis: var(--color-success);
+    --bs-success-bg-subtle: var(--color-success-soft);
+    --bs-success-border-subtle: rgba(61, 220, 132, 0.4);
+
+    --bs-danger: var(--color-danger);
+    --bs-danger-rgb: 255, 77, 61;
+    --bs-danger-text-emphasis: var(--color-danger);
+    --bs-danger-bg-subtle: var(--color-danger-soft);
+    --bs-danger-border-subtle: rgba(255, 77, 61, 0.4);
+
+    --bs-warning: var(--color-warning);
+    --bs-warning-rgb: 255, 158, 31;
+    --bs-warning-text-emphasis: var(--color-warning);
+    --bs-warning-bg-subtle: var(--color-warning-soft);
+
+    /* "info" do Bootstrap é ciano: aqui ele vira o próprio amarelo. */
+    --bs-info: var(--color-primary);
+    --bs-info-rgb: var(--rgb-primary);
+    --bs-info-text-emphasis: var(--color-primary-strong);
+    --bs-info-bg-subtle: var(--color-primary-soft);
+    --bs-info-border-subtle: var(--color-primary-line);
+
+    --bs-light: rgb(var(--rgb-bone));
+    --bs-light-rgb: var(--rgb-bone);
+    --bs-dark: rgb(var(--rgb-ink));
+    --bs-dark-rgb: var(--rgb-ink);
+
+    /* --- Corpo do documento --- */
+    --bs-body-font-family: var(--font-sans);
+    --bs-body-font-size: var(--text-base);
+    --bs-body-font-weight: var(--font-normal);
+    --bs-body-line-height: var(--leading-normal);
+    --bs-body-color: var(--color-text);
+    --bs-body-color-rgb: var(--rgb-bone);
+    --bs-body-bg: var(--color-background);
+    --bs-body-bg-rgb: var(--rgb-ink);
+
+    --bs-emphasis-color: var(--color-text);
+    --bs-emphasis-color-rgb: var(--rgb-bone);
+    --bs-secondary-color: var(--color-text-muted);
+    --bs-secondary-color-rgb: 138, 138, 133;
+    --bs-secondary-bg: var(--color-surface-secondary);
+    --bs-secondary-bg-rgb: 24, 24, 24;
+    --bs-tertiary-color: var(--color-text-faint);
+    --bs-tertiary-bg: var(--color-surface);
+    --bs-tertiary-bg-rgb: 17, 17, 17;
+
+    --bs-heading-color: inherit;
+    --bs-link-color: var(--color-primary-strong);
+    --bs-link-color-rgb: var(--rgb-primary);
+    --bs-link-hover-color: var(--color-text);
+    --bs-link-hover-color-rgb: var(--rgb-bone);
+    --bs-link-decoration: none;
+    --bs-code-color: var(--color-primary-strong);
+    --bs-highlight-color: var(--color-text-inverse);
+    --bs-highlight-bg: var(--color-primary);
+
+    /* --- Bordas: retas e finas --- */
+    --bs-border-width: 1px;
+    --bs-border-style: solid;
+    --bs-border-color: var(--color-border);
+    --bs-border-color-translucent: var(--color-border);
+    --bs-border-radius: 0;
+    --bs-border-radius-sm: 0;
+    --bs-border-radius-lg: 0;
+    --bs-border-radius-xl: 0;
+    --bs-border-radius-xxl: 0;
+    --bs-border-radius-2xl: 0;
+    --bs-border-radius-pill: 0;
+
+    /* --- Sombras: preto sobre preto pede borda, não brilho --- */
+    --bs-box-shadow: none;
+    --bs-box-shadow-sm: none;
+    --bs-box-shadow-lg: var(--shadow-lg);
+    --bs-box-shadow-inset: none;
+
+    /* --- Foco amarelo --- */
+    --bs-focus-ring-width: 3px;
+    --bs-focus-ring-opacity: 0.45;
+    --bs-focus-ring-color: rgba(var(--rgb-primary), 0.45);
+
+    /* --- Validação: só as cores de estado que já existem nos tokens --- */
+    --bs-form-valid-color: var(--color-success);
+    --bs-form-valid-border-color: var(--color-success);
+    --bs-form-invalid-color: var(--color-danger);
+    --bs-form-invalid-border-color: var(--color-danger);
+}
+
+/* ============================================================
+   BOTÕES
+   As variantes (btn-primary, btn-outline-light...) são definidas em
+   css/components.css, junto dos aliases da V1 (btn--primary...), para
+   que os dois nomes renderizem igual. Aqui fica só o close.
+   ============================================================ */
+.btn-close {
+    --bs-btn-close-opacity: 0.7;
+    --bs-btn-close-hover-opacity: 1;
+    --bs-btn-close-focus-shadow: 0 0 0 3px rgba(var(--rgb-primary), 0.45);
+    width: 1em;
+    height: 1em;
+    padding: 0.75em;
+}
+
+/* ============================================================
+   FORMULÁRIOS
+   ============================================================ */
+.form-label {
+    margin-bottom: var(--space-2xs);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.form-text {
+    margin-top: var(--space-2xs);
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+.form-control,
+.form-select {
+    min-height: 46px;
+    border-color: var(--color-border);
+    border-radius: 0;
+    background-color: var(--color-surface-inset);
+    color: var(--color-text);
+    font-size: var(--text-base);
+}
+
+.form-control::placeholder {
+    color: var(--color-text-faint);
+}
+
+.form-control:hover,
+.form-select:hover {
+    border-color: var(--color-border-strong);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-primary);
+    background-color: var(--color-surface-secondary);
+    color: var(--color-text);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: var(--color-surface);
+    color: var(--color-text-faint);
+}
+
+textarea.form-control {
+    min-height: 104px;
+    line-height: var(--leading-normal);
+}
+
+.form-select option {
+    background: var(--color-surface-secondary);
+    color: var(--color-text);
+}
+
+/* Validação sem os ícones de fábrica: a borda e a mensagem bastam. */
+.form-control.is-invalid,
+.form-select.is-invalid,
+.was-validated .form-control:invalid {
+    border-color: var(--color-danger);
+    background-image: none;
+    padding-right: var(--space-md);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px var(--color-danger-soft);
+}
+
+.form-control.is-valid,
+.form-select.is-valid {
+    border-color: var(--color-success);
+    background-image: none;
+    padding-right: var(--space-md);
+}
+
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+    border-color: var(--color-success);
+    box-shadow: 0 0 0 3px var(--color-success-soft);
+}
+
+.invalid-feedback,
+.valid-feedback {
+    font-size: var(--text-xs);
+}
+
+.form-check-input {
+    border-radius: 0;
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface-inset);
+}
+
+.form-check-input:checked {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+}
+
+.form-check-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+/* O check desenhado em preto sobre o amarelo. */
+.form-check-input:checked[type="checkbox"] {
+    --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23050505' stroke-linecap='square' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.form-check-input:checked[type="radio"] {
+    --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3crect x='-2' y='-2' width='4' height='4' fill='%23050505'/%3e%3c/svg%3e");
+}
+
+.form-switch .form-check-input {
+    border-radius: 0;
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3crect x='-3' y='-3' width='6' height='6' fill='%238a8a85'/%3e%3c/svg%3e");
+}
+
+.form-switch .form-check-input:checked {
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3crect x='-3' y='-3' width='6' height='6' fill='%23050505'/%3e%3c/svg%3e");
+}
+
+.input-group-text {
+    border-color: var(--color-border);
+    border-radius: 0;
+    background-color: var(--color-surface-secondary);
+    color: var(--color-text-faint);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal {
+    --bs-modal-zindex: 1055;
+    --bs-modal-width: 560px;
+    --bs-modal-padding: var(--space-lg);
+    --bs-modal-margin: var(--space-md);
+    --bs-modal-color: var(--color-text);
+    --bs-modal-bg: var(--color-background-elevated);
+    --bs-modal-border-color: var(--color-border-strong);
+    --bs-modal-border-width: 1px;
+    --bs-modal-border-radius: 0;
+    --bs-modal-inner-border-radius: 0;
+    --bs-modal-box-shadow: var(--shadow-xl);
+    --bs-modal-header-padding: var(--space-lg) var(--space-lg) var(--space-md);
+    --bs-modal-header-border-color: var(--color-border-soft);
+    --bs-modal-footer-border-color: var(--color-border-soft);
+    --bs-modal-footer-gap: var(--space-xs);
+    --bs-modal-title-line-height: 1.2;
+}
+
+.modal-lg,
+.modal-xl {
+    --bs-modal-width: 760px;
+}
+
+.modal-backdrop {
+    --bs-backdrop-bg: #000;
+    --bs-backdrop-opacity: 0.74;
+}
+
+.modal-header {
+    align-items: flex-start;
+    gap: var(--space-md);
+}
+
+.modal-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    letter-spacing: var(--tracking-display);
+}
+
+.modal-subtitle {
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.modal-footer {
+    background: var(--color-surface-inset);
+}
+
+.modal-content {
+    box-shadow: var(--shadow-xl);
+}
+
+/* ============================================================
+   OFFCANVAS
+   ============================================================ */
+.offcanvas,
+.offcanvas-lg,
+.offcanvas-md {
+    --bs-offcanvas-width: min(300px, 86vw);
+    --bs-offcanvas-padding-x: var(--space-md);
+    --bs-offcanvas-padding-y: var(--space-md);
+    --bs-offcanvas-color: var(--color-text);
+    --bs-offcanvas-bg: var(--color-background-elevated);
+    --bs-offcanvas-border-width: 1px;
+    --bs-offcanvas-border-color: var(--color-border);
+    --bs-offcanvas-box-shadow: var(--shadow-xl);
+}
+
+/* ============================================================
+   DROPDOWN
+   ============================================================ */
+.dropdown-menu {
+    --bs-dropdown-bg: var(--color-background-elevated);
+    --bs-dropdown-color: var(--color-text);
+    --bs-dropdown-border-color: var(--color-border-strong);
+    --bs-dropdown-border-radius: 0;
+    --bs-dropdown-inner-border-radius: 0;
+    --bs-dropdown-box-shadow: var(--shadow-lg);
+    --bs-dropdown-link-color: var(--color-text-secondary);
+    --bs-dropdown-link-hover-color: var(--color-text);
+    --bs-dropdown-link-hover-bg: var(--color-surface-secondary);
+    --bs-dropdown-link-active-color: var(--color-text-inverse);
+    --bs-dropdown-link-active-bg: var(--color-primary);
+    --bs-dropdown-header-color: var(--color-text-muted);
+    --bs-dropdown-divider-bg: var(--color-border-soft);
+    --bs-dropdown-font-size: var(--text-sm);
+    box-shadow: var(--shadow-lg);
+}
+
+.dropdown-header {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   NAV, TABS E PILLS
+   ============================================================ */
+.nav {
+    --bs-nav-link-color: var(--color-text-muted);
+    --bs-nav-link-hover-color: var(--color-text);
+    --bs-nav-link-disabled-color: var(--color-text-faint);
+    --bs-nav-link-font-size: var(--text-sm);
+    --bs-nav-link-font-weight: var(--font-semibold);
+}
+
+.nav-tabs {
+    --bs-nav-tabs-border-width: 1px;
+    --bs-nav-tabs-border-color: var(--color-border);
+    --bs-nav-tabs-border-radius: 0;
+    --bs-nav-tabs-link-hover-border-color: var(--color-border) var(--color-border) var(--color-border);
+    --bs-nav-tabs-link-active-color: var(--color-text-inverse);
+    --bs-nav-tabs-link-active-bg: var(--color-primary);
+    --bs-nav-tabs-link-active-border-color: var(--color-primary);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.nav-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-tabs .nav-link {
+    white-space: nowrap;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+}
+
+.nav-pills {
+    --bs-nav-pills-border-radius: 0;
+    --bs-nav-pills-link-active-color: var(--color-text-inverse);
+    --bs-nav-pills-link-active-bg: var(--color-primary);
+}
+
+.nav-pills .nav-link {
+    border: 1px solid var(--color-border);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+}
+
+.nav-pills .nav-link.active {
+    border-color: var(--color-primary);
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar {
+    --bs-navbar-color: var(--color-text-muted);
+    --bs-navbar-hover-color: var(--color-text);
+    --bs-navbar-active-color: var(--color-primary-strong);
+    --bs-navbar-brand-color: var(--color-text);
+    --bs-navbar-brand-hover-color: var(--color-text);
+    --bs-navbar-toggler-border-color: var(--color-border);
+    --bs-navbar-toggler-border-radius: 0;
+    --bs-navbar-toggler-focus-width: 3px;
+    --bs-navbar-nav-link-padding-x: var(--space-sm);
+}
+
+.navbar-toggler {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: var(--color-text-secondary);
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+/* ============================================================
+   CARD
+   O .card da V1 e o .card do Bootstrap são o mesmo componente: as
+   variáveis abaixo vestem o card do Bootstrap com a superfície da
+   RIVALY. O caso "card sem card-body" (markup da V1) é tratado em
+   css/components.css.
+   ============================================================ */
+.card {
+    --bs-card-spacer-y: var(--space-lg);
+    --bs-card-spacer-x: var(--space-lg);
+    --bs-card-title-spacer-y: var(--space-xs);
+    --bs-card-title-color: var(--color-text);
+    --bs-card-subtitle-color: var(--color-text-muted);
+    --bs-card-border-width: 1px;
+    --bs-card-border-color: var(--color-border);
+    --bs-card-border-radius: 0;
+    --bs-card-inner-border-radius: 0;
+    --bs-card-cap-padding-y: var(--space-sm);
+    --bs-card-cap-padding-x: var(--space-lg);
+    --bs-card-cap-bg: var(--color-surface-inset);
+    --bs-card-cap-color: var(--color-text-muted);
+    --bs-card-color: var(--color-text);
+    --bs-card-bg: var(--color-surface);
+}
+
+.card-title {
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+}
+
+.card-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+/* ============================================================
+   BADGE
+   ============================================================ */
+.badge {
+    --bs-badge-padding-x: 0.5em;
+    --bs-badge-padding-y: 0.3em;
+    --bs-badge-font-size: var(--text-2xs);
+    --bs-badge-font-weight: var(--font-bold);
+    --bs-badge-color: var(--color-text-inverse);
+    --bs-badge-border-radius: 0;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+.progress,
+.progress-stacked {
+    --bs-progress-height: 8px;
+    --bs-progress-bg: var(--color-surface-inset);
+    --bs-progress-border-radius: 0;
+    --bs-progress-bar-color: var(--color-text-inverse);
+    --bs-progress-bar-bg: var(--color-primary);
+    --bs-progress-bar-transition: width var(--duration-slower) var(--ease-out);
+}
+
+/* ============================================================
+   TABELA
+   ============================================================ */
+.table {
+    --bs-table-color: var(--color-text-secondary);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--color-border-soft);
+    --bs-table-striped-bg: rgba(var(--rgb-bone), 0.03);
+    --bs-table-striped-color: var(--color-text-secondary);
+    --bs-table-active-bg: var(--color-primary-soft);
+    --bs-table-active-color: var(--color-text);
+    --bs-table-hover-bg: var(--color-surface-secondary);
+    --bs-table-hover-color: var(--color-text);
+    margin-bottom: 0;
+    font-size: var(--text-sm);
+}
+
+.table > thead th {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.table > :not(caption) > * > * {
+    padding: var(--space-sm) var(--space-md);
+}
+
+.table caption {
+    padding: var(--space-sm) 0 0;
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+/* ============================================================
+   ACCORDION
+   ============================================================ */
+.accordion {
+    --bs-accordion-color: var(--color-text-secondary);
+    --bs-accordion-bg: var(--color-surface);
+    --bs-accordion-border-color: var(--color-border);
+    --bs-accordion-border-radius: 0;
+    --bs-accordion-inner-border-radius: 0;
+    --bs-accordion-btn-padding-x: var(--space-lg);
+    --bs-accordion-btn-padding-y: var(--space-md);
+    --bs-accordion-btn-color: var(--color-text);
+    --bs-accordion-btn-bg: var(--color-surface);
+    --bs-accordion-btn-focus-box-shadow: inset 0 0 0 2px var(--color-primary);
+    --bs-accordion-body-padding-x: var(--space-lg);
+    --bs-accordion-body-padding-y: var(--space-md);
+    --bs-accordion-active-color: var(--color-primary-strong);
+    --bs-accordion-active-bg: var(--color-surface-secondary);
+    --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23c6c6c1' stroke-width='2' stroke-linecap='square'%3e%3cpath d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23FFD400' stroke-width='2' stroke-linecap='square'%3e%3cpath d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.accordion-button {
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+}
+
+/* ============================================================
+   PAGINAÇÃO
+   ============================================================ */
+.pagination {
+    --bs-pagination-color: var(--color-text-secondary);
+    --bs-pagination-bg: var(--color-surface);
+    --bs-pagination-border-color: var(--color-border);
+    --bs-pagination-border-radius: 0;
+    --bs-pagination-hover-color: var(--color-text);
+    --bs-pagination-hover-bg: var(--color-surface-secondary);
+    --bs-pagination-hover-border-color: var(--color-border-strong);
+    --bs-pagination-focus-color: var(--color-text);
+    --bs-pagination-focus-bg: var(--color-surface-secondary);
+    --bs-pagination-focus-box-shadow: 0 0 0 3px var(--color-primary-soft);
+    --bs-pagination-active-color: var(--color-text-inverse);
+    --bs-pagination-active-bg: var(--color-primary);
+    --bs-pagination-active-border-color: var(--color-primary);
+    --bs-pagination-disabled-color: var(--color-text-faint);
+    --bs-pagination-disabled-bg: var(--color-surface-inset);
+    --bs-pagination-disabled-border-color: var(--color-border-soft);
+}
+
+.page-link {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-grid;
+    place-items: center;
+}
+
+/* ============================================================
+   TOOLTIP E POPOVER
+   ============================================================ */
+.tooltip {
+    --bs-tooltip-bg: var(--color-background-elevated);
+    --bs-tooltip-color: var(--color-text-secondary);
+    --bs-tooltip-border-radius: 0;
+    --bs-tooltip-font-size: var(--text-xs);
+    --bs-tooltip-max-width: 260px;
+    --bs-tooltip-opacity: 1;
+}
+
+.tooltip-inner {
+    border: 1px solid var(--color-border-strong);
+    text-align: left;
+}
+
+.popover {
+    --bs-popover-bg: var(--color-background-elevated);
+    --bs-popover-border-color: var(--color-border-strong);
+    --bs-popover-border-radius: 0;
+    --bs-popover-header-bg: var(--color-surface-secondary);
+    --bs-popover-header-color: var(--color-text);
+    --bs-popover-body-color: var(--color-text-secondary);
+    --bs-popover-font-size: var(--text-xs);
+}
+
+/* ============================================================
+   UTILITÁRIOS QUE O BOOTSTRAP MARCA COMO !important
+   Mantêm os tons da RIVALY em vez dos de fábrica.
+   ============================================================ */
+.text-primary {
+    color: var(--color-primary-strong) !important;
+}
+
+.text-muted {
+    color: var(--color-text-muted) !important;
+}
+
+.bg-primary {
+    color: var(--color-text-inverse);
+}
+
+.link-primary {
+    color: var(--color-primary-strong) !important;
+}
+
+/* <mark> e .mark do Bootstrap pintam um fundo; o SVG do loader usa a
+   classe .mark para outra coisa, então ele é devolvido ao normal. */
+svg.mark {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+}

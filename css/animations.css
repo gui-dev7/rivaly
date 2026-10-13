@@ -147,6 +147,14 @@
     100% { transform: translateX(100%) scaleX(0.4); }
 }
 
+/* Preenchimento reto: a barra cresce da esquerda até a borda, sem onda e
+   sem bolha. É o "loading" da marca em botões e na sessão simulada. */
+@keyframes fill-straight {
+    0%   { transform: scaleX(0); }
+    70%  { transform: scaleX(1); }
+    100% { transform: scaleX(1); opacity: 0; }
+}
+
 /* ------------------------------------------------------------
    ANIMATION UTILITIES
    ------------------------------------------------------------ */

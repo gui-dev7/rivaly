@@ -381,15 +381,9 @@
         overflow-y: visible;
     }
 
-    /* 100vh mente no celular (a barra do navegador entra na conta);
-       dvh acompanha a altura realmente visivel. */
-    .modal {
-        max-height: calc(100dvh - var(--space-md));
-    }
-
-    /* O subtitulo repete o que as abas ja dizem e custa uma linha
+    /* O subtítulo repete o que as abas já dizem e custa uma linha
        preciosa de altura. */
-    .modal__subtitle {
+    .rv-modal .modal-subtitle {
         display: none;
     }
 
