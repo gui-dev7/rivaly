@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://rivaly-social.vercel.app/sitemap.xml
