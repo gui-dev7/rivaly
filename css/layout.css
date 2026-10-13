@@ -1,8 +1,12 @@
 /* ============================================================
    RIVALY — LAYOUT
-   The application shell: sidebar, topbar, content column and
-   the mobile bottom navigation. Marketing pages (landing,
-   login, onboarding) opt out of the shell entirely.
+   A moldura do app sobre o Bootstrap:
+     - sidebar = .offcanvas-lg: coluna fixa a partir de 992px e
+       gaveta (offcanvas) abaixo disso;
+     - topo (.topbar.navbar) com título, XP e centro de convites;
+     - barra inferior com 5 destinos no celular (o 5º abre o menu);
+     - rodapé com créditos e o mapa do site.
+   Os breakpoints são os do Bootstrap (sm 576, md 768, lg 992, xl 1200).
    ============================================================ */
 
 /* ============================================================
@@ -24,25 +28,62 @@
    ============================================================ */
 .app {
     display: grid;
-    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     min-height: 100vh;
     min-height: 100dvh;
 }
 
+@media (min-width: 992px) {
+    .app {
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    }
+}
+
 /* ============================================================
-   SIDEBAR
+   SIDEBAR / OFFCANVAS
    ============================================================ */
-.sidebar {
-    position: sticky;
-    top: 0;
-    z-index: var(--z-sidebar);
+
+/* No celular a "casca" some do fluxo: o offcanvas dentro dela é fixo. */
+.sidebar-shell {
+    display: contents;
+}
+
+@media (min-width: 992px) {
+    .sidebar-shell {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: var(--z-sidebar);
+        height: 100vh;
+        height: 100dvh;
+        border-right: 1px solid var(--color-border-soft);
+        background: var(--color-background-elevated);
+    }
+
+    .sidebar {
+        height: 100%;
+    }
+}
+
+.sidebar__header {
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.sidebar .offcanvas-body,
+.sidebar__body {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
+    gap: 0;
     padding: var(--space-md);
-    border-right: 1px solid var(--color-border-soft);
-    background: var(--color-background-elevated);
+}
+
+@media (min-width: 992px) {
+    .sidebar .offcanvas-body {
+        flex-grow: 1;
+        height: 100%;
+        padding: var(--space-md);
+        overflow-y: auto;
+    }
 }
 
 .sidebar__brand {
@@ -50,6 +91,11 @@
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-xs) var(--space-xs) var(--space-lg);
+    color: var(--color-text);
+}
+
+.sidebar__header .sidebar__brand {
+    padding: 0;
 }
 
 .brand-mark {
@@ -97,11 +143,8 @@
 .sidebar__nav {
     display: flex;
     flex-direction: column;
-    gap: 2px;
     flex: 1;
-    overflow-y: auto;
-    margin: 0 calc(var(--space-xs) * -1);
-    padding: 0 var(--space-xs);
+    gap: 2px;
 }
 
 .sidebar__group-label {
@@ -113,13 +156,21 @@
     color: var(--color-text-faint);
 }
 
-.nav-item {
+.sidebar__group-label:first-child {
+    padding-top: 0;
+}
+
+.sidebar__list {
+    gap: 2px;
+}
+
+.sidebar__link {
     position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+    min-height: 40px;
     padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-md);
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
     color: var(--color-text-muted);
@@ -127,69 +178,43 @@
         color var(--duration-fast) var(--ease-out);
 }
 
-.nav-item__icon {
+.sidebar__icon {
     width: 17px;
     height: 17px;
     flex-shrink: 0;
 }
 
-.nav-item:hover {
+.sidebar__link:hover,
+.sidebar__link:focus-visible {
     background: var(--color-surface-secondary);
     color: var(--color-text);
 }
 
-.nav-item[aria-current="page"] {
+.sidebar__link[aria-current="page"] {
     background: var(--color-primary-soft);
     color: var(--color-primary-strong);
     font-weight: var(--font-semibold);
 }
 
-.nav-item[aria-current="page"]::before {
+.sidebar__link[aria-current="page"]::before {
     content: "";
     position: absolute;
-    left: -6px;
-    top: 50%;
+    left: 0;
+    top: 0;
+    bottom: 0;
     width: 3px;
-    height: 18px;
-    border-radius: var(--radius-full);
     background: var(--color-primary);
-    transform: translateY(-50%);
 }
 
-.nav-item__badge {
-    margin-left: auto;
-    padding: 1px 6px;
-    border-radius: var(--radius-full);
-    background: var(--color-surface-tertiary);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: var(--font-semibold);
-    color: var(--color-text-muted);
-}
-
-.nav-item[aria-current="page"] .nav-item__badge {
-    background: rgba(var(--rgb-primary), 0.22);
-    color: var(--color-primary-strong);
-}
-
-.nav-item--soon {
-    opacity: 0.45;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.nav-item--soon .nav-item__badge {
-    font-family: var(--font-sans);
-    font-size: 9px;
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-}
-
-/* --- Sidebar footer: the mini passport --- */
+/* --- Rodapé da sidebar: o mini passaporte --- */
 .sidebar__footer {
     margin-top: var(--space-md);
     padding-top: var(--space-md);
     border-top: 1px solid var(--color-border-soft);
+}
+
+.sidebar__footer:empty {
+    display: none;
 }
 
 .mini-passport {
@@ -197,7 +222,6 @@
     width: 100%;
     padding: var(--space-sm);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
     background: var(--color-surface);
     text-align: left;
     transition: border-color var(--duration-fast) var(--ease-out),
@@ -270,14 +294,13 @@
     top: 0;
     z-index: var(--z-sticky);
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     gap: var(--space-md);
     height: var(--topbar-height);
     padding: 0 var(--page-padding-x);
     border-bottom: 1px solid var(--color-border-soft);
-    background: rgba(var(--rgb-ink), 0.72);
-    backdrop-filter: blur(var(--blur-md)) saturate(140%);
-    -webkit-backdrop-filter: blur(var(--blur-md)) saturate(140%);
+    background: rgba(var(--rgb-ink), 0.94);
 }
 
 .topbar__heading {
@@ -310,12 +333,10 @@
 }
 
 .topbar__xp {
-    display: flex;
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-2xs) var(--space-sm) var(--space-2xs) var(--space-2xs);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-full);
     background: var(--color-surface);
 }
 
@@ -324,19 +345,18 @@
 }
 
 .topbar__xp-text {
-    font-family: var(--font-mono);
     font-size: var(--text-2xs);
     color: var(--color-text-muted);
     white-space: nowrap;
 }
 
 .menu-toggle {
-    display: none;
+    display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
     background: var(--color-surface);
     color: var(--color-text-secondary);
 }
@@ -366,6 +386,12 @@
     max-width: var(--content-narrow);
 }
 
+.page > section + section,
+.page > section + div,
+.page > div + section {
+    margin-top: var(--space-xl);
+}
+
 .page__header {
     display: flex;
     align-items: flex-end;
@@ -376,8 +402,8 @@
 }
 
 .page__title {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-bold);
+    font-size: var(--text-3xl);
+    font-weight: 400;
     letter-spacing: var(--tracking-display);
 }
 
@@ -396,32 +422,17 @@
 }
 
 /* ============================================================
-   GRIDS
+   GRIDS LEGADOS
+   As telas novas usam o grid do Bootstrap (row/col). Estes ficam
+   para componentes internos que não são layout de página.
    ============================================================ */
 .grid {
     display: grid;
     gap: var(--space-md);
 }
 
-.grid--stats {
-    grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-}
-
-.grid--cards {
-    grid-template-columns: repeat(auto-fill, minmax(198px, 1fr));
-}
-
 .grid--badges {
-    grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-}
-
-.grid--split {
-    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-    align-items: start;
-}
-
-.grid--halves {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 
 .grid--form-2 {
@@ -429,35 +440,24 @@
 }
 
 /* ============================================================
-   MOBILE DRAWER + BOTTOM NAV
+   BARRA INFERIOR (celular e tablet)
    ============================================================ */
-.drawer-scrim {
-    position: fixed;
-    inset: 0;
-    z-index: calc(var(--z-drawer) - 1);
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(var(--blur-sm));
-    -webkit-backdrop-filter: blur(var(--blur-sm));
-    animation: fade-in var(--duration-fast) var(--ease-out) both;
-}
-
 .bottom-nav {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: var(--z-sticky);
-    display: none;
+    display: flex;
     align-items: stretch;
     height: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px));
     padding-bottom: env(safe-area-inset-bottom, 0px);
     border-top: 1px solid var(--color-border);
-    background: rgba(var(--rgb-ink), 0.94);
-    backdrop-filter: blur(var(--blur-md)) saturate(140%);
-    -webkit-backdrop-filter: blur(var(--blur-md)) saturate(140%);
+    background: rgba(var(--rgb-ink), 0.97);
 }
 
 .bottom-nav__item {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -465,6 +465,7 @@
     justify-content: center;
     gap: 3px;
     min-width: 0;
+    min-height: 44px;
     color: var(--color-text-faint);
     transition: color var(--duration-fast) var(--ease-out);
 }
@@ -475,7 +476,7 @@
 }
 
 .bottom-nav__item span {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: var(--font-semibold);
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
@@ -493,177 +494,196 @@
     content: "";
     position: absolute;
     top: 0;
-    width: 26px;
+    width: 28px;
     height: 2px;
-    border-radius: var(--radius-full);
     background: var(--color-primary);
 }
 
-.bottom-nav__item {
-    position: relative;
-}
-
 /* ============================================================
-   MARKETING SHELL (landing / login / onboarding)
+   CABEÇALHO PÚBLICO (navbar Bootstrap)
    ============================================================ */
 .site-header {
     position: sticky;
     top: 0;
     z-index: var(--z-sticky);
+    min-height: var(--topbar-height);
+    padding: var(--space-xs) var(--space-xl);
+    border-bottom: 1px solid var(--color-border-soft);
+    background: rgba(var(--rgb-ink), 0.94);
+}
+
+.site-header__inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0;
+}
+
+.site-header .sidebar__brand {
+    padding: 0;
+    margin-right: 0;
+}
+
+.site-header .nav-link {
+    min-height: 44px;
     display: flex;
     align-items: center;
-    gap: var(--space-lg);
-    height: var(--topbar-height);
-    padding: 0 var(--space-xl);
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--duration-normal) var(--ease-out),
-        background-color var(--duration-normal) var(--ease-out);
-}
-
-.site-header.is-stuck {
-    border-bottom-color: var(--color-border-soft);
-    background: rgba(var(--rgb-ink), 0.78);
-    backdrop-filter: blur(var(--blur-md)) saturate(140%);
-    -webkit-backdrop-filter: blur(var(--blur-md)) saturate(140%);
-}
-
-.site-header__nav {
-    display: flex;
-    align-items: center;
-    gap: var(--space-lg);
-    margin-left: var(--space-xl);
-}
-
-.site-header__link {
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
-    color: var(--color-text-muted);
-    transition: color var(--duration-fast) var(--ease-out);
 }
 
-.site-header__link:hover {
-    color: var(--color-text);
+.site-header .nav-link[aria-current="page"] {
+    color: var(--color-primary-strong);
 }
 
-.site-header__actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    margin-left: auto;
+/* Landing: o cabeçalho só ganha fundo depois de rolar. */
+.site-header--landing:not(.is-stuck) {
+    border-bottom-color: transparent;
+    background: transparent;
 }
 
+/* ============================================================
+   RODAPÉ COM CRÉDITOS
+   ============================================================ */
 .site-footer {
-    padding: var(--space-2xl) var(--space-xl);
+    padding: var(--space-2xl) var(--space-xl) var(--space-xl);
     border-top: 1px solid var(--color-border-soft);
     background: var(--color-background-elevated);
 }
 
-/* A barra inferior e fixa, e o rodape institucional e injetado FORA do
-   `.page` — que ja reserva espaco para ela. Sem esta folga, as redes
-   sociais e a linha legal ficam permanentemente atras da barra, por mais
-   que se role. */
-@media (max-width: 860px) {
-    .site-footer {
-        padding-bottom: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px) + var(--space-lg));
-    }
-}
-
 .site-footer__inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-lg);
-    flex-wrap: wrap;
     max-width: var(--content-max);
     margin: 0 auto;
+    padding: 0;
+}
+
+.site-footer__logo {
+    width: 132px;
+    height: auto;
+}
+
+.site-footer__tagline {
+    margin-top: var(--space-sm);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-display);
+    color: var(--color-primary-strong);
 }
 
 .site-footer__note {
+    margin-top: var(--space-2xs);
+    max-width: 40ch;
     font-size: var(--text-xs);
     color: var(--color-text-faint);
-    max-width: 56ch;
+}
+
+.site-footer__heading {
+    margin-bottom: var(--space-xs);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
 }
 
 .site-footer__links {
     display: flex;
-    gap: var(--space-md);
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
 }
 
 .site-footer__links a {
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
     transition: color var(--duration-fast) var(--ease-out);
 }
 
 .site-footer__links a:hover {
-    color: var(--color-text);
+    color: var(--color-primary-strong);
+}
+
+.site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border-soft);
+}
+
+.site-footer__credits,
+.site-footer__legal {
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+.site-footer__credits {
+    color: var(--color-text-muted);
+}
+
+.site-footer__credits a {
+    color: var(--color-primary-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* A barra inferior é fixa: o rodapé ganha folga para não ficar atrás dela. */
+@media (max-width: 991.98px) {
+    .app ~ .site-footer,
+    .bottom-nav ~ .site-footer {
+        padding-bottom: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px) + var(--space-lg));
+    }
+}
+
+/* ============================================================
+   MAPA DO SITE: MOLDURA HÍBRIDA
+   <html data-auth="in|out"> decide qual navegação aparece.
+   ============================================================ */
+[data-auth="out"] .sidebar-shell,
+[data-auth="out"] .topbar,
+[data-auth="out"] .bottom-nav {
+    display: none !important;
+}
+
+[data-auth="out"] .app {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+[data-auth="in"] .public-header {
+    display: none !important;
 }
 
 /* ============================================================
    RESPONSIVE
-   Layouts are rethought, not merely scaled down.
    ============================================================ */
 
-/* --- Laptop --- */
-@media (max-width: 1180px) {
+@media (max-width: 1199.98px) {
     :root {
         --page-padding-x: var(--space-lg);
     }
+}
 
-    .grid--split {
-        grid-template-columns: minmax(0, 1fr);
+@media (max-width: 991.98px) {
+    .page {
+        padding-bottom: calc(var(--bottomnav-height) + var(--space-xl));
+    }
+
+    [data-auth="out"] .page {
+        padding-bottom: var(--space-3xl);
     }
 }
 
-/* --- Tablet: sidebar becomes an off-canvas drawer --- */
-@media (max-width: 1080px) {
-    .app {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: var(--z-drawer);
-        width: min(280px, 84vw);
-        transform: translateX(-102%);
-        transition: transform var(--duration-normal) var(--ease-out);
-        box-shadow: var(--shadow-xl);
-        border-right-color: var(--color-border);
-    }
-
-    .sidebar.is-open {
-        transform: translateX(0);
-    }
-
-    .menu-toggle {
-        display: grid;
-    }
-
-    .site-header__nav {
-        display: none;
-    }
-}
-
-/* --- Mobile --- */
-@media (max-width: 860px) {
+@media (max-width: 767.98px) {
     :root {
         --page-padding-x: var(--space-md);
     }
 
     .page {
         padding-top: var(--space-lg);
-        padding-bottom: calc(var(--bottomnav-height) + var(--space-xl));
-    }
-
-    .bottom-nav {
-        display: flex;
-    }
-
-    .topbar__xp {
-        display: none;
     }
 
     .page__header {
@@ -674,17 +694,7 @@
     }
 
     .page__title {
-        font-size: var(--text-xl);
-    }
-
-    .grid--cards {
-        grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-        gap: var(--space-sm);
-    }
-
-    .grid--stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: var(--space-sm);
+        font-size: var(--text-2xl);
     }
 
     .grid--badges {
@@ -698,9 +708,8 @@
         padding-right: var(--space-md);
     }
 
-    .site-footer__inner {
-        flex-direction: column;
-        align-items: flex-start;
+    .topbar {
+        gap: var(--space-sm);
     }
 }
 

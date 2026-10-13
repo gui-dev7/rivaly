@@ -1,18 +1,21 @@
 /**
  * app.js — shared bootstrap.
  *
- * Two entry points:
- *   bootPublic()  → landing / login / onboarding (no auth chrome)
+ * Three entry points:
+ *   bootPublic()  → landing / login / onboarding / 404 (no auth chrome)
  *   bootApp()     → every signed-in page (guard + chrome + motion)
+ *   bootHybrid()  → the site map: app chrome when signed in, the public
+ *                   navbar when not
  *
+ * The chrome itself (navbar, offcanvas, bottom nav, footer) is static
+ * Bootstrap markup in each HTML file; see tools/sync-chrome.mjs.
  * Page controllers import one of these, then render their own content.
  */
 
 import { initStorage, getSettings, getUser } from './storage.js';
-import { requireAuth } from './auth.js';
-import { mountNavigation } from './navigation.js';
+import { requireAuth, isAuthenticated } from './auth.js';
+import { mountNavigation, markPublicNavigation } from './navigation.js';
 import { animateProgressBars, initScrollReveal } from './animations.js';
-import { initFooter } from './footer.js';
 import { applyBrandArt } from './brand.js';
 import { initTour } from './tour.js';
 
@@ -85,20 +88,60 @@ export function applySettings() {
     if (theme === 'rivaly') delete document.documentElement.dataset.theme;
     else document.documentElement.dataset.theme = theme;
 
-    // A marca tem uma versao colorida por tema; trocar a paleta sem trocar
+    // A marca tem uma versão colorida por tema; trocar a paleta sem trocar
     // a arte deixaria um logo amarelo sobre um fundo rosa.
     applyBrandArt(theme);
 }
 
+/**
+ * Bootstrap tooltips are opt-in: every [data-bs-toggle="tooltip"] on the
+ * page (and inside content rendered later) gets one instance.
+ */
+export function initTooltips(scope = document) {
+    if (!window.bootstrap?.Tooltip) return;
+    scope.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((node) => {
+        window.bootstrap.Tooltip.getOrCreateInstance(node);
+    });
+}
+
 /** Bootstrap for pages that do not require a session. */
-export function bootPublic() {
+export function bootPublic({ page = '' } = {}) {
     initStorage();
     applySettings();
     initArtworkFallback();
     initScrollReveal();
-    initFooter();
+    if (page) markPublicNavigation(page);
     applyBrandArt(document.documentElement.dataset.theme ?? 'rivaly');
+    initTooltips();
     return true;
+}
+
+/**
+ * The site map is public, but a signed-in visitor should not lose the app
+ * navigation on the way there. <html data-auth> switches which chrome is
+ * visible (see css/layout.css).
+ * @returns {object|null} the user when signed in, null otherwise
+ */
+export function bootHybrid({ page, title, subtitle = '' }) {
+    initStorage();
+    applySettings();
+    initArtworkFallback();
+
+    const user = isAuthenticated() ? getUser() : null;
+    const signedIn = Boolean(user?.onboardingComplete);
+    document.documentElement.dataset.auth = signedIn ? 'in' : 'out';
+
+    if (signedIn) {
+        mountNavigation({ page, title, subtitle });
+        animateProgressBars(document);
+    } else {
+        markPublicNavigation(page);
+    }
+
+    initScrollReveal();
+    applyBrandArt(document.documentElement.dataset.theme ?? 'rivaly');
+    initTooltips();
+    return signedIn ? user : null;
 }
 
 /**
@@ -122,8 +165,8 @@ export function bootApp({ page, title, subtitle = '', requireOnboarding = true }
     // its own controller has finished rendering.
     animateProgressBars(document);
     initScrollReveal();
-    initFooter();
     applyBrandArt(document.documentElement.dataset.theme ?? 'rivaly');
+    initTooltips();
     initTour();
 
     return user;
@@ -136,4 +179,5 @@ export function bootApp({ page, title, subtitle = '', requireOnboarding = true }
 export function afterRender(scope = document) {
     animateProgressBars(scope);
     initScrollReveal(scope);
+    initTooltips(scope);
 }

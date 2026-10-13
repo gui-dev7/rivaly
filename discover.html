@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-motion="full">
+<html lang="pt-BR" data-motion="full" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,14 +35,19 @@
     <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
 
 
+    <!-- chrome:styles:start -->
+    <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="css/fonts.css">
-    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.css">
     <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/community.css">
     <link rel="stylesheet" href="css/pages/avatar.css">
+    <!-- chrome:styles:end -->
     <link rel="stylesheet" href="css/pages/discover.css">
 </head>
 <body>
@@ -52,21 +57,160 @@
         <div class="protocol-warning__inner">
             <h2>Abra a RIVALY por um servidor local</h2>
             <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
-            <pre>python -m http.server 5500
-# depois abra http://localhost:5500</pre>
+            <pre>npm run dev
+# ou: python -m http.server 5500</pre>
         </div>
     </div>
-    <script>
-        if (window.location.protocol === 'file:') {
-            document.getElementById('protocolWarning').hidden = false;
-        }
-    </script>
 
     <div class="app">
-        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Navegação principal"></aside>
+        <!-- chrome:app-nav:start -->
+        <aside class="sidebar-shell" aria-label="Navegação principal">
+            <div class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="appNav" aria-labelledby="appNavTitle">
+                <div class="offcanvas-header sidebar__header">
+                    <a class="sidebar__brand" href="dashboard.html" aria-label="RIVALY, ir para o Início">
+                        <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
+                        <span class="brand-name">
+                            <span class="brand-name__top">RIVALY</span>
+                            <span class="brand-name__sub">Rival + Ally</span>
+                        </span>
+                    </a>
+                    <h2 class="visually-hidden" id="appNavTitle">Menu da RIVALY</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#appNav" aria-label="Fechar menu"></button>
+                </div>
+                <div class="offcanvas-body sidebar__body">
+                    <a class="sidebar__brand d-none d-lg-flex" href="dashboard.html" aria-label="RIVALY, ir para o Início">
+                        <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
+                        <span class="brand-name">
+                            <span class="brand-name__top">RIVALY</span>
+                            <span class="brand-name__sub">Rival + Ally</span>
+                        </span>
+                    </a>
+                    <nav class="sidebar__nav" aria-label="Seções do app">
+                        <p class="sidebar__group-label" id="navGroup-voce">Você</p>
+                        <ul class="nav flex-column sidebar__list" aria-labelledby="navGroup-voce">
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="dashboard.html" data-nav-id="dashboard">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9.5"/></svg>
+                                    <span>Início</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="passport.html" data-nav-id="passport">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><circle cx="8.5" cy="11" r="2.5"/><path d="M4.5 17c.6-1.8 2.1-2.8 4-2.8s3.4 1 4 2.8"/><path d="M15 9.5h4M15 12.5h4M15 15.5h2.5"/></svg>
+                                    <span>Passaporte</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="library.html" data-nav-id="library">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.2"/><rect x="10" y="4" width="5" height="16" rx="1.2"/><path d="m17.4 5.7 3.2 14"/></svg>
+                                    <span>Biblioteca</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="achievements.html" data-nav-id="achievements">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4.5v1.5A3.5 3.5 0 0 0 8 11"/><path d="M17 6h2.5v1.5A3.5 3.5 0 0 1 16 11"/><path d="M12 15v3"/><path d="M8.5 21h7l-.8-3h-5.4z"/></svg>
+                                    <span>Conquistas</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <p class="sidebar__group-label" id="navGroup-comunidade">Comunidade</p>
+                        <ul class="nav flex-column sidebar__list" aria-labelledby="navGroup-comunidade">
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="squads.html" data-nav-id="squads">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.7-3.2 3-5 6-5s5.3 1.8 6 5"/><path d="M16 5.3a3.2 3.2 0 0 1 0 5.9"/><path d="M18 15.4c2 .7 3.3 2.3 3.8 4.6"/></svg>
+                                    <span>Squads</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="arena.html" data-nav-id="arena">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
+                                    <span>Arena</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="clans.html" data-nav-id="clans">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 5.8v5.4c0 4.3 2.9 8.2 7 9.6 4.1-1.4 7-5.3 7-9.6V5.8z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>
+                                    <span>Clãs</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="feed.html" data-nav-id="feed">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.2 2.4 3.4 5.4 3.4 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.4-5.4-3.4-8.5S9.8 5.9 12 3.5z"/></svg>
+                                    <span>Feed</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <p class="sidebar__group-label" id="navGroup-explorar">Explorar</p>
+                        <ul class="nav flex-column sidebar__list" aria-labelledby="navGroup-explorar">
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="discover.html" data-nav-id="discover">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg>
+                                    <span>Descobrir</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <p class="sidebar__group-label" id="navGroup-conta">Conta</p>
+                        <ul class="nav flex-column sidebar__list" aria-labelledby="navGroup-conta">
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="settings.html" data-nav-id="settings">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.5 7.5l2 1.2M17.5 15.3l2 1.2M4.5 16.5l2-1.2M17.5 8.7l2-1.2"/></svg>
+                                    <span>Configurações</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link sidebar__link" href="sitemap.html" data-nav-id="sitemap">
+                                    <svg class="sidebar__icon" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5.2-5.2 2 2-5.2z"/></svg>
+                                    <span>Mapa do site</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="sidebar__footer" data-mini-passport></div>
+                </div>
+            </div>
+        </aside>
+        <!-- chrome:app-nav:end -->
 
         <div class="main">
-            <header class="topbar" data-topbar></header>
+            <!-- chrome:topbar:start -->
+            <header class="topbar navbar" data-topbar>
+                <button type="button" class="menu-toggle d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#appNav" aria-controls="appNav" aria-label="Abrir menu">
+                    <svg class="" aria-hidden="true" focusable="false" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                </button>
+                <div class="topbar__heading">
+                    <p class="topbar__title" data-topbar-title>RIVALY</p>
+                    <p class="topbar__subtitle" data-topbar-subtitle></p>
+                </div>
+                <div class="topbar__actions">
+                    <div class="topbar__xp d-none d-md-flex" title="Experiência até o próximo nível">
+                        <span class="level-pill">
+                            <span class="level-pill__num numeric" data-xp-level>1</span>
+                            <span class="level-pill__label">Nível</span>
+                        </span>
+                        <span class="progress progress--thin progress--xp topbar__xp-bar" role="progressbar" aria-label="Progresso até o próximo nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-xp-bar>
+                            <span class="progress__fill" data-progress="0"></span>
+                        </span>
+                        <span class="topbar__xp-text numeric" data-xp-text>0/1.000</span>
+                    </div>
+                    <div class="dropdown invites" data-invites>
+                        <button type="button" class="btn btn-outline-light btn-icon invites__toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="Centro de convites">
+                            <svg class="" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 10a5.5 5.5 0 0 1 11 0c0 4 1.5 5.5 1.5 5.5H5S6.5 14 6.5 10z"/><path d="M10.2 19a2 2 0 0 0 3.6 0"/></svg>
+                            <span class="badge invites__count" data-invites-count hidden>0</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end invites__menu" data-invites-menu>
+                            <p class="dropdown-header invites__title">Convites e desafios</p>
+                            <div class="invites__list" data-invites-list></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-light btn-icon" data-logout aria-label="Sair da conta">
+                        <svg class="" aria-hidden="true" focusable="false" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 16.5V19a1.5 1.5 0 0 1-1.5 1.5H5.5A1.5 1.5 0 0 1 4 19V5a1.5 1.5 0 0 1 1.5-1.5H13A1.5 1.5 0 0 1 14.5 5v2.5"/><path d="M9.5 12H21"/><path d="m17.5 8.5 3.5 3.5-3.5 3.5"/></svg>
+                    </button>
+                </div>
+            </header>
+            <!-- chrome:topbar:end -->
 
             <main class="page page-enter" id="main-content">
                 <div class="page__header">
@@ -114,8 +258,84 @@
         </div>
     </div>
 
-    <nav class="bottom-nav" data-bottom-nav aria-label="Navegação principal"></nav>
+    <!-- chrome:bottom-nav:start -->
+    <nav class="bottom-nav d-lg-none" aria-label="Navegação rápida">
+        <a class="bottom-nav__item" href="dashboard.html" data-nav-id="dashboard">
+            <svg class="" aria-hidden="true" focusable="false" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9.5"/></svg>
+            <span>Início</span>
+        </a>
+        <a class="bottom-nav__item" href="passport.html" data-nav-id="passport">
+            <svg class="" aria-hidden="true" focusable="false" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><circle cx="8.5" cy="11" r="2.5"/><path d="M4.5 17c.6-1.8 2.1-2.8 4-2.8s3.4 1 4 2.8"/><path d="M15 9.5h4M15 12.5h4M15 15.5h2.5"/></svg>
+            <span>Passaporte</span>
+        </a>
+        <a class="bottom-nav__item" href="squads.html" data-nav-id="squads">
+            <svg class="" aria-hidden="true" focusable="false" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.7-3.2 3-5 6-5s5.3 1.8 6 5"/><path d="M16 5.3a3.2 3.2 0 0 1 0 5.9"/><path d="M18 15.4c2 .7 3.3 2.3 3.8 4.6"/></svg>
+            <span>Squads</span>
+        </a>
+        <a class="bottom-nav__item" href="arena.html" data-nav-id="arena">
+            <svg class="" aria-hidden="true" focusable="false" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
+            <span>Arena</span>
+        </a>
+        <button type="button" class="bottom-nav__item" data-bs-toggle="offcanvas" data-bs-target="#appNav" aria-controls="appNav">
+            <svg class="" aria-hidden="true" focusable="false" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+            <span>Mais</span>
+        </button>
+    </nav>
+    <!-- chrome:bottom-nav:end -->
 
+    <!-- chrome:footer:start -->
+    <footer class="site-footer">
+        <div class="container-fluid site-footer__inner">
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <img class="site-footer__logo" data-brand="logo" src="/assets/brand/logo-rivaly.png" alt="RIVALY" width="132" height="44" loading="lazy" decoding="async">
+                    <p class="site-footer__tagline">Find allies. Meet rivals.</p>
+                    <p class="site-footer__note">Sua identidade gamer em um só lugar. Tudo fica salvo neste navegador.</p>
+                </div>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-voce">
+                    <p class="site-footer__heading" id="footGroup-voce">Você</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="dashboard.html">Início</a></li>
+                        <li><a href="passport.html">Passaporte</a></li>
+                        <li><a href="library.html">Biblioteca</a></li>
+                        <li><a href="achievements.html">Conquistas</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-comunidade">
+                    <p class="site-footer__heading" id="footGroup-comunidade">Comunidade</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="squads.html">Squads</a></li>
+                        <li><a href="arena.html">Arena</a></li>
+                        <li><a href="clans.html">Clãs</a></li>
+                        <li><a href="feed.html">Feed</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-explorar">
+                    <p class="site-footer__heading" id="footGroup-explorar">Explorar</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="discover.html">Descobrir</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-conta">
+                    <p class="site-footer__heading" id="footGroup-conta">Conta</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="settings.html">Configurações</a></li>
+                        <li><a href="sitemap.html">Mapa do site</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="site-footer__bottom">
+                <p class="site-footer__credits">RIVALY · Guilherme Oliveira Santos · RM576218 · FIAP 2026 · <a href="sitemap.html">Mapa do site</a></p>
+                <p class="site-footer__legal">Projeto acadêmico. As artes dos jogos pertencem aos seus detentores.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- chrome:footer:end -->
+
+    <!-- chrome:scripts:start -->
+    <script src="js/protocol-check.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- chrome:scripts:end -->
     <script type="module" src="js/discover.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-motion="full">
+<html lang="pt-BR" data-motion="full" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,14 +35,19 @@
     <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
 
 
+    <!-- chrome:styles:start -->
+    <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="css/fonts.css">
-    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.css">
     <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/community.css">
     <link rel="stylesheet" href="css/pages/avatar.css">
+    <!-- chrome:styles:end -->
     <link rel="stylesheet" href="css/pages/login.css">
 </head>
 <body class="auth-body">
@@ -52,15 +57,10 @@
         <div class="protocol-warning__inner">
             <h2>Abra a RIVALY por um servidor local</h2>
             <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
-            <pre>python -m http.server 5500
-# depois abra http://localhost:5500</pre>
+            <pre>npm run dev
+# ou: python -m http.server 5500</pre>
         </div>
     </div>
-    <script>
-        if (window.location.protocol === 'file:') {
-            document.getElementById('protocolWarning').hidden = false;
-        }
-    </script>
 
     <main class="auth" id="main-content">
         <!-- ---------- Narrative side ---------- -->
@@ -221,6 +221,59 @@
         </section>
     </main>
 
+    <!-- chrome:footer:start -->
+    <footer class="site-footer">
+        <div class="container-fluid site-footer__inner">
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <img class="site-footer__logo" data-brand="logo" src="/assets/brand/logo-rivaly.png" alt="RIVALY" width="132" height="44" loading="lazy" decoding="async">
+                    <p class="site-footer__tagline">Find allies. Meet rivals.</p>
+                    <p class="site-footer__note">Sua identidade gamer em um só lugar. Tudo fica salvo neste navegador.</p>
+                </div>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-voce">
+                    <p class="site-footer__heading" id="footGroup-voce">Você</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="dashboard.html">Início</a></li>
+                        <li><a href="passport.html">Passaporte</a></li>
+                        <li><a href="library.html">Biblioteca</a></li>
+                        <li><a href="achievements.html">Conquistas</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-comunidade">
+                    <p class="site-footer__heading" id="footGroup-comunidade">Comunidade</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="squads.html">Squads</a></li>
+                        <li><a href="arena.html">Arena</a></li>
+                        <li><a href="clans.html">Clãs</a></li>
+                        <li><a href="feed.html">Feed</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-explorar">
+                    <p class="site-footer__heading" id="footGroup-explorar">Explorar</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="discover.html">Descobrir</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-conta">
+                    <p class="site-footer__heading" id="footGroup-conta">Conta</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="settings.html">Configurações</a></li>
+                        <li><a href="sitemap.html">Mapa do site</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="site-footer__bottom">
+                <p class="site-footer__credits">RIVALY · Guilherme Oliveira Santos · RM576218 · FIAP 2026 · <a href="sitemap.html">Mapa do site</a></p>
+                <p class="site-footer__legal">Projeto acadêmico. As artes dos jogos pertencem aos seus detentores.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- chrome:footer:end -->
+
+    <!-- chrome:scripts:start -->
+    <script src="js/protocol-check.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <!-- chrome:scripts:end -->
     <script type="module" src="js/login.js"></script>
 </body>
 </html>
