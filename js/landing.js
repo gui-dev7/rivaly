@@ -9,11 +9,47 @@
 import { bootPublic, afterRender } from './app.js';
 import { gameMarkMarkup } from './cards.js';
 import { icon, escapeHtml, avatarSvg, formatNumber } from './ui.js';
-import { DNA_ATTRIBUTES, ROADMAP, getGameById } from './data.js';
+import { DNA_ATTRIBUTES, ROADMAP, ACHIEVEMENTS, ARCHETYPES, getGameById } from './data.js';
 import { WEIGHTS } from './compatibility.js';
 import { countUp, runSequence, initStickyHeader, prefersReducedMotion, wait } from './animations.js';
 
-bootPublic();
+bootPublic({ page: 'home' });
+
+/* ============================================================
+   VÍDEO DE APRESENTAÇÃO
+   Cole aqui o link de incorporação (youtube-nocookie.com/embed/...).
+   Enquanto estiver vazio, a seção inteira fica escondida: nada de
+   espaço reservado fingindo que existe um vídeo.
+   ============================================================ */
+export const PRESENTATION_VIDEO_URL = '';
+
+function renderVideo() {
+    const url = PRESENTATION_VIDEO_URL.trim();
+    // Só o domínio sem cookies do YouTube, que é o único liberado na CSP.
+    if (!/^https:\/\/www\.youtube-nocookie\.com\/embed\/[\w-]+/.test(url)) return;
+    const frame = document.createElement('iframe');
+    frame.src = url;
+    frame.title = 'Vídeo de apresentação da RIVALY';
+    frame.loading = 'lazy';
+    frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    frame.allow = 'accelerometer; encrypted-media; gyroscope; picture-in-picture';
+    frame.allowFullscreen = true;
+    document.getElementById('videoFrame').append(frame);
+    document.getElementById('video').hidden = false;
+}
+
+/* Os números do topo vêm dos dados, não do HTML escrito à mão. */
+function renderFacts() {
+    const facts = {
+        attributes: DNA_ATTRIBUTES.length,
+        archetypes: ARCHETYPES.length,
+        factors: Object.keys(WEIGHTS).length,
+        achievements: ACHIEVEMENTS.length,
+    };
+    document.querySelectorAll('[data-fact]').forEach((node) => {
+        node.textContent = String(facts[node.dataset.fact] ?? node.textContent);
+    });
+}
 
 /* ============================================================
    FEATURES
@@ -36,8 +72,8 @@ const FEATURES = [
         tag: 'Acompanhamento',
     },
     {
-        icon: 'users', title: 'Buscar Squad',
-        text: 'Filtre por jogo, rank, horário, estilo de jogo, função e chat de voz. Acompanhe a análise e o ranqueamento dos jogadores.',
+        icon: 'users', title: 'Squads',
+        text: 'Filtre por jogo, rank, horário, estilo, função e voz. Depois jogue uma sessão com 2 a 4 jogadores e avalie cada um.',
         tag: 'Social',
     },
     {
@@ -47,8 +83,23 @@ const FEATURES = [
     },
     {
         icon: 'trophy', title: 'Progressão',
-        text: 'XP por ações reais. Uma curva de níveis progressiva, vinte medalhas em cinco raridades e uma Pontuação Gamer no topo.',
+        text: `XP por ações reais. Uma curva de níveis progressiva, ${ACHIEVEMENTS.length} medalhas em cinco raridades e uma Pontuação Gamer no topo.`,
         tag: 'Gamificação',
+    },
+    {
+        icon: 'target', title: 'Arena',
+        text: 'Duelos, squads e Clã vs Clã com rating no estilo Elo. Antes de cada partida, a chance de vitória; depois, a conta.',
+        tag: 'Competição',
+    },
+    {
+        icon: 'shield', title: 'Clãs',
+        text: 'Explore clãs pela compatibilidade com o seu DNA, candidate-se ou funde o seu, com emblema gerado a partir da tag.',
+        tag: 'Pertencer',
+    },
+    {
+        icon: 'globe', title: 'Feed',
+        text: 'Posts, reações (GG, Respeito, Rivalidade) e comentários, com abas para clã, aliados, rivais e Arena.',
+        tag: 'Comunidade',
     },
 ];
 
@@ -56,23 +107,27 @@ const JOURNEY = [
     { title: 'Crie sua conta', text: 'Cadastro local e acadêmico. Nada sai do seu navegador.', icon: 'user' },
     { title: 'Responda ao teste de DNA', text: 'Dez perguntas sobre como você joga, não sobre o que possui.', icon: 'dna' },
     { title: 'Descubra seu arquétipo', text: 'Seis atributos recebem uma pontuação e definem um entre onze arquétipos.', icon: 'spark' },
-    { title: 'Construa e encontre', text: 'Preencha a biblioteca, ganhe XP, desbloqueie medalhas e encontre seu squad.', icon: 'layers' },
+    { title: 'Jogue e pertença', text: 'Jogue sessões, marque aliados e rivais, entre num clã e suba na Arena.', icon: 'layers' },
 ];
 
 function renderFeatures() {
     const host = document.getElementById('featureGrid');
     if (!host) return;
     host.innerHTML = FEATURES.map((feature, index) => `
-        <article class="feature" data-reveal data-reveal-delay="${index * 70}">
-            <span class="feature__icon">${icon(feature.icon, { size: 22 })}</span>
-            <div class="feature__body">
-                <div class="feature__head">
-                    <h3 class="feature__title">${escapeHtml(feature.title)}</h3>
-                    <span class="tag">${escapeHtml(feature.tag)}</span>
+        <div class="col">
+            <article class="card h-100 feature" data-reveal data-reveal-delay="${(index % 3) * 70}">
+                <div class="card-body feature__inner">
+                    <span class="feature__icon">${icon(feature.icon, { size: 22 })}</span>
+                    <div class="feature__body">
+                        <div class="feature__head">
+                            <h3 class="card-title feature__title">${escapeHtml(feature.title)}</h3>
+                            <span class="tag">${escapeHtml(feature.tag)}</span>
+                        </div>
+                        <p class="card-text feature__text">${escapeHtml(feature.text)}</p>
+                    </div>
                 </div>
-                <p class="feature__text">${escapeHtml(feature.text)}</p>
-            </div>
-        </article>
+            </article>
+        </div>
     `).join('');
 }
 
@@ -121,7 +176,7 @@ function renderRoteiro() {
         <article class="roadmap__item" data-reveal data-reveal-delay="${index * 70}">
             <div class="roadmap__head">
                 <h3 class="roadmap__title">${escapeHtml(item.title)}</h3>
-                <span class="tag ${item.status === 'next' ? 'tag--primary' : ''}">${item.status === 'next' ? 'Em breve' : 'Em estudo'}</span>
+                <span class="tag ${item.status === 'next' ? 'tag--primary' : ''}">${item.status === 'next' ? 'Próximo passo' : 'Em estudo'}</span>
             </div>
             <p class="roadmap__text">${escapeHtml(item.text)}</p>
         </article>
@@ -144,7 +199,7 @@ const DEMO = {
     dna: { competitive: 82, social: 78, explorer: 73, strategist: 96, achiever: 78, collector: 41 },
     reputation: 94,
     score: 18420,
-    badges: 17,
+    badges: 21,
 };
 
 function heroNode(name) {
@@ -242,6 +297,8 @@ async function playHeroSequence() {
    BOOT
    ============================================================ */
 
+renderFacts();
+renderVideo();
 renderFeatures();
 renderJourney();
 renderWeights();
@@ -260,6 +317,8 @@ document.addEventListener('click', (event) => {
     const target = document.querySelector(link.getAttribute('href'));
     if (!target) return;
     event.preventDefault();
+    // No celular o menu recolhível fecha ao escolher uma seção.
+    window.bootstrap?.Collapse.getInstance(document.getElementById('landingNav'))?.hide();
     target.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
     // Keep the keyboard focus with the visual position.
     target.setAttribute('tabindex', '-1');

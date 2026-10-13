@@ -131,27 +131,34 @@
     </div>
 
     <div class="page-root" data-app-root>
-    <header class="site-header" id="siteHeader">
-        <a class="sidebar__brand" href="index.html" style="padding:0" aria-label="Página inicial da RIVALY">
-            <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
-            <span class="brand-name">
-                <span class="brand-name__top">RIVALY</span>
-                <span class="brand-name__sub">Rival + Ally</span>
-            </span>
-        </a>
-
-        <nav class="site-header__nav" aria-label="Seções da página">
-            <a class="site-header__link" href="#features">Plataforma</a>
-            <a class="site-header__link" href="#journey">Como funciona</a>
-            <a class="site-header__link" href="#engine">Compatibilidade</a>
-            <a class="site-header__link" href="#roadmap">Roteiro</a>
-        </nav>
-
-        <div class="site-header__actions">
-            <a class="btn btn--ghost btn--sm" href="login.html?mode=signin">Entrar</a>
-            <a class="btn btn--primary btn--sm" href="login.html?mode=create">Criar passaporte</a>
+    <nav class="navbar navbar-expand-lg site-header site-header--landing" id="siteHeader" aria-label="Navegação da página inicial">
+        <div class="container-fluid site-header__inner">
+            <a class="navbar-brand sidebar__brand" href="index.html" aria-label="Página inicial da RIVALY">
+                <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
+                <span class="brand-name">
+                    <span class="brand-name__top">RIVALY</span>
+                    <span class="brand-name__sub">Rival + Ally</span>
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav" aria-controls="landingNav" aria-expanded="false" aria-label="Abrir menu">
+                <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+            <div class="collapse navbar-collapse" id="landingNav">
+                <ul class="navbar-nav ms-lg-4 me-auto">
+                    <li class="nav-item"><a class="nav-link" href="#features">Plataforma</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#community">Comunidade</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#engine">Compatibilidade</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#numbers">Em números</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#roadmap">Roteiro</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sitemap.html" data-nav-id="sitemap">Mapa do site</a></li>
+                </ul>
+                <div class="d-flex flex-wrap gap-2 py-2 py-lg-0">
+                    <a class="btn btn-ghost btn-sm" href="login.html?mode=signin">Entrar</a>
+                    <a class="btn btn-primary btn-sm" href="login.html?mode=create">Criar meu Passaporte</a>
+                </div>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <main id="main-content">
 
@@ -168,34 +175,34 @@
                     </h1>
 
                     <p class="hero__lede anim-fade-up" style="animation-delay:460ms">
-                        Um perfil para tudo que você joga. Dez perguntas mapeiam como você joga
+                        Um perfil para tudo o que você joga. Dez perguntas mapeiam como você joga
                         de verdade, e o <strong>Passaporte Gamer</strong> que sai daí conduz o resto:
-                        sua biblioteca, suas medalhas e quem o motor coloca no seu time.
+                        sua biblioteca, seus squads, seu clã e o seu rating na Arena.
                     </p>
 
                     <div class="hero__actions anim-fade-up" style="animation-delay:580ms">
-                        <a class="btn btn--primary btn--lg" href="login.html?mode=create">
+                        <a class="btn btn-primary btn-lg" href="login.html?mode=create">
                             Criar meu Passaporte Gamer
                             <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg>
                         </a>
-                        <a class="btn btn--outline btn--lg" href="#features">Explorar a plataforma</a>
+                        <a class="btn btn-outline-light btn-lg" href="#features">Ver o que dá para fazer</a>
                     </div>
 
                     <dl class="hero__facts anim-fade-up" style="animation-delay:700ms">
                         <div class="hero__fact">
-                            <dt>6</dt>
+                            <dt data-fact="attributes">6</dt>
                             <dd>Atributos do DNA</dd>
                         </div>
                         <div class="hero__fact">
-                            <dt>11</dt>
+                            <dt data-fact="archetypes">11</dt>
                             <dd>Arquétipos</dd>
                         </div>
                         <div class="hero__fact">
-                            <dt>7</dt>
-                            <dd>Fatores de match</dd>
+                            <dt data-fact="factors">7</dt>
+                            <dd>Fatores de compatibilidade</dd>
                         </div>
                         <div class="hero__fact">
-                            <dt>20</dt>
+                            <dt data-fact="achievements">28</dt>
                             <dd>Conquistas</dd>
                         </div>
                     </dl>
@@ -304,13 +311,13 @@
             <div class="section__inner">
                 <header class="section__head" data-reveal>
                     <p class="eyebrow">A plataforma</p>
-                    <h2 class="section__title">Seis sistemas.<br>Um registro.</h2>
+                    <h2 class="section__title">Nove sistemas.<br>Um registro.</h2>
                     <p class="section__lede">
                         Tudo que você faz aqui volta para o Passaporte, e o Passaporte deixa o próximo passo mais preciso.
                     </p>
                 </header>
 
-                <div class="feature-grid" id="featureGrid"></div>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3" id="featureGrid"></div>
             </div>
         </section>
 
@@ -325,6 +332,42 @@
                 </header>
 
                 <ol class="journey" id="journeySteps"></ol>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             COMUNIDADE (simulada, e dita assim)
+             ============================================================ -->
+        <section class="section" id="community" aria-labelledby="communityTitle">
+            <div class="section__inner">
+                <header class="section__head" data-reveal>
+                    <p class="eyebrow">Novo na V2</p>
+                    <h2 class="section__title" id="communityTitle">Arena, Feed e Clãs.<br>Ligados ao seu Passaporte.</h2>
+                    <p class="section__lede">
+                        Jogue uma sessão com um squad compatível, marque aliados e rivais, desafie quem quiser enfrentar de novo e entre num clã que combina com o seu DNA. Tudo volta para o Passaporte como XP, conquistas e números.
+                    </p>
+                </header>
+                <div class="community-note" data-reveal>
+                    <p class="community-note__title">Uma comunidade simulada, sem esconder isso</p>
+                    <p class="community-note__text">
+                        A RIVALY não tem servidor nem outros usuários reais. Os outros jogadores são perfis criados para a demonstração, e tudo o que eles fazem (aceitar, recusar, postar, jogar) sai de um motor determinístico que mostra o motivo de cada decisão. Multiplayer de verdade está no roteiro, logo abaixo.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             APRESENTAÇÃO EM VÍDEO
+             Só aparece quando PRESENTATION_VIDEO_URL (js/landing.js) tiver
+             um endereço. Sem vídeo, nenhum espaço fingindo que há um.
+             ============================================================ -->
+        <section class="section section--alt" id="video" aria-labelledby="videoTitle" hidden>
+            <div class="section__inner">
+                <header class="section__head">
+                    <p class="eyebrow">Apresentação</p>
+                    <h2 class="section__title" id="videoTitle">A RIVALY em poucos minutos.</h2>
+                </header>
+                <div class="ratio ratio-16x9 video-frame" id="videoFrame"></div>
             </div>
         </section>
 
@@ -344,7 +387,7 @@
                         <li>Todo resultado mostra a própria conta.</li>
                         <li>Uma função que falta no seu time vale mais que uma que você já tem.</li>
                     </ul>
-                    <a class="btn btn--outline" href="login.html?mode=create">Testar o motor</a>
+                    <a class="btn btn-outline-light" href="login.html?mode=create">Testar o motor com o meu Passaporte</a>
                 </div>
 
                 <div class="engine__visual" data-reveal data-reveal-delay="120">
@@ -354,15 +397,63 @@
         </section>
 
         <!-- ============================================================
-             ROADMAP — honest about what V1 does not do
+             O JOGADOR BRASILEIRO EM NÚMEROS
+             Dados do material da disciplina, cada um com a fonte citada.
+             ============================================================ -->
+        <section class="section section--alt" id="numbers" aria-labelledby="numbersTitle">
+            <div class="section__inner">
+                <header class="section__head" data-reveal>
+                    <p class="eyebrow">Contexto</p>
+                    <h2 class="section__title" id="numbersTitle">O jogador brasileiro<br>em números.</h2>
+                    <p class="section__lede">Por que um produto de identidade gamer faz sentido no Brasil.</p>
+                </header>
+                <div class="table-responsive numbers-table" data-reveal>
+                    <table class="table table-hover align-middle">
+                        <caption>Fontes indicadas em cada linha. Dados reunidos no material da disciplina Happy Game (FIAP).</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Indicador</th>
+                                <th scope="col">Dado</th>
+                                <th scope="col">Fonte</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Brasileiros que jogam jogos digitais</th>
+                                <td class="numeric">82,8%</td>
+                                <td>Pesquisa Game Brasil (PGB) 2025</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Jogos desenvolvidos no Brasil para celular</th>
+                                <td class="numeric">38%</td>
+                                <td>Pesquisa da Indústria Brasileira de Games 2022</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Jogos desenvolvidos no Brasil para PC</th>
+                                <td class="numeric">20%</td>
+                                <td>Pesquisa da Indústria Brasileira de Games 2022</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Desenvolvedoras de games no Brasil</th>
+                                <td class="numeric">762</td>
+                                <td>Material da disciplina Happy Game (FIAP)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             ROTEIRO — o que honestamente ainda não existe
              ============================================================ -->
         <section class="section section--alt" id="roadmap">
             <div class="section__inner">
                 <header class="section__head" data-reveal>
                     <p class="eyebrow">Roteiro</p>
-                    <h2 class="section__title">Fora da V1.</h2>
+                    <h2 class="section__title">O que ainda não existe.</h2>
                     <p class="section__lede">
-                        A V1 é o núcleo de identidade. O restante está planejado, não simulado. Você não encontrará botões sem função para nada disso.
+                        A V2 trouxe Arena, Feed e Clãs com uma comunidade simulada. O que depende de servidor ou de integração real continua no roteiro, e nada disso aparece como botão.
                     </p>
                 </header>
 
@@ -375,34 +466,66 @@
              ============================================================ -->
         <section class="cta">
             <div class="cta__inner" data-reveal>
-                <h2 class="cta__title">Dois minutos.<br>Depois é sua.</h2>
+                <h2 class="cta__title">Find allies.<br>Meet rivals.</h2>
                 <p class="cta__text">
-                    Dez perguntas entram, um arquétipo sai. Daí em diante, a construção é sua.
+                    Dez perguntas entram, um arquétipo sai. Em dois minutos você está jogando sessões, entrando num clã e subindo na Arena.
                 </p>
                 <div class="cta__actions">
-                    <a class="btn btn--primary btn--lg" href="login.html?mode=create">Criar meu Passaporte Gamer</a>
-                    <a class="btn btn--ghost btn--lg" href="login.html?mode=signin">Já tenho uma</a>
+                    <a class="btn btn-primary btn-lg" href="login.html?mode=create">Criar meu Passaporte Gamer</a>
+                    <a class="btn btn-ghost btn-lg" href="login.html?mode=signin">Já tenho conta</a>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="landing-footer">
-        <div class="site-footer__inner">
-            <p class="site-footer__note">
-                <strong>RIVALY.</strong> Seu Passaporte Gamer, sua biblioteca e seus squads
-                em um só lugar. Tudo fica salvo no seu próprio navegador — nenhum dado sai
-                daqui.
-            </p>
-            <nav class="site-footer__links" aria-label="Rodapé">
-                <a href="#features">Plataforma</a>
-                <a href="#journey">Como funciona</a>
-                <a href="#engine">Compatibilidade</a>
-                <a href="#roadmap">Roteiro</a>
-                <a href="login.html?mode=create">Começar</a>
-            </nav>
+    <!-- chrome:footer:start -->
+    <footer class="site-footer">
+        <div class="container-fluid site-footer__inner">
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <img class="site-footer__logo" data-brand="logo" src="/assets/brand/logo-rivaly.png" alt="RIVALY" width="132" height="44" loading="lazy" decoding="async">
+                    <p class="site-footer__tagline">Find allies. Meet rivals.</p>
+                    <p class="site-footer__note">Sua identidade gamer em um só lugar. Tudo fica salvo neste navegador.</p>
+                </div>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-voce">
+                    <p class="site-footer__heading" id="footGroup-voce">Você</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="dashboard.html">Início</a></li>
+                        <li><a href="passport.html">Passaporte</a></li>
+                        <li><a href="library.html">Biblioteca</a></li>
+                        <li><a href="achievements.html">Conquistas</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-comunidade">
+                    <p class="site-footer__heading" id="footGroup-comunidade">Comunidade</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="squads.html">Squads</a></li>
+                        <li><a href="arena.html">Arena</a></li>
+                        <li><a href="clans.html">Clãs</a></li>
+                        <li><a href="feed.html">Feed</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-explorar">
+                    <p class="site-footer__heading" id="footGroup-explorar">Explorar</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="discover.html">Descobrir</a></li>
+                    </ul>
+                </nav>
+                <nav class="col-6 col-md-3 col-lg-2" aria-labelledby="footGroup-conta">
+                    <p class="site-footer__heading" id="footGroup-conta">Conta</p>
+                    <ul class="list-unstyled site-footer__links">
+                        <li><a href="settings.html">Configurações</a></li>
+                        <li><a href="sitemap.html">Mapa do site</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="site-footer__bottom">
+                <p class="site-footer__credits">RIVALY · Guilherme Oliveira Santos · RM576218 · FIAP 2026 · <a href="sitemap.html">Mapa do site</a></p>
+                <p class="site-footer__legal">Projeto acadêmico. As artes dos jogos pertencem aos seus detentores.</p>
+            </div>
         </div>
     </footer>
+    <!-- chrome:footer:end -->
     </div>
 
     <!-- chrome:scripts:start -->
