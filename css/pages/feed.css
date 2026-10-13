@@ -1,0 +1,206 @@
+/* ============================================================
+   RIVALY — FEED
+   ============================================================ */
+
+.composer {
+    border-color: var(--color-primary-line);
+}
+
+.composer::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 48px;
+    height: 3px;
+    background: var(--color-primary);
+}
+
+.feed-tabs {
+    margin: var(--space-lg) 0 var(--space-md);
+}
+
+.feed-tabs__count {
+    margin-left: 2px;
+    opacity: 0.7;
+}
+
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.feed-more {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-md);
+}
+
+/* --- Post --- */
+.post.is-new {
+    border-color: var(--color-primary);
+    animation: fade-down var(--duration-slow) var(--ease-out) both;
+}
+
+.post--mine {
+    border-left: 3px solid var(--color-primary);
+}
+
+.post__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-xs);
+}
+
+.post__time {
+    margin-left: auto;
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+.post__text {
+    font-size: var(--text-base);
+    color: var(--color-text);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.post__game {
+    margin-top: var(--space-2xs);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.post__reactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-top: var(--space-sm);
+}
+
+.reaction {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 36px;
+    padding: 0 var(--space-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-inset);
+    color: var(--color-text-secondary);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    transition: border-color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.reaction:hover {
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+}
+
+.reaction.is-active {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.reaction__count {
+    font-size: var(--text-xs);
+}
+
+.post__comments {
+    padding-top: var(--space-xs);
+    padding-bottom: var(--space-xs);
+}
+
+.post__panel {
+    padding-bottom: var(--space-xs);
+}
+
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin: var(--space-xs) 0 var(--space-sm);
+}
+
+.comment {
+    padding: var(--space-xs) var(--space-sm);
+    border-left: 2px solid var(--color-border-strong);
+    background: var(--color-surface);
+}
+
+.comment__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.comment__head .post__time {
+    margin-left: auto;
+}
+
+.comment__text {
+    margin-top: 2px;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    overflow-wrap: anywhere;
+}
+
+/* --- Evento (atividade do usuário) --- */
+.feed-event {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border: 1px dashed var(--color-border);
+    background: var(--color-surface-inset);
+}
+
+.feed-event__icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+}
+
+.feed-event--arena .feed-event__icon,
+.feed-event--clan .feed-event__icon,
+.feed-event--achievement .feed-event__icon {
+    border-color: var(--color-primary-line);
+    color: var(--color-primary-strong);
+}
+
+.feed-event__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.feed-event__text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.feed-event__body .post__time {
+    margin-left: 0;
+}
+
+.feed-event__xp {
+    flex-shrink: 0;
+    font-size: var(--text-xs);
+    color: var(--color-primary-strong);
+}
+
+.form-status {
+    margin-top: var(--space-sm);
+}
