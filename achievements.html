@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" data-motion="full">
+<html lang="pt-BR" data-motion="full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Your RIVALY achievements — twenty badges across five rarities, all unlocked by real actions.">
+    <meta name="description" content="Suas conquistas na RIVALY — vinte medalhas em cinco raridades, todas desbloqueadas por ações reais.">
     <meta name="theme-color" content="#050505">
-    <title>Achievements — RIVALY</title>
+    <title>Conquistas — RIVALY</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+    <link rel="icon" type="image/png" href="/assets/brand/icon-rivaly.png">
+
+    <!-- ============================================================
+         SOCIAL PREVIEW
+         A imagem 1200x630 e o formato que Facebook, WhatsApp, LinkedIn,
+         Discord e X usam no card. A quadrada serve ao atalho de tela
+         inicial no iOS.
+         ============================================================ -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="RIVALY">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Conquistas — RIVALY">
+    <meta property="og:description" content="Suas conquistas na RIVALY — vinte medalhas em cinco raridades, todas desbloqueadas por ações reais.">
+    <meta property="og:image" content="/assets/brand/social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Marca RIVALY">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Conquistas — RIVALY">
+    <meta name="twitter:description" content="Suas conquistas na RIVALY — vinte medalhas em cinco raridades, todas desbloqueadas por ações reais.">
+    <meta name="twitter:image" content="/assets/brand/social.png">
+    <meta name="twitter:image:alt" content="Marca RIVALY">
+
+    <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
+
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -16,17 +42,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/avatar.css">
     <link rel="stylesheet" href="css/pages/achievements.css">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="protocol-warning" id="protocolWarning" hidden>
         <div class="protocol-warning__inner">
-            <h2>Run RIVALY from a local server</h2>
-            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <h2>Abra a RIVALY por um servidor local</h2>
+            <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
             <pre>python -m http.server 5500
-# then open http://localhost:5500</pre>
+# depois abra http://localhost:5500</pre>
         </div>
     </div>
     <script>
@@ -36,7 +63,7 @@
     </script>
 
     <div class="app">
-        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Navegação principal"></aside>
 
         <div class="main">
             <header class="topbar" data-topbar></header>
@@ -44,10 +71,9 @@
             <main class="page page-enter" id="main-content">
                 <div class="page__header">
                     <div>
-                        <h1 class="page__title">Achievements</h1>
+                        <h1 class="page__title">Conquistas</h1>
                         <p class="page__lede">
-                            Twenty badges, five rarities. Each one is tied to something you did.
-                            None are granted for free.
+                            Vinte medalhas, cinco raridades. Cada uma está ligada a algo que você fez. Nenhuma é dada de graça.
                         </p>
                     </div>
                 </div>
@@ -55,7 +81,7 @@
                 <!-- Progress -->
                 <section class="achv-progress card card--accented" aria-labelledby="progressTitle">
                     <div class="achv-progress__main">
-                        <p class="eyebrow" id="progressTitle">Collection progress</p>
+                        <p class="eyebrow" id="progressTitle">Progresso da coleção</p>
                         <p class="achv-progress__value">
                             <span class="numeric" id="unlockedCount">0</span><span class="achv-progress__total" id="totalCount">/20</span>
                         </p>
@@ -70,26 +96,26 @@
                 <!-- Next up -->
                 <section aria-labelledby="nextTitle">
                     <div class="section-head">
-                        <h2 class="section-head__title" id="nextTitle">Closest to unlocking</h2>
+                        <h2 class="section-head__title" id="nextTitle">Mais perto de desbloquear</h2>
                     </div>
                     <div id="nextUp"></div>
                 </section>
 
                 <!-- Filters -->
-                <section class="achv-toolbar" aria-label="Achievement filters">
-                    <div class="segmented" id="achvTabs" role="tablist" aria-label="Filter achievements"></div>
+                <section class="achv-toolbar" aria-label="Filtros de conquistas">
+                    <div class="segmented" id="achvTabs" role="tablist" aria-label="Filtrar conquistas"></div>
                 </section>
 
                 <!-- Grid -->
                 <section aria-labelledby="badgeGridTitle">
-                    <h2 class="visually-hidden" id="badgeGridTitle">All achievements</h2>
+                    <h2 class="visually-hidden" id="badgeGridTitle">Todas as conquistas</h2>
                     <div id="badgeGrid" aria-live="polite"></div>
                 </section>
             </main>
         </div>
     </div>
 
-    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+    <nav class="bottom-nav" data-bottom-nav aria-label="Navegação principal"></nav>
 
     <script type="module" src="js/achievements.js"></script>
 </body>

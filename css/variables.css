@@ -121,10 +121,10 @@
 
     /* ------------------------------------------------------------
        8. TYPOGRAPHY
-       Anton for impact, Chakra Petch for everything readable.
+       Jersey 10 for impact, Chakra Petch for everything readable.
        Both self-hosted — see css/fonts.css.
        ------------------------------------------------------------ */
-    --font-display: 'Anton', 'Arial Narrow', Impact, sans-serif;
+    --font-display: 'Jersey 10', 'Courier New', monospace;
     --font-sans: 'Chakra Petch', 'Segoe UI', -apple-system, BlinkMacSystemFont,
         Roboto, Arial, sans-serif;
     --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas,
@@ -147,13 +147,15 @@
     --font-semibold: 600;
     --font-bold: 700;
     --font-black: 700; /* Chakra Petch tops out at 700 */
-    --font-display-weight: 400; /* Anton ships a single weight */
+    --font-display-weight: 400; /* Jersey 10 ships a single weight */
 
     --leading-tight: 1.05;
     --leading-snug: 1.35;
     --leading-normal: 1.6;
     --leading-relaxed: 1.75;
 
+    /* Jersey 10 e pixelada: precisa respirar, nao apertar. */
+    --tracking-display: 0.045em;
     --tracking-tighter: -0.02em;
     --tracking-tight: -0.01em;
     --tracking-normal: 0;
@@ -297,4 +299,78 @@
 
     --shadow-md: 0 6px 18px -6px rgba(0, 0, 0, 0.16);
     --shadow-lg: 0 14px 34px -12px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================
+   TEMAS ALTERNATIVOS
+
+   A identidade inteira nasce de tres canais RGB, entao um tema
+   e apenas a redeclaracao desses canais mais as superficies que
+   nao derivam deles. Nenhuma regra de componente precisa mudar.
+   ============================================================ */
+
+/* ---------- MARROM + ROSA ---------- */
+[data-theme="marrom-rosa"] {
+    --rgb-primary: 255, 143, 184;   /* rosa */
+    --rgb-ink: 32, 21, 17;          /* marrom profundo */
+    --rgb-bone: 248, 240, 236;
+
+    --color-background-elevated: #2a1c17;
+    --color-surface: #33231d;
+    --color-surface-secondary: #3d2b23;
+    --color-surface-tertiary: #4a352b;
+    --color-surface-hover: #5a4134;
+    --color-surface-inset: #1a110d;
+
+    --color-text-secondary: #e6d6cf;
+    --color-text-muted: #b39a8f;
+    --color-text-faint: #97806f;
+
+    --color-primary-strong: #ffb3cd;
+    --color-primary-dim: #c96389;
+}
+
+/* ---------- AZUL BEBE + VERDE ---------- */
+[data-theme="azul-verde"] {
+    --rgb-primary: 159, 216, 245;   /* azul bebe */
+    --rgb-ink: 11, 31, 27;          /* verde escuro profundo */
+    --rgb-bone: 240, 248, 245;
+
+    --color-background-elevated: #102a24;
+    --color-surface: #14332c;
+    --color-surface-secondary: #1a3f36;
+    --color-surface-tertiary: #224e43;
+    --color-surface-hover: #2b6153;
+    --color-surface-inset: #081714;
+
+    --color-text-secondary: #d3e8e0;
+    --color-text-muted: #93b5aa;
+    --color-text-faint: #7a9c91;
+
+    --color-primary-strong: #c4e8fa;
+    --color-primary-dim: #5aa7c9;
+
+    /* o verde entra como acento de apoio */
+    --color-accent: #57d99a;
+}
+
+/* ---------- PRETO + VERMELHO ---------- */
+[data-theme="preto-vermelho"] {
+    --rgb-primary: 255, 46, 58;     /* vermelho */
+    --rgb-ink: 5, 5, 5;
+    --rgb-bone: 245, 245, 242;
+
+    --color-background-elevated: #0b0b0b;
+    --color-surface: #121010;
+    --color-surface-secondary: #1a1616;
+    --color-surface-tertiary: #241d1d;
+    --color-surface-hover: #2e2424;
+    --color-surface-inset: #020202;
+
+    --color-text-secondary: #c9c4c4;
+    --color-text-muted: #8d8585;
+    --color-text-faint: #7a7272;
+
+    --color-primary-strong: #ff6670;
+    --color-primary-dim: #b81f28;
 }

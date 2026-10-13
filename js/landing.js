@@ -21,42 +21,42 @@ bootPublic();
 
 const FEATURES = [
     {
-        icon: 'id', title: 'Gamer Passport',
-        text: 'Nickname, platforms, archetype, level, badges, reputation. One record that moves every time you use the product.',
-        tag: 'Core',
+        icon: 'id', title: 'Passaporte Gamer',
+        text: 'Apelido, plataformas, arquétipo, nível, medalhas e reputação. Um só registro que evolui sempre que você usa o produto.',
+        tag: 'Essencial',
     },
     {
-        icon: 'dna', title: 'Gamer DNA',
-        text: 'Ten questions, six behavioural attributes, one archetype. Same answers always give the same result.',
-        tag: 'Behavioural',
+        icon: 'dna', title: 'DNA Gamer',
+        text: 'Dez perguntas, seis atributos comportamentais e um arquétipo. As mesmas respostas sempre geram o mesmo resultado.',
+        tag: 'Comportamental',
     },
     {
-        icon: 'library', title: 'Game Library',
-        text: 'Add, rate, track hours. Move titles between Playing, Completed, Backlog, Dropped and Wishlist by drag or by keyboard.',
-        tag: 'Tracking',
+        icon: 'library', title: 'Biblioteca de Jogos',
+        text: 'Adicione jogos, avalie e registre horas. Mova títulos entre Jogando, Zerado, Fila, Abandonado e Lista de desejos arrastando ou usando o teclado.',
+        tag: 'Acompanhamento',
     },
     {
-        icon: 'users', title: 'Squad Finder',
-        text: 'Filter by game, rank, schedule, playstyle, role and voice. Watch the engine scan and rank the pool.',
+        icon: 'users', title: 'Buscar Squad',
+        text: 'Filtre por jogo, rank, horário, estilo de jogo, função e chat de voz. Acompanhe a análise e o ranqueamento dos jogadores.',
         tag: 'Social',
     },
     {
-        icon: 'target', title: 'Compatibility Engine',
-        text: 'Seven weighted factors, a 0-100 score, and the arithmetic behind every point gained or lost.',
-        tag: 'Algorithm',
+        icon: 'target', title: 'Motor de Compatibilidade',
+        text: 'Sete fatores ponderados, uma nota de 0 a 100 e a conta por trás de cada ponto ganho ou perdido.',
+        tag: 'Algoritmo',
     },
     {
-        icon: 'trophy', title: 'Progression',
-        text: 'XP for real actions. A scaling level curve, twenty badges across five rarities, one Gamer Score on top.',
-        tag: 'Gamified',
+        icon: 'trophy', title: 'Progressão',
+        text: 'XP por ações reais. Uma curva de níveis progressiva, vinte medalhas em cinco raridades e uma Pontuação Gamer no topo.',
+        tag: 'Gamificação',
     },
 ];
 
 const JOURNEY = [
-    { title: 'Create your account', text: 'Local, academic sign-up. Nothing leaves your browser.', icon: 'user' },
-    { title: 'Answer the DNA', text: 'Ten questions about how you play, not what you own.', icon: 'dna' },
-    { title: 'Get your archetype', text: 'Six attributes scored, one of eleven archetypes resolved.', icon: 'spark' },
-    { title: 'Build and match', text: 'Fill the library, earn XP, unlock badges, find your squad.', icon: 'layers' },
+    { title: 'Crie sua conta', text: 'Cadastro local e acadêmico. Nada sai do seu navegador.', icon: 'user' },
+    { title: 'Responda ao teste de DNA', text: 'Dez perguntas sobre como você joga, não sobre o que possui.', icon: 'dna' },
+    { title: 'Descubra seu arquétipo', text: 'Seis atributos recebem uma pontuação e definem um entre onze arquétipos.', icon: 'spark' },
+    { title: 'Construa e encontre', text: 'Preencha a biblioteca, ganhe XP, desbloqueie medalhas e encontre seu squad.', icon: 'layers' },
 ];
 
 function renderFeatures() {
@@ -94,13 +94,13 @@ function renderWeights() {
     if (!host) return;
 
     const labels = {
-        game: 'Game compatibility',
-        rank: 'Rank proximity',
-        schedule: 'Schedule overlap',
-        playstyle: 'Playstyle match',
-        role: 'Role complementarity',
-        communication: 'Communication',
-        reputation: 'Reputation',
+        game: 'Compatibilidade de jogo',
+        rank: 'Proximidade de rank',
+        schedule: 'Compatibilidade de horários',
+        playstyle: 'Compatibilidade de estilo de jogo',
+        role: 'Complementaridade de função',
+        communication: 'Comunicação',
+        reputation: 'Reputação',
     };
 
     host.innerHTML = Object.entries(WEIGHTS).map(([key, weight]) => `
@@ -114,14 +114,14 @@ function renderWeights() {
     `).join('') + `<p class="weights__total"><span>Total</span><span class="numeric">100%</span></p>`;
 }
 
-function renderRoadmap() {
+function renderRoteiro() {
     const host = document.getElementById('roadmapList');
     if (!host) return;
     host.innerHTML = ROADMAP.map((item, index) => `
         <article class="roadmap__item" data-reveal data-reveal-delay="${index * 70}">
             <div class="roadmap__head">
                 <h3 class="roadmap__title">${escapeHtml(item.title)}</h3>
-                <span class="tag ${item.status === 'next' ? 'tag--primary' : ''}">${item.status === 'next' ? 'Coming next' : 'Exploring'}</span>
+                <span class="tag ${item.status === 'next' ? 'tag--primary' : ''}">${item.status === 'next' ? 'Em breve' : 'Em estudo'}</span>
             </div>
             <p class="roadmap__text">${escapeHtml(item.text)}</p>
         </article>
@@ -137,7 +137,7 @@ function renderRoadmap() {
 const DEMO = {
     gamerId: 'HG-4927-XA',
     nickname: 'NOVA_7',
-    archetype: 'The Strategist',
+    archetype: 'O Estrategista',
     level: 27,
     avatarSeed: 'nova-7-demo',
     games: ['valorant', 'cs2', 'minecraft'],
@@ -245,7 +245,7 @@ async function playHeroSequence() {
 renderFeatures();
 renderJourney();
 renderWeights();
-renderRoadmap();
+renderRoteiro();
 initStickyHeader(document.getElementById('siteHeader'));
 
 // Re-run reveal + bar animation now that the sections exist.
@@ -265,3 +265,64 @@ document.addEventListener('click', (event) => {
     target.setAttribute('tabindex', '-1');
     target.focus({ preventScroll: true });
 });
+
+/* ============================================================
+   VITRINE DE CAPTURAS
+
+   Alterna entre prints reais do produto. Roda sozinha para quem
+   so passa o olho, e para assim que a pessoa assume o controle —
+   uma vitrine que continua girando enquanto voce le e irritante.
+   ============================================================ */
+const showcase = document.getElementById('showcase');
+
+if (showcase) {
+    const tabs = [...showcase.querySelectorAll('[data-shot]')];
+    const shots = [...showcase.querySelectorAll('[data-shot-img]')];
+    const label = showcase.querySelector('[data-shot-label]');
+
+    let index = 0;
+    let timer = null;
+
+    const show = (next) => {
+        index = (next + tabs.length) % tabs.length;
+        const id = tabs[index].dataset.shot;
+
+        tabs.forEach((tab) => {
+            const on = tab.dataset.shot === id;
+            tab.classList.toggle('is-active', on);
+            tab.setAttribute('aria-selected', String(on));
+        });
+        shots.forEach((img) => img.classList.toggle('is-active', img.dataset.shotImg === id));
+        if (label) label.textContent = tabs[index].textContent.trim();
+    };
+
+    const stop = () => {
+        if (timer) window.clearInterval(timer);
+        timer = null;
+    };
+
+    const start = () => {
+        // Rotacao automatica e movimento: quem pediu menos movimento nao recebe.
+        if (prefersReducedMotion() || timer) return;
+        timer = window.setInterval(() => show(index + 1), 4500);
+    };
+
+    tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => {
+            stop();
+            show(i);
+        });
+    });
+
+    showcase.addEventListener('mouseenter', stop);
+    showcase.addEventListener('focusin', stop);
+
+    // So gira quando esta visivel: rodar fora da tela gasta CPU a toa.
+    if ('IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => {
+            entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
+        }, { threshold: 0.35 }).observe(showcase);
+    } else {
+        start();
+    }
+}

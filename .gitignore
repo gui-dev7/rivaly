@@ -10,3 +10,12 @@ npm-debug.log*
 /oqueadicionar.md
 .DS_Store
 Thumbs.db
+
+# Editores e arquivos temporarios locais
+.vscode/
+.idea/
+*.tmp
+*.swp
+.cache/
+coverage/
+Desktop.ini

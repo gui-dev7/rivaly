@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" data-motion="full">
+<html lang="pt-BR" data-motion="full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sign in to RIVALY or create your Gamer Passport. Local academic demo — no server, no real authentication.">
+    <meta name="description" content="Entre na RIVALY ou crie seu Passaporte Gamer. Demonstração acadêmica local, sem servidor nem autenticação real.">
     <meta name="theme-color" content="#050505">
-    <title>Sign in — RIVALY</title>
+    <title>Entrar — RIVALY</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+    <link rel="icon" type="image/png" href="/assets/brand/icon-rivaly.png">
+
+    <!-- ============================================================
+         SOCIAL PREVIEW
+         A imagem 1200x630 e o formato que Facebook, WhatsApp, LinkedIn,
+         Discord e X usam no card. A quadrada serve ao atalho de tela
+         inicial no iOS.
+         ============================================================ -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="RIVALY">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Entrar na RIVALY">
+    <meta property="og:description" content="Entre na RIVALY ou crie seu Passaporte Gamer. Demonstração acadêmica local, sem servidor nem autenticação real.">
+    <meta property="og:image" content="/assets/brand/social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Marca RIVALY">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Entrar na RIVALY">
+    <meta name="twitter:description" content="Entre na RIVALY ou crie seu Passaporte Gamer. Demonstração acadêmica local, sem servidor nem autenticação real.">
+    <meta name="twitter:image" content="/assets/brand/social.png">
+    <meta name="twitter:image:alt" content="Marca RIVALY">
+
+    <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
+
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -16,17 +42,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/avatar.css">
     <link rel="stylesheet" href="css/pages/login.css">
 </head>
 <body class="auth-body">
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="protocol-warning" id="protocolWarning" hidden>
         <div class="protocol-warning__inner">
-            <h2>Run RIVALY from a local server</h2>
-            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <h2>Abra a RIVALY por um servidor local</h2>
+            <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
             <pre>python -m http.server 5500
-# then open http://localhost:5500</pre>
+# depois abra http://localhost:5500</pre>
         </div>
     </div>
     <script>
@@ -38,10 +65,8 @@
     <main class="auth" id="main-content">
         <!-- ---------- Narrative side ---------- -->
         <section class="auth__aside" aria-labelledby="authAsideTitle">
-            <a class="sidebar__brand auth__brand" href="index.html" aria-label="Back to RIVALY home">
-                <span class="brand-mark" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z"/><path d="M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z"/></svg>
-                </span>
+            <a class="sidebar__brand auth__brand" href="index.html" aria-label="Voltar para a página inicial da RIVALY">
+                <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
                 <span class="brand-name">
                     <span class="brand-name__top">RIVALY</span>
                     <span class="brand-name__sub">Rival + Ally</span>
@@ -50,152 +75,148 @@
 
             <div class="auth__aside-body">
                 <h1 class="auth__aside-title" id="authAsideTitle">
-                    Two minutes to your<br>
-                    <span class="text-mark">Gamer Passport</span>
+                    Dois minutos até seu<br>
+                    <span class="text-mark">Passaporte Gamer</span>
                 </h1>
                 <p class="auth__aside-text">
-                    Create an account, answer the DNA questionnaire, get your archetype.
-                    Every game and every match you log after that sharpens it.
+                    Crie uma conta, responda ao questionário de DNA e receba seu arquétipo. Cada jogo e cada match que você registra depois refinam o resultado.
                 </p>
 
                 <ol class="auth__steps">
-                    <li><span class="numeric">01</span> Create your account</li>
-                    <li><span class="numeric">02</span> Set up your profile</li>
-                    <li><span class="numeric">03</span> Answer the Gamer DNA</li>
-                    <li><span class="numeric">04</span> Get your Passport</li>
+                    <li><span class="numeric">01</span> Crie sua conta</li>
+                    <li><span class="numeric">02</span> Configure seu perfil</li>
+                    <li><span class="numeric">03</span> Responda o DNA Gamer</li>
+                    <li><span class="numeric">04</span> Receba seu Passaporte</li>
                 </ol>
             </div>
 
             <p class="auth__aside-foot">
-                RIVALY V1. HTML5, CSS3 and vanilla JavaScript. No frameworks.
+                RIVALY V1. HTML5, CSS3 e JavaScript puro. Sem frameworks.
             </p>
         </section>
 
         <!-- ---------- Form side ---------- -->
         <section class="auth__panel" aria-labelledby="authFormTitle">
             <div class="auth__card">
-                <div class="auth__tabs" role="tablist" aria-label="Authentication mode">
-                    <button type="button" class="auth__tab" role="tab" id="tabSignin" aria-selected="true" aria-controls="panelSignin" data-tab="signin">Sign in</button>
-                    <button type="button" class="auth__tab" role="tab" id="tabCreate" aria-selected="false" aria-controls="panelCreate" data-tab="create" tabindex="-1">Create passport</button>
+                <div class="auth__tabs" role="tablist" aria-label="Modo de autenticação">
+                    <button type="button" class="auth__tab" role="tab" id="tabSignin" aria-selected="true" aria-controls="panelSignin" data-tab="signin">Entrar</button>
+                    <button type="button" class="auth__tab" role="tab" id="tabCreate" aria-selected="false" aria-controls="panelCreate" data-tab="create" tabindex="-1">Criar passaporte</button>
                     <span class="auth__tab-indicator" aria-hidden="true"></span>
                 </div>
 
-                <h2 class="auth__title" id="authFormTitle">Welcome back</h2>
-                <p class="auth__subtitle" id="authSubtitle">Sign back into your Gamer Passport.</p>
+                <h2 class="auth__title" id="authFormTitle">Bem-vindo de volta</h2>
+                <p class="auth__subtitle" id="authSubtitle">Volte para o seu Passaporte Gamer.</p>
 
                 <!-- ---------- SIGN IN ---------- -->
                 <form class="auth__form" id="panelSignin" role="tabpanel" aria-labelledby="tabSignin" novalidate>
                     <div class="field">
-                        <label class="field__label" for="signinEmail">Email</label>
+                        <label class="field__label" for="signinEmail">E-mail</label>
                         <div class="input-group">
                             <span class="input-group__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
                             </span>
                             <input class="input" type="email" id="signinEmail" name="email" autocomplete="email"
-                                   placeholder="you@example.com" required aria-describedby="signinEmailError">
+                                   placeholder="voce@exemplo.com" required aria-describedby="signinEmailError">
                         </div>
                         <p class="field__error" id="signinEmailError" role="alert"></p>
                     </div>
 
                     <div class="field">
-                        <label class="field__label" for="signinPassword">Password</label>
+                        <label class="field__label" for="signinPassword">Senha</label>
                         <div class="input-group">
                             <span class="input-group__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>
                             </span>
                             <input class="input" type="password" id="signinPassword" name="password"
-                                   autocomplete="current-password" placeholder="Your demo password" required
+                                   autocomplete="current-password" placeholder="Sua senha de demonstração" required
                                    aria-describedby="signinPasswordError">
-                            <button type="button" class="auth__reveal" data-reveal-password="signinPassword" aria-label="Show password" aria-pressed="false"></button>
+                            <button type="button" class="auth__reveal" data-reveal-password="signinPassword" aria-label="Mostrar senha" aria-pressed="false"></button>
                         </div>
                         <p class="field__error" id="signinPasswordError" role="alert"></p>
                     </div>
 
-                    <button type="submit" class="btn btn--primary btn--block btn--lg" id="signinSubmit">Sign in</button>
+                    <button type="submit" class="btn btn--primary btn--block btn--lg" id="signinSubmit">Entrar</button>
                     <p class="auth__switch">
-                        No passport yet?
-                        <button type="button" class="link" data-goto-tab="create">Create one</button>
+                        Ainda sem passaporte?
+                        <button type="button" class="link" data-goto-tab="create">Criar uma</button>
                     </p>
                 </form>
 
                 <!-- ---------- Demo entry point ---------- -->
                 <div class="auth__demo">
-                    <p class="divider divider--labelled">or</p>
+                    <p class="divider divider--labelled">ou</p>
                     <button type="button" class="btn btn--outline btn--block" id="demoLoginBtn">
                         <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5.5 18.5 12 8 18.5z"/></svg>
-                        Enter with a demo account
+                        Entrar com conta de demonstração
                     </button>
                     <p class="auth__demo-hint">
-                        Builds a finished Passport (DNA, 14 games, saved squad, badges) and drops you
-                        straight into the dashboard. Replaces any local data.
+                        Monta um Passaporte completo (DNA, 14 jogos, squad salvo, medalhas) e leva você direto ao Início. Substitui os dados locais existentes.
                     </p>
                 </div>
 
                 <!-- ---------- CREATE ---------- -->
                 <form class="auth__form" id="panelCreate" role="tabpanel" aria-labelledby="tabCreate" novalidate hidden>
                     <div class="field">
-                        <label class="field__label" for="createNickname">Nickname</label>
+                        <label class="field__label" for="createNickname">Apelido</label>
                         <div class="input-group">
                             <span class="input-group__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.5 3.5-5.5 7-5.5s6.2 2 7 5.5"/></svg>
                             </span>
                             <input class="input" type="text" id="createNickname" name="nickname" autocomplete="nickname"
-                                   placeholder="How should we call you?" required minlength="3" maxlength="18"
+                                   placeholder="Como devemos te chamar?" required minlength="3" maxlength="18"
                                    aria-describedby="createNicknameError createNicknameHint">
                         </div>
-                        <p class="field__hint" id="createNicknameHint">3–18 characters. This becomes your public identity.</p>
+                        <p class="field__hint" id="createNicknameHint">3 a 18 caracteres. Esse apelido será sua identidade pública.</p>
                         <p class="field__error" id="createNicknameError" role="alert"></p>
                     </div>
 
                     <div class="field">
-                        <label class="field__label" for="createEmail">Email</label>
+                        <label class="field__label" for="createEmail">E-mail</label>
                         <div class="input-group">
                             <span class="input-group__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
                             </span>
                             <input class="input" type="email" id="createEmail" name="email" autocomplete="email"
-                                   placeholder="you@example.com" required aria-describedby="createEmailError">
+                                   placeholder="voce@exemplo.com" required aria-describedby="createEmailError">
                         </div>
                         <p class="field__error" id="createEmailError" role="alert"></p>
                     </div>
 
                     <div class="field">
-                        <label class="field__label" for="createPassword">Demo password</label>
+                        <label class="field__label" for="createPassword">Senha de demonstração</label>
                         <div class="input-group">
                             <span class="input-group__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>
                             </span>
                             <input class="input" type="password" id="createPassword" name="password"
-                                   autocomplete="new-password" placeholder="At least 6 characters" required minlength="6"
+                                   autocomplete="new-password" placeholder="Pelo menos 6 caracteres" required minlength="6"
                                    aria-describedby="createPasswordError createPasswordHint">
-                            <button type="button" class="auth__reveal" data-reveal-password="createPassword" aria-label="Show password" aria-pressed="false"></button>
+                            <button type="button" class="auth__reveal" data-reveal-password="createPassword" aria-label="Mostrar senha" aria-pressed="false"></button>
                         </div>
-                        <p class="field__hint" id="createPasswordHint">Do not reuse a real password — see the notice below.</p>
+                        <p class="field__hint" id="createPasswordHint">Não reutilize uma senha real — veja o aviso abaixo.</p>
                         <p class="field__error" id="createPasswordError" role="alert"></p>
                     </div>
 
-                    <button type="submit" class="btn btn--primary btn--block btn--lg" id="createSubmit">Create my Gamer Passport</button>
+                    <button type="submit" class="btn btn--primary btn--block btn--lg" id="createSubmit">Criar meu Passaporte Gamer</button>
                     <p class="auth__switch">
-                        Already have one?
-                        <button type="button" class="link" data-goto-tab="signin">Sign in</button>
+                        Já tem uma?
+                        <button type="button" class="link" data-goto-tab="signin">Entrar</button>
                     </p>
                 </form>
 
                 <!-- ---------- Honest disclaimer ---------- -->
-                <aside class="auth__notice" aria-label="Important notice about this demo">
+                <aside class="auth__notice" aria-label="Aviso importante sobre esta demonstração">
                     <span class="auth__notice-icon" aria-hidden="true">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 21 19.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"/></svg>
                     </span>
                     <p>
-                        <strong>Academic simulation.</strong> There is no server and no real authentication.
-                        Your account lives only in this browser's local storage and can be read by anyone with
-                        access to this device. Use a throwaway password.
+                        <strong>Simulação acadêmica.</strong> Não existe servidor nem autenticação real. Sua conta vive apenas no armazenamento local deste navegador e pode ser lida por qualquer pessoa com acesso a este dispositivo. Use uma senha descartável.
                     </p>
                 </aside>
             </div>
 
             <p class="auth__back">
-                <a class="link" href="index.html">← Back to the landing page</a>
+                <a class="link" href="index.html">← Voltar para a página inicial</a>
             </p>
         </section>
     </main>

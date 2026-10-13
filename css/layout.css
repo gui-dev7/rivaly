@@ -59,13 +59,18 @@
     height: 32px;
     flex-shrink: 0;
     border-radius: var(--radius-sm);
-    background: var(--color-primary);
-    color: var(--color-text-inverse);
+    overflow: hidden;
 }
 
 .brand-mark svg {
     width: 18px;
     height: 18px;
+}
+
+.brand-mark__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .brand-name {
@@ -373,7 +378,7 @@
 .page__title {
     font-size: var(--text-2xl);
     font-weight: var(--font-bold);
-    letter-spacing: var(--tracking-tighter);
+    letter-spacing: var(--tracking-display);
 }
 
 .page__lede {
@@ -551,6 +556,16 @@
     padding: var(--space-2xl) var(--space-xl);
     border-top: 1px solid var(--color-border-soft);
     background: var(--color-background-elevated);
+}
+
+/* A barra inferior e fixa, e o rodape institucional e injetado FORA do
+   `.page` — que ja reserva espaco para ela. Sem esta folga, as redes
+   sociais e a linha legal ficam permanentemente atras da barra, por mais
+   que se role. */
+@media (max-width: 860px) {
+    .site-footer {
+        padding-bottom: calc(var(--bottomnav-height) + env(safe-area-inset-bottom, 0px) + var(--space-lg));
+    }
 }
 
 .site-footer__inner {

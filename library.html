@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" data-motion="full">
+<html lang="pt-BR" data-motion="full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Your RIVALY library — add, rate, track hours and move games between Playing, Completed, Backlog, Dropped and Wishlist.">
+    <meta name="description" content="Sua biblioteca da RIVALY — adicione e avalie jogos, registre horas e mova títulos entre Jogando, Zerado, Fila, Abandonado e Lista de desejos.">
     <meta name="theme-color" content="#050505">
-    <title>Library — RIVALY</title>
+    <title>Biblioteca — RIVALY</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+    <link rel="icon" type="image/png" href="/assets/brand/icon-rivaly.png">
+
+    <!-- ============================================================
+         SOCIAL PREVIEW
+         A imagem 1200x630 e o formato que Facebook, WhatsApp, LinkedIn,
+         Discord e X usam no card. A quadrada serve ao atalho de tela
+         inicial no iOS.
+         ============================================================ -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="RIVALY">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Biblioteca de Jogos — RIVALY">
+    <meta property="og:description" content="Sua biblioteca da RIVALY — adicione e avalie jogos, registre horas e mova títulos entre Jogando, Zerado, Fila, Abandonado e Lista de desejos.">
+    <meta property="og:image" content="/assets/brand/social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Marca RIVALY">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Biblioteca de Jogos — RIVALY">
+    <meta name="twitter:description" content="Sua biblioteca da RIVALY — adicione e avalie jogos, registre horas e mova títulos entre Jogando, Zerado, Fila, Abandonado e Lista de desejos.">
+    <meta name="twitter:image" content="/assets/brand/social.png">
+    <meta name="twitter:image:alt" content="Marca RIVALY">
+
+    <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
+
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -16,17 +42,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/avatar.css">
     <link rel="stylesheet" href="css/pages/library.css">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="protocol-warning" id="protocolWarning" hidden>
         <div class="protocol-warning__inner">
-            <h2>Run RIVALY from a local server</h2>
-            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <h2>Abra a RIVALY por um servidor local</h2>
+            <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
             <pre>python -m http.server 5500
-# then open http://localhost:5500</pre>
+# depois abra http://localhost:5500</pre>
         </div>
     </div>
     <script>
@@ -36,7 +63,7 @@
     </script>
 
     <div class="app">
-        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Navegação principal"></aside>
 
         <div class="main">
             <header class="topbar" data-topbar></header>
@@ -44,16 +71,15 @@
             <main class="page page-enter" id="main-content">
                 <div class="page__header">
                     <div>
-                        <h1 class="page__title">Game Library</h1>
+                        <h1 class="page__title">Biblioteca de Jogos</h1>
                         <p class="page__lede">
-                            Everything you have played, are playing, or plan to. Genres, platforms,
-                            hours and completion all feed your Passport.
+                            Tudo que você já jogou, está jogando ou pretende jogar. Gêneros, plataformas, horas e conclusão alimentam seu Passaporte.
                         </p>
                     </div>
                     <div class="page__actions">
                         <button type="button" class="btn btn--primary" id="addGameBtn">
                             <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                            Add game
+                            Adicionar jogo
                         </button>
                     </div>
                 </div>
@@ -62,44 +88,44 @@
                 <div class="grid grid--stats stagger" id="librarySummary"></div>
 
                 <!-- Toolbar: filter tabs double as drag-and-drop targets -->
-                <section class="library-toolbar" aria-label="Library filters">
-                    <div class="segmented" id="statusTabs" role="tablist" aria-label="Filter by status"></div>
+                <section class="library-toolbar" aria-label="Filtros da biblioteca">
+                    <div class="segmented" id="statusTabs" role="tablist" aria-label="Filtrar por status"></div>
 
                     <div class="library-toolbar__controls">
                         <div class="input-group library-search">
                             <span class="input-group__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg>
                             </span>
-                            <input class="input" type="search" id="librarySearch" placeholder="Search your library…" aria-label="Search your library">
+                            <input class="input" type="search" id="librarySearch" placeholder="Buscar na sua biblioteca…" aria-label="Buscar na sua biblioteca">
                         </div>
 
                         <div class="select-wrap library-sort">
-                            <label class="visually-hidden" for="librarySort">Sort library</label>
+                            <label class="visually-hidden" for="librarySort">Ordenar biblioteca</label>
                             <select class="select" id="librarySort">
-                                <option value="recent">Recently updated</option>
-                                <option value="title">Title A–Z</option>
-                                <option value="hours">Most hours</option>
-                                <option value="rating">Highest rated</option>
-                                <option value="added">Recently added</option>
+                                <option value="recent">Atualizados recentemente</option>
+                                <option value="title">Título A–Z</option>
+                                <option value="hours">Mais horas</option>
+                                <option value="rating">Mais bem avaliados</option>
+                                <option value="added">Adicionados recentemente</option>
                             </select>
                         </div>
                     </div>
                 </section>
 
                 <p class="library-hint" id="libraryHint">
-                    Tip: drag a card onto a status tab to move it, or use the edit button — both work.
+                    Dica: arraste um card para uma aba de status para movê-lo ou use o botão de editar — os dois funcionam.
                 </p>
 
                 <!-- Grid -->
                 <section aria-labelledby="libraryGridTitle">
-                    <h2 class="visually-hidden" id="libraryGridTitle">Your games</h2>
+                    <h2 class="visually-hidden" id="libraryGridTitle">Seus jogos</h2>
                     <div id="libraryGrid" aria-live="polite"></div>
                 </section>
             </main>
         </div>
     </div>
 
-    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+    <nav class="bottom-nav" data-bottom-nav aria-label="Navegação principal"></nav>
 
     <script type="module" src="js/library.js"></script>
 </body>

@@ -1,0 +1,206 @@
+/* ============================================================
+   PAGINA — DESCOBRIR (GameDB)
+   ============================================================ */
+
+.discover-search {
+    margin-bottom: var(--space-lg);
+}
+
+.discover-search__status {
+    margin-top: var(--space-xs);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.discover-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.discover-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    overflow: hidden;
+}
+
+.discover-card__cover {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 4;
+    background: var(--color-surface-inset);
+    overflow: hidden;
+}
+
+/* Fica atras da imagem: se a capa falhar ou nem existir, as iniciais
+   continuam la sem nenhum salto de layout. */
+.discover-card__initials {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    color: var(--color-text-faint);
+    letter-spacing: var(--tracking-display);
+}
+
+.discover-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.discover-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-sm);
+    min-width: 0;
+}
+
+.discover-card__name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-snug);
+    overflow-wrap: anywhere;
+}
+
+.discover-card__meta,
+.discover-card__genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.discover-card__genres {
+    color: var(--color-text-faint);
+}
+
+.discover-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: var(--space-2xs);
+}
+
+/* ---------- SKELETON ---------- */
+.discover-card--skeleton .discover-card__body {
+    gap: 6px;
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--color-surface-secondary) 25%,
+        var(--color-surface-tertiary) 37%,
+        var(--color-surface-secondary) 63%
+    );
+    background-size: 400% 100%;
+    animation: skeleton-sweep 1.4s ease infinite;
+    border-radius: var(--radius-xs);
+}
+
+.discover-card--skeleton .discover-card__cover {
+    aspect-ratio: 3 / 4;
+}
+
+.skeleton--line {
+    display: block;
+    height: 10px;
+}
+
+.skeleton--short {
+    width: 60%;
+}
+
+@keyframes skeleton-sweep {
+    0%   { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+[data-motion="reduced"] .skeleton {
+    animation: none;
+}
+
+/* ---------- REGISTROS SALVOS ---------- */
+.discover-saved__list {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-sm);
+}
+
+.discover-saved__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) 0;
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.discover-saved__row:last-child {
+    border-bottom: none;
+}
+
+.discover-saved__name {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+    .discover-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: var(--space-sm);
+    }
+}
+
+/* Acoes compactas: com btn--sm os tres rotulos empilhavam e deixavam os
+   cards da grade com alturas diferentes. */
+.discover-card__actions .btn {
+    flex: 1 1 auto;
+    padding: 4px 8px;
+    font-size: 10px;
+    letter-spacing: var(--tracking-wide);
+}
+
+.discover-card {
+    height: 100%;
+}
+
+.discover-card__body {
+    flex: 1;
+}
+
+.discover-card__actions {
+    margin-top: auto;
+    padding-top: var(--space-2xs);
+}
+
+/* Ja consta na Biblioteca: o card continua clicavel (da para trocar o
+   status), mas para de parecer uma descoberta nova. */
+.discover-card.is-owned {
+    border-color: var(--color-primary);
+}
+
+.discover-card__owned {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-size: 9px;
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}

@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" data-motion="full">
+<html lang="pt-BR" data-motion="full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Find teammates with the RIVALY Compatibility Engine — seven weighted factors, fully transparent scoring.">
+    <meta name="description" content="Encontre companheiros com o Motor de Compatibilidade da RIVALY — sete fatores ponderados e pontuação totalmente transparente.">
     <meta name="theme-color" content="#050505">
-    <title>Squad Finder — RIVALY</title>
+    <title>Buscar Squad — RIVALY</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+    <link rel="icon" type="image/png" href="/assets/brand/icon-rivaly.png">
+
+    <!-- ============================================================
+         SOCIAL PREVIEW
+         A imagem 1200x630 e o formato que Facebook, WhatsApp, LinkedIn,
+         Discord e X usam no card. A quadrada serve ao atalho de tela
+         inicial no iOS.
+         ============================================================ -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="RIVALY">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Buscar Squad — RIVALY">
+    <meta property="og:description" content="Encontre companheiros com o Motor de Compatibilidade da RIVALY — sete fatores ponderados e pontuação totalmente transparente.">
+    <meta property="og:image" content="/assets/brand/social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Marca RIVALY">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Buscar Squad — RIVALY">
+    <meta name="twitter:description" content="Encontre companheiros com o Motor de Compatibilidade da RIVALY — sete fatores ponderados e pontuação totalmente transparente.">
+    <meta name="twitter:image" content="/assets/brand/social.png">
+    <meta name="twitter:image:alt" content="Marca RIVALY">
+
+    <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
+
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -16,17 +42,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/avatar.css">
     <link rel="stylesheet" href="css/pages/squads.css">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="protocol-warning" id="protocolWarning" hidden>
         <div class="protocol-warning__inner">
-            <h2>Run RIVALY from a local server</h2>
-            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <h2>Abra a RIVALY por um servidor local</h2>
+            <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
             <pre>python -m http.server 5500
-# then open http://localhost:5500</pre>
+# depois abra http://localhost:5500</pre>
         </div>
     </div>
     <script>
@@ -36,7 +63,7 @@
     </script>
 
     <div class="app">
-        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Navegação principal"></aside>
 
         <div class="main">
             <header class="topbar" data-topbar></header>
@@ -44,10 +71,9 @@
             <main class="page page-enter" id="main-content">
                 <div class="page__header">
                     <div>
-                        <h1 class="page__title">Find your squad</h1>
+                        <h1 class="page__title">Encontre seu squad</h1>
                         <p class="page__lede">
-                            Seven weighted factors, one score, full breakdown. No randomness:
-                            run the same search twice and you get the same ranking.
+                            Sete fatores ponderados, uma nota, detalhamento completo. Sem aleatoriedade: rode a mesma busca duas vezes e o ranking é o mesmo.
                         </p>
                     </div>
                 </div>
@@ -56,17 +82,17 @@
                     <!-- ---------- Search ---------- -->
                     <section class="squads__search" aria-labelledby="searchTitle">
                         <form class="card card--accented squad-form" id="squadForm" novalidate>
-                            <h2 class="card__title" id="searchTitle">Search filters</h2>
+                            <h2 class="card__title" id="searchTitle">Filtros de busca</h2>
 
                             <div class="field">
-                                <label class="field__label" for="filterGame">Game</label>
+                                <label class="field__label" for="filterGame">Jogo</label>
                                 <div class="select-wrap">
                                     <select class="select" id="filterGame" required></select>
                                 </div>
                             </div>
 
                             <div class="field">
-                                <label class="field__label" for="filterPlaystyle">Playstyle</label>
+                                <label class="field__label" for="filterPlaystyle">Estilo de jogo</label>
                                 <div class="select-wrap">
                                     <select class="select" id="filterPlaystyle"></select>
                                 </div>
@@ -80,38 +106,38 @@
                             </div>
 
                             <div class="field">
-                                <label class="field__label" for="filterSchedule">Schedule</label>
+                                <label class="field__label" for="filterSchedule">Horário</label>
                                 <div class="select-wrap">
                                     <select class="select" id="filterSchedule"></select>
                                 </div>
                             </div>
 
                             <div class="field">
-                                <label class="field__label" for="filterRole">Role you need</label>
+                                <label class="field__label" for="filterRole">Função de que você precisa</label>
                                 <div class="select-wrap">
                                     <select class="select" id="filterRole"></select>
                                 </div>
-                                <p class="field__hint">Leave on “Complement my Passport” to let the engine use your own roles.</p>
+                                <p class="field__hint">Deixe em “Complementar meu Passaporte” para o motor usar suas próprias funções.</p>
                             </div>
 
                             <div class="field">
-                                <label class="field__label" for="filterVoice">Voice chat</label>
+                                <label class="field__label" for="filterVoice">Chat de voz</label>
                                 <div class="select-wrap">
                                     <select class="select" id="filterVoice">
-                                        <option value="true">Required</option>
-                                        <option value="false">Text only</option>
-                                        <option value="any">Doesn't matter</option>
+                                        <option value="true">Obrigatório</option>
+                                        <option value="false">Só texto</option>
+                                        <option value="any">Indiferente</option>
                                     </select>
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn--primary btn--block btn--lg" id="findBtn">
-                                Find players
+                                Buscar jogadores
                             </button>
 
                             <p class="squad-form__note">
-                                Matching runs entirely in your browser against a demo pool of
-                                <strong id="poolSize">26</strong> simulated players.
+                                A busca é processada inteiramente no seu navegador em um grupo de
+                                <strong id="poolSize">26</strong> jogadores simulados.
                             </p>
                         </form>
                     </section>
@@ -119,7 +145,7 @@
                     <!-- ---------- Results ---------- -->
                     <section class="squads__results" aria-labelledby="resultsTitle" aria-live="polite">
                         <div class="section-head">
-                            <h2 class="section-head__title" id="resultsTitle">Results</h2>
+                            <h2 class="section-head__title" id="resultsTitle">Resultados</h2>
                             <span class="section-head__meta text-muted" id="resultsMeta"></span>
                         </div>
                         <div id="resultsHost"></div>
@@ -129,8 +155,8 @@
                 <!-- ---------- Saved squad ---------- -->
                 <section class="squads__saved" aria-labelledby="savedTitle">
                     <div class="section-head">
-                        <h2 class="section-head__title" id="savedTitle">Your squad</h2>
-                        <button type="button" class="link" id="clearSquadBtn" hidden>Clear squad</button>
+                        <h2 class="section-head__title" id="savedTitle">Seu squad</h2>
+                        <button type="button" class="link" id="clearSquadBtn" hidden>Limpar squad</button>
                     </div>
                     <div id="savedHost"></div>
                 </section>
@@ -138,7 +164,7 @@
         </div>
     </div>
 
-    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+    <nav class="bottom-nav" data-bottom-nav aria-label="Navegação principal"></nav>
 
     <script type="module" src="js/squads.js"></script>
 </body>

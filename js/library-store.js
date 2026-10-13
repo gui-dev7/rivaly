@@ -1,5 +1,5 @@
 /**
- * library-store.js — CRUD for the Game Library.
+ * library-store.js — CRUD for the Biblioteca de Jogos.
  *
  * Pure data layer: no DOM, no toasts, no XP. The page controller
  * (library.js) and the onboarding flow both build on top of it, which
@@ -11,6 +11,7 @@
 
 import { getLibrary, saveLibrary } from './storage.js';
 import { getGameById, LIBRARY_STATUSES } from './data.js';
+import { getExternalGame, saveExternalGame, isExternalId, pruneExternalGames } from './external-games.js';
 
 const VALID_STATUSES = LIBRARY_STATUSES.map((status) => status.id);
 
@@ -25,9 +26,17 @@ export const findEntry = (entryId) =>
 export const hasGame = (gameId) =>
     getLibrary().some((entry) => entry.gameId === gameId);
 
+/**
+ * Resolve um gameId no catalogo curado ou no catalogo externo (GameDB).
+ * Sem isto, uma entrada vinda do Descobrir nao teria titulo nem capa.
+ */
+export function resolveGame(gameId) {
+    return getGameById(gameId) ?? (isExternalId(gameId) ? getExternalGame(gameId) : null);
+}
+
 /** Joins an entry with its catalogue record for rendering. */
 export function hydrate(entry) {
-    return { ...entry, game: getGameById(entry.gameId) };
+    return { ...entry, game: resolveGame(entry.gameId) };
 }
 
 export const listHydrated = () => getLibrary().map(hydrate).filter((entry) => entry.game);
@@ -35,10 +44,14 @@ export const listHydrated = () => getLibrary().map(hydrate).filter((entry) => en
 /**
  * @returns {{ok:boolean, entry?:object, reason?:string}}
  */
-export function addEntry({ gameId, status = 'backlog', platform, hours = 0, rating = 0, note = '' }) {
-    const game = getGameById(gameId);
-    if (!game) return { ok: false, reason: 'Unknown game.' };
-    if (hasGame(gameId)) return { ok: false, reason: `${game.title} is already in your Library.` };
+export function addEntry({ gameId, status = 'backlog', platform, hours = 0, rating = 0, note = '', game: external = null }) {
+    // Um jogo do Descobrir chega com o proprio registro: guardamos antes de
+    // resolver, senao a entrada apontaria para um catalogo que nao o conhece.
+    if (external && isExternalId(gameId)) saveExternalGame(external);
+
+    const game = resolveGame(gameId);
+    if (!game) return { ok: false, reason: 'Jogo desconhecido.' };
+    if (hasGame(gameId)) return { ok: false, reason: `${game.title} já está na sua Biblioteca.` };
 
     const entry = {
         id: `lib-${Date.now().toString(36)}-${Math.abs(gameId.length * 31 + getLibrary().length)}`,
@@ -94,6 +107,11 @@ export function removeEntry(entryId) {
     const target = entries.find((entry) => entry.id === entryId);
     if (!target) return { ok: false };
     saveLibrary(entries.filter((entry) => entry.id !== entryId));
+
+    // Sem isto o catalogo externo acumularia registros de jogos que a
+    // Biblioteca nao referencia mais.
+    pruneExternalGames(getLibrary().filter((e) => isExternalId(e.gameId)).map((e) => e.gameId));
+
     return { ok: true, entry: target };
 }
 

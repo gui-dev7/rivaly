@@ -52,11 +52,11 @@ const DEMO_SQUAD = [
 ];
 
 const DEMO_ACTIVITY = [
-    ['library', 'Added Counter-Strike 2 to the Library'],
-    ['squad', 'Found 99% compatibility with Aisha'],
-    ['achievement', 'Unlocked Perfect Match'],
-    ['library', 'Completed Elden Ring'],
-    ['passport', 'Updated the Gamer Passport'],
+    ['library', 'Adicionou Counter-Strike 2 à Biblioteca'],
+    ['squad', 'Encontrou 99% de compatibilidade com Aisha'],
+    ['achievement', 'Desbloqueou Match Perfeito'],
+    ['library', 'Zerou Elden Ring'],
+    ['passport', 'Atualizou o Passaporte Gamer'],
 ];
 
 /**
@@ -66,7 +66,7 @@ const DEMO_ACTIVITY = [
 export function seedDemoAccount() {
     resetAll({ keepAccounts: true });
 
-    /* --- Account --- */
+    /* --- Conta --- */
     const existing = getAccounts().find((account) => account.email === DEMO_EMAIL);
     const account = existing ?? {
         id: 'acc-demo',
@@ -87,7 +87,8 @@ export function seedDemoAccount() {
         rank: 'Diamond',
         region: 'South America',
         age: 24,
-        bio: 'Support main, night player, allergic to solo queue.',
+        bio: 'Main de suporte, jogo à noite e sou alérgico a solo queue.',
+        avatar: { type: 'dicebear', style: 'pixel-art', seed: 'rival-007' },
         platforms: ['pc', 'playstation'],
         languages: ['pt', 'en'],
         favoriteGenres: ['FPS', 'Strategy', 'RPG', 'Battle Royale'],

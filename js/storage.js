@@ -22,6 +22,7 @@ export const KEYS = {
     activity: `${NAMESPACE}:activity`,
     squads: `${NAMESPACE}:squads`,
     settings: `${NAMESPACE}:settings`,
+    externalGames: `${NAMESPACE}:externalGames`,
 };
 
 /** Cheap availability probe — Safari Private Mode throws on setItem. */
@@ -113,15 +114,15 @@ export const getSession = () => read(KEYS.session, null);
 export const saveSession = (session) => write(KEYS.session, session);
 export const clearSession = () => remove(KEYS.session);
 
-/* --- Gamer Passport (the user profile) --- */
+/* --- Passaporte Gamer (the user profile) --- */
 export const getUser = () => read(KEYS.user, null);
 export const saveUser = (user) => write(KEYS.user, user);
 
-/* --- Game Library --- */
+/* --- Biblioteca de Jogos --- */
 export const getLibrary = () => read(KEYS.library, []);
 export const saveLibrary = (library) => write(KEYS.library, library);
 
-/* --- Achievements: array of { id, unlockedAt, context } --- */
+/* --- Conquistas: array of { id, unlockedAt, context } --- */
 export const getAchievements = () => read(KEYS.achievements, []);
 export const saveAchievements = (achievements) => write(KEYS.achievements, achievements);
 

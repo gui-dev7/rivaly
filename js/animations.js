@@ -135,7 +135,7 @@ export function initScrollReveal(scope = document) {
 
 /**
  * Runs an ordered list of steps with a pause between each.
- * Used by the Gamer DNA reveal and the Squad Finder scan.
+ * Used by the DNA Gamer reveal and the Buscar Squad scan.
  *
  * @param {Array<{run: Function, wait?: number}>} steps
  * @param {{ signal?: AbortSignal }} [options]

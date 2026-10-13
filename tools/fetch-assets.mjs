@@ -1,21 +1,4 @@
 /**
- * tools/fetch-assets.mjs — DEV TOOL, run once. Not part of the product.
- *
- * Downloads the artwork for every game in the catalogue and writes
- * optimised WebP into public/assets/. The application never fetches anything at
- * runtime: it loads these local files, exactly like the fonts.
- *
- * Sources, in order of preference per game (declared in js/data.js):
- *   steamAppId  -> Steam CDN library_600x900.jpg + header.jpg
- *   coverUrl    -> Wikipedia box art (console/PC exclusives)
- *   logoUrl     -> Wikimedia Commons wordmark, composited onto the game's
- *                  own procedural gradient (titles with no box art anywhere)
- *
- * Usage:
- *   node tools/fetch-assets.mjs           # skips files that already exist
- *   node tools/fetch-assets.mjs --force   # re-downloads everything
- *
- * Requires Python + Pillow for the resize/composite step.
  */
 
 import { mkdirSync, existsSync, writeFileSync, readFileSync, statSync, rmSync } from 'node:fs';

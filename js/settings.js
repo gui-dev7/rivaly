@@ -14,12 +14,13 @@ import { currentAccount, logout } from './auth.js';
 import { confirmDialog } from './modal.js';
 import { toast } from './notifications.js';
 import { progressSnapshot } from './gamification.js';
-import { $, render, escapeHtml, avatarMarkup, formatNumber } from './ui.js';
+import { $, render, escapeHtml, formatNumber } from './ui.js';
+import { userAvatarMarkup } from './avatar-service.js';
 
 const user = bootApp({
     page: 'settings',
-    title: 'Settings',
-    subtitle: 'Preferences and local data',
+    title: 'Configurações',
+    subtitle: 'Preferências e dados locais',
 });
 if (!user) await haltModule();
 
@@ -32,20 +33,20 @@ const snapshot = progressSnapshot();
 
 render($('#accountInfo'), `
     <div class="settings-account__row">
-        ${avatarMarkup(user.avatarSeed, { size: 'lg' })}
+        ${userAvatarMarkup(user, { size: 'lg' })}
         <div>
             <p class="settings-account__nick">${escapeHtml(user.nickname)}</p>
             <p class="settings-account__meta">${escapeHtml(account?.email ?? user.email)}</p>
-            <p class="settings-account__meta numeric">${escapeHtml(user.gamerId)} · Level ${snapshot.level} · ${formatNumber(snapshot.xp)} XP</p>
+            <p class="settings-account__meta numeric">${escapeHtml(user.gamerId)} · Nível ${snapshot.level} · ${formatNumber(snapshot.xp)} XP</p>
         </div>
     </div>
 `);
 
 $('#signOutBtn').addEventListener('click', async () => {
     const confirmed = await confirmDialog({
-        title: 'Sign out?',
-        message: 'Your data stays in this browser. You can sign back in with the same email at any time.',
-        confirmLabel: 'Sign out',
+        title: 'Sair?',
+        message: 'Seus dados ficam neste navegador. Você pode entrar novamente com o mesmo e-mail quando quiser.',
+        confirmLabel: 'Sair',
     });
     if (!confirmed) return;
     logout();
@@ -58,10 +59,50 @@ $('#signOutBtn').addEventListener('click', async () => {
 
 const settings = getSettings();
 
+/* ------------------------------------------------------------
+   TUTORIAL
+   ------------------------------------------------------------ */
+$('#replayTourBtn').addEventListener('click', async () => {
+    const { startTour } = await import('./tour.js');
+    startTour();
+});
+
+/* ------------------------------------------------------------
+   TEMA VISUAL
+   ------------------------------------------------------------ */
+const themePicker = document.getElementById('themePicker');
+const THEME_NAMES = {
+    'rivaly': 'Preto e amarelo',
+    'marrom-rosa': 'Marrom e rosa',
+    'azul-verde': 'Azul-bebê e verde',
+    'preto-vermelho': 'Preto e vermelho',
+};
+
+function markTheme(active) {
+    themePicker.querySelectorAll('[data-theme-id]').forEach((btn) => {
+        const on = btn.dataset.themeId === active;
+        btn.setAttribute('aria-checked', String(on));
+        btn.classList.toggle('is-selected', on);
+    });
+}
+
+markTheme(settings.theme ?? 'rivaly');
+
+themePicker.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-theme-id]');
+    if (!btn) return;
+
+    const chosen = btn.dataset.themeId;
+    saveSettings({ theme: chosen });
+    applySettings();
+    markTheme(chosen);
+    toast({ title: 'Tema aplicado', message: THEME_NAMES[chosen], type: 'success' });
+});
+
 const toggles = [
-    { id: 'reducedMotionToggle', key: 'reducedMotion', label: 'Reduce motion' },
-    { id: 'toastsToggle', key: 'toastsEnabled', label: 'Toast notifications' },
-    { id: 'densityToggle', key: 'compactDensity', label: 'Compact density' },
+    { id: 'reducedMotionToggle', key: 'reducedMotion', label: 'Reduzir animações' },
+    { id: 'toastsToggle', key: 'toastsEnabled', label: 'Notificações' },
+    { id: 'densityToggle', key: 'compactDensity', label: 'Densidade compacta' },
 ];
 
 toggles.forEach(({ id, key, label }) => {
@@ -74,10 +115,10 @@ toggles.forEach(({ id, key, label }) => {
 
         // The toasts switch has to confirm itself before it takes effect.
         if (key === 'toastsEnabled' && !input.checked) {
-            toast({ title: 'Toasts disabled', message: 'You can re-enable them here at any time.', type: 'info' });
+            toast({ title: 'Notificações desativadas', message: 'Você pode reativá-las aqui quando quiser.', type: 'info' });
         } else {
             toast({
-                title: `${label} ${input.checked ? 'enabled' : 'disabled'}`,
+                title: `${label}: ${input.checked ? 'ativo' : 'inativo'}`,
                 type: 'info',
             });
         }
@@ -89,21 +130,22 @@ toggles.forEach(({ id, key, label }) => {
    ============================================================ */
 
 const STORAGE_LABELS = {
-    version: 'Schema version',
-    accounts: 'Accounts (sign-in simulation)',
-    session: 'Active session',
-    user: 'Gamer Passport',
-    library: 'Game Library',
-    achievements: 'Unlocked achievements',
-    activity: 'Activity ledger',
-    squads: 'Saved squad',
-    settings: 'Interface preferences',
+    version: 'Versão do schema',
+    accounts: 'Contas (simulação de login)',
+    session: 'Sessão ativa',
+    user: 'Passaporte Gamer',
+    library: 'Biblioteca de Jogos',
+    externalGames: 'Jogos vindos do GameDB',
+    achievements: 'Conquistas desbloqueadas',
+    activity: 'Registro de atividade',
+    squads: 'Squad salvo',
+    settings: 'Preferências de interface',
 };
 
 function describe(value) {
-    if (value === null || value === undefined) return 'empty';
+    if (value === null || value === undefined) return 'vazio';
     if (Array.isArray(value)) return `${value.length} item${value.length === 1 ? '' : 's'}`;
-    if (typeof value === 'object') return `${Object.keys(value).length} field${Object.keys(value).length === 1 ? '' : 's'}`;
+    if (typeof value === 'object') return `${Object.keys(value).length} campo${Object.keys(value).length === 1 ? '' : 's'}`;
     return String(value);
 }
 
@@ -135,12 +177,12 @@ function renderStorage() {
 
     render($('#storageTable'), `
         <div class="storage-row storage-row--head">
-            <span>Key</span><span>Contents</span><span>Value</span><span>Size</span>
+            <span>Chave</span><span>Conteúdo</span><span>Valor</span><span>Tamanho</span>
         </div>
         ${rows}
         ${isPersistent()
             ? ''
-            : '<p class="storage-warning">Local storage is unavailable in this browser context. The app is running from memory and nothing will survive a refresh.</p>'}
+            : '<p class="storage-warning">O armazenamento local não está disponível neste navegador. O app roda em memória e nada persiste após o recarregamento.</p>'}
     `);
 }
 
@@ -171,8 +213,8 @@ $('#exportBtn').addEventListener('click', () => {
     URL.revokeObjectURL(url);
 
     toast({
-        title: 'Data exported.',
-        message: 'Your passport, library, achievements and activity — account credentials excluded.',
+        title: 'Dados exportados.',
+        message: 'Seu Passaporte, sua Biblioteca, suas conquistas e atividades foram exportados — as credenciais da conta não foram incluídas.',
         type: 'success',
     });
 });
@@ -183,16 +225,16 @@ $('#exportBtn').addEventListener('click', () => {
 
 $('#clearActivityBtn').addEventListener('click', async () => {
     const confirmed = await confirmDialog({
-        title: 'Clear the activity history?',
-        message: 'Only the activity ledger is removed. Your Passport, Library, XP and achievements are untouched.',
-        confirmLabel: 'Clear history',
+        title: 'Limpar o histórico de atividades?',
+        message: 'Apenas o registro de atividades será removido. Seu Passaporte, sua Biblioteca, seu XP e suas conquistas permanecerão intactos.',
+        confirmLabel: 'Limpar histórico',
         danger: true,
     });
     if (!confirmed) return;
 
     clearActivity();
     renderStorage();
-    toast({ title: 'Activity history cleared.', type: 'info' });
+    toast({ title: 'Histórico de atividades limpo.', type: 'info' });
 });
 
 /* ============================================================
@@ -201,10 +243,10 @@ $('#clearActivityBtn').addEventListener('click', async () => {
 
 $('#resetBtn').addEventListener('click', async () => {
     const confirmed = await confirmDialog({
-        title: 'Reset all demo data?',
-        message: 'Your Passport, Gamer DNA, Library, achievements, activity and saved squad are permanently deleted from this browser. Your sign-in account is kept.',
-        confirmLabel: 'Reset everything',
-        cancelLabel: 'Keep my data',
+        title: 'Resetar todos os dados demo?',
+        message: 'Seu Passaporte, DNA Gamer, Biblioteca, conquistas, atividades e squad salvo serão apagados definitivamente deste navegador. Sua conta de acesso será mantida.',
+        confirmLabel: 'Resetar tudo',
+        cancelLabel: 'Manter meus dados',
         danger: true,
     });
     if (!confirmed) return;
@@ -218,13 +260,13 @@ $('#resetBtn').addEventListener('click', async () => {
    ============================================================ */
 
 const ABOUT = [
-    ['Version', 'V1 — Vanilla'],
-    ['Stack', 'HTML5 · CSS3 · JavaScript (ES Modules)'],
-    ['Runtime dependencies', 'None'],
-    ['Image assets', 'None — avatars and covers are generated'],
-    ['Persistence', 'localStorage (namespaced)'],
-    ['Backend', 'None'],
-    ['Next version', 'React + Tailwind CSS'],
+    ['Versão', 'V1 — Vanilla'],
+    ['Tecnologias', 'HTML5 · CSS3 · JavaScript (módulos ES)'],
+    ['Dependências em tempo de execução', 'Nenhuma'],
+    ['Recursos de imagem', 'Nenhum — avatares e capas são gerados'],
+    ['Persistência', 'localStorage (com namespace)'],
+    ['Backend', 'Nenhum'],
+    ['Próxima versão', 'React + Tailwind CSS'],
 ];
 
 render($('#aboutList'), ABOUT.map(([term, value]) => `

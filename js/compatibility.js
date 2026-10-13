@@ -1,5 +1,5 @@
 /**
- * compatibility.js — the Compatibility Engine.
+ * compatibility.js — the Motor de Compatibilidade.
  *
  * A real, auditable algorithm. Given a search and a player, it returns
  * a 0-100 score plus a full breakdown explaining where every point was
@@ -11,10 +11,10 @@
  *   Game compatibility ....... 20%
  *   Rank ..................... 15%
  *   Schedule ................. 15%
- *   Playstyle ................ 15%
+ *   Estilo de jogo ................ 15%
  *   Role compatibility ....... 15%
  *   Communication ............ 10%
- *   Reputation ............... 10%
+ *   Reputacao ............... 10%
  *   ------------------------------
  *   Total ................... 100%
  */
@@ -47,11 +47,11 @@ const labelOf = (collection, id) =>
 export function calculateGameCompatibility(player, criteria) {
     const target = getGameById(criteria.gameId);
     if (!target) {
-        return { score: 70, reason: 'No specific game selected', positive: false };
+        return { score: 70, reason: 'Nenhum jogo específico selecionado', positive: false };
     }
 
     if (player.games.includes(target.id)) {
-        return { score: 100, reason: `Plays ${target.title}`, positive: true };
+        return { score: 100, reason: `Joga ${target.title}`, positive: true };
     }
 
     const playerGenres = new Set(
@@ -60,12 +60,12 @@ export function calculateGameCompatibility(player, criteria) {
     const shared = target.genre.filter((genre) => playerGenres.has(genre));
 
     if (shared.length >= 2) {
-        return { score: 62, reason: `Plays similar genres (${shared.join(', ')})`, positive: false };
+        return { score: 62, reason: `Joga gêneros parecidos (${shared.join(', ')})`, positive: false };
     }
     if (shared.length === 1) {
-        return { score: 48, reason: `Some genre overlap (${shared[0]})`, positive: false };
+        return { score: 48, reason: `Alguma coincidência de gênero (${shared[0]})`, positive: false };
     }
-    return { score: 15, reason: `Does not play ${target.title}`, positive: false };
+    return { score: 15, reason: `Não joga ${target.title}`, positive: false };
 }
 
 /* ============================================================
@@ -78,24 +78,24 @@ const RANK_BY_DISTANCE = [100, 85, 62, 38, 20, 8];
 
 export function calculateRankCompatibility(player, criteria) {
     if (!criteria.rank || criteria.rank === 'any') {
-        return { score: 82, reason: 'No rank requirement set', positive: false };
+        return { score: 82, reason: 'Sem exigência de rank', positive: false };
     }
 
     const targetIndex = RANK_LADDER.indexOf(criteria.rank);
     const playerIndex = RANK_LADDER.indexOf(player.rank);
 
     if (targetIndex < 0 || playerIndex < 0) {
-        return { score: 60, reason: 'Rank not comparable', positive: false };
+        return { score: 60, reason: 'Rank não comparável', positive: false };
     }
 
     const distance = Math.abs(targetIndex - playerIndex);
     const score = RANK_BY_DISTANCE[Math.min(distance, RANK_BY_DISTANCE.length - 1)];
 
-    if (distance === 0) return { score, reason: `Same rank (${player.rank})`, positive: true };
-    if (distance === 1) return { score, reason: `One tier apart (${player.rank})`, positive: true };
+    if (distance === 0) return { score, reason: `Mesmo rank (${player.rank})`, positive: true };
+    if (distance === 1) return { score, reason: `Um tier de diferença (${player.rank})`, positive: true };
     return {
         score,
-        reason: `${distance} tiers apart (${player.rank} vs ${criteria.rank})`,
+        reason: `${distance} tiers de diferença (${player.rank} vs ${criteria.rank})`,
         positive: false,
     };
 }
@@ -111,7 +111,7 @@ const SCHEDULE_BY_DISTANCE = [100, 72, 42, 20, 10];
 
 export function calculateScheduleCompatibility(player, criteria) {
     if (!criteria.schedule || criteria.schedule === 'any') {
-        return { score: 80, reason: 'Flexible schedule requested', positive: false };
+        return { score: 80, reason: 'Horário flexível solicitado', positive: false };
     }
 
     const targetIndex = SCHEDULES.findIndex((slot) => slot.id === criteria.schedule);
@@ -121,18 +121,18 @@ export function calculateScheduleCompatibility(player, criteria) {
         .map((index) => Math.abs(index - targetIndex));
 
     if (distances.length === 0) {
-        return { score: 40, reason: 'No schedule information', positive: false };
+        return { score: 40, reason: 'Sem informação de horário', positive: false };
     }
 
     const distance = Math.min(...distances);
     const score = SCHEDULE_BY_DISTANCE[Math.min(distance, SCHEDULE_BY_DISTANCE.length - 1)];
     const targetLabel = labelOf(SCHEDULES, criteria.schedule);
 
-    if (distance === 0) return { score, reason: `Plays in the ${targetLabel.toLowerCase()}`, positive: true };
-    if (distance === 1) return { score, reason: `Adjacent time window to ${targetLabel.toLowerCase()}`, positive: true };
+    if (distance === 0) return { score, reason: `Mesmo horário (${targetLabel})`, positive: true };
+    if (distance === 1) return { score, reason: `Horário próximo (${targetLabel})`, positive: true };
     return {
         score,
-        reason: `Usually online at a different time (${player.schedules.map((slot) => labelOf(SCHEDULES, slot)).join(', ')})`,
+        reason: `Costuma estar online em outro horário (${player.schedules.map((slot) => labelOf(SCHEDULES, slot)).join(', ')})`,
         positive: false,
     };
 }
@@ -147,23 +147,23 @@ const PLAYSTYLE_BY_DISTANCE = [100, 74, 44, 18];
 
 export function calculatePlaystyleCompatibility(player, criteria) {
     if (!criteria.playstyle || criteria.playstyle === 'any') {
-        return { score: 80, reason: 'Any playstyle accepted', positive: false };
+        return { score: 80, reason: 'Qualquer estilo de jogo aceito', positive: false };
     }
 
     const targetIndex = PLAYSTYLES.findIndex((style) => style.id === criteria.playstyle);
     const playerIndex = PLAYSTYLES.findIndex((style) => style.id === player.playstyle);
 
     if (targetIndex < 0 || playerIndex < 0) {
-        return { score: 60, reason: 'Playstyle not comparable', positive: false };
+        return { score: 60, reason: 'Estilo de jogo não comparável', positive: false };
     }
 
     const distance = Math.abs(targetIndex - playerIndex);
     const score = PLAYSTYLE_BY_DISTANCE[Math.min(distance, PLAYSTYLE_BY_DISTANCE.length - 1)];
     const playerLabel = labelOf(PLAYSTYLES, player.playstyle);
 
-    if (distance === 0) return { score, reason: `Same playstyle (${playerLabel})`, positive: true };
-    if (distance === 1) return { score, reason: `Similar playstyle (${playerLabel})`, positive: true };
-    return { score, reason: `Different intensity (${playerLabel})`, positive: false };
+    if (distance === 0) return { score, reason: `Mesmo estilo de jogo (${playerLabel})`, positive: true };
+    if (distance === 1) return { score, reason: `Estilo de jogo parecido (${playerLabel})`, positive: true };
+    return { score, reason: `Intensidade diferente (${playerLabel})`, positive: false };
 }
 
 /* ============================================================
@@ -183,10 +183,10 @@ export function calculateRoleCompatibility(player, criteria, userRoles = []) {
     const wanted = criteria.role && criteria.role !== 'any' ? [criteria.role] : userRoles;
 
     if (!wanted || wanted.length === 0) {
-        return { score: 75, reason: 'No preferred role set on your Passport', positive: false };
+        return { score: 75, reason: 'Sem função preferida no seu Passaporte', positive: false };
     }
     if (!player.roles || player.roles.length === 0) {
-        return { score: 60, reason: 'Player has no declared role', positive: false };
+        return { score: 60, reason: 'Jogador sem função declarada', positive: false };
     }
 
     let best = { score: 0, userRole: wanted[0], playerRole: player.roles[0] };
@@ -201,12 +201,12 @@ export function calculateRoleCompatibility(player, criteria, userRoles = []) {
     const userLabel = labelOf(ROLES, best.userRole);
 
     if (best.score === 100) {
-        return { score: 100, reason: `Complementary role (${playerLabel} covers your ${userLabel})`, positive: true };
+        return { score: 100, reason: `Função complementar (${playerLabel} cobre sua ${userLabel})`, positive: true };
     }
     if (best.score === 52) {
-        return { score: 52, reason: `Same role as you (${playerLabel}) — you would overlap`, positive: false };
+        return { score: 52, reason: `Mesma função que a sua (${playerLabel}) — vocês se sobrepõem`, positive: false };
     }
-    return { score: best.score, reason: `Compatible role (${playerLabel})`, positive: true };
+    return { score: best.score, reason: `Função compatível (${playerLabel})`, positive: true };
 }
 
 /* ============================================================
@@ -226,23 +226,23 @@ export function calculateCommunicationCompatibility(player, criteria, userLangua
 
     if (voiceIsIndifferent) {
         base = 82;
-        reason = player.voiceChat ? 'Uses voice chat' : 'Prefers text only';
+        reason = player.voiceChat ? 'Usa chat de voz' : 'Prefere apenas texto';
         positive = false;
     } else if (wantsVoice && player.voiceChat) {
         base = 100;
-        reason = 'Voice chat enabled on both sides';
+        reason = 'Ambos usam chat de voz';
         positive = true;
     } else if (!wantsVoice && !player.voiceChat) {
         base = 88;
-        reason = 'Both prefer to play without voice';
+        reason = 'Ambos preferem jogar sem voz';
         positive = true;
     } else if (wantsVoice && !player.voiceChat) {
         base = 25;
-        reason = 'Does not use voice chat';
+        reason = 'Não usa chat de voz';
         positive = false;
     } else {
         base = 70;
-        reason = 'Uses voice chat, you asked for text only';
+        reason = 'Usa chat de voz; você pediu apenas texto';
         positive = false;
     }
 
@@ -252,13 +252,13 @@ export function calculateCommunicationCompatibility(player, criteria, userLangua
             const names = player.languages.map((id) => labelOf(LANGUAGES, id)).join(', ');
             return {
                 score: Math.round(base * 0.6),
-                reason: `No shared language (speaks ${names})`,
+                reason: `Nenhum idioma em comum (fala ${names})`,
                 positive: false,
             };
         }
         if (positive) {
             const names = shared.map((id) => labelOf(LANGUAGES, id)).join(', ');
-            return { score: base, reason: `${reason}, speaks ${names}`, positive: true };
+            return { score: base, reason: `${reason}, fala ${names}`, positive: true };
         }
     }
 
@@ -271,12 +271,12 @@ export function calculateCommunicationCompatibility(player, criteria, userLangua
    player has a history of good sessions.
    ============================================================ */
 
-export function calculateReputationScore(player) {
+export function calculateReputacaoScore(player) {
     const reputation = Math.max(0, Math.min(100, Number(player.reputation) || 0));
-    if (reputation >= 90) return { score: reputation, reason: `Outstanding reputation (${reputation})`, positive: true };
-    if (reputation >= 80) return { score: reputation, reason: `High reputation (${reputation})`, positive: true };
-    if (reputation >= 70) return { score: reputation, reason: `Solid reputation (${reputation})`, positive: false };
-    return { score: reputation, reason: `Building reputation (${reputation})`, positive: false };
+    if (reputation >= 90) return { score: reputation, reason: `Reputação excepcional (${reputation})`, positive: true };
+    if (reputation >= 80) return { score: reputation, reason: `Reputação alta (${reputation})`, positive: true };
+    if (reputation >= 70) return { score: reputation, reason: `Reputação sólida (${reputation})`, positive: false };
+    return { score: reputation, reason: `Reputação em construção (${reputation})`, positive: false };
 }
 
 /* ============================================================
@@ -284,17 +284,17 @@ export function calculateReputationScore(player) {
    ============================================================ */
 
 export const TIERS = [
-    { id: 'excellent', min: 90, label: 'Excellent Match' },
-    { id: 'great', min: 75, label: 'Great Match' },
-    { id: 'good', min: 60, label: 'Good Match' },
-    { id: 'low', min: 0, label: 'Low Compatibility' },
+    { id: 'excellent', min: 90, label: 'Match Excelente' },
+    { id: 'great', min: 75, label: 'Match Ótimo' },
+    { id: 'good', min: 60, label: 'Match Bom' },
+    { id: 'low', min: 0, label: 'Compatibilidade Baixa' },
 ];
 
 export const tierFor = (total) => TIERS.find((tier) => total >= tier.min) ?? TIERS[TIERS.length - 1];
 
 /**
  * @param {object} player   A record from PLAYERS.
- * @param {object} criteria The Squad Finder search.
+ * @param {object} criteria The Buscar Squad search.
  * @param {object} [user]   The current passport (roles + languages).
  * @returns {{total:number, tier:object, breakdown:Array, highlights:Array, deductions:Array}}
  */
@@ -303,13 +303,13 @@ export function calculateTotalCompatibility(player, criteria, user = null) {
     const userLanguages = user?.languages ?? [];
 
     const parts = [
-        { key: 'game', label: 'Game', weight: WEIGHTS.game, ...calculateGameCompatibility(player, criteria) },
+        { key: 'game', label: 'Jogo', weight: WEIGHTS.game, ...calculateGameCompatibility(player, criteria) },
         { key: 'rank', label: 'Rank', weight: WEIGHTS.rank, ...calculateRankCompatibility(player, criteria) },
-        { key: 'schedule', label: 'Schedule', weight: WEIGHTS.schedule, ...calculateScheduleCompatibility(player, criteria) },
-        { key: 'playstyle', label: 'Playstyle', weight: WEIGHTS.playstyle, ...calculatePlaystyleCompatibility(player, criteria) },
-        { key: 'role', label: 'Role', weight: WEIGHTS.role, ...calculateRoleCompatibility(player, criteria, userRoles) },
-        { key: 'communication', label: 'Communication', weight: WEIGHTS.communication, ...calculateCommunicationCompatibility(player, criteria, userLanguages) },
-        { key: 'reputation', label: 'Reputation', weight: WEIGHTS.reputation, ...calculateReputationScore(player) },
+        { key: 'schedule', label: 'Horário', weight: WEIGHTS.schedule, ...calculateScheduleCompatibility(player, criteria) },
+        { key: 'playstyle', label: 'Estilo de jogo', weight: WEIGHTS.playstyle, ...calculatePlaystyleCompatibility(player, criteria) },
+        { key: 'role', label: 'Função', weight: WEIGHTS.role, ...calculateRoleCompatibility(player, criteria, userRoles) },
+        { key: 'communication', label: 'Comunicação', weight: WEIGHTS.communication, ...calculateCommunicationCompatibility(player, criteria, userLanguages) },
+        { key: 'reputation', label: 'Reputação', weight: WEIGHTS.reputation, ...calculateReputacaoScore(player) },
     ];
 
     const breakdown = parts.map((part) => {
@@ -362,8 +362,8 @@ export function findMatches(criteria, user = null, { limit = 8 } = {}) {
         .sort((a, b) => {
             const byScore = b.result.total - a.result.total;
             if (byScore !== 0) return byScore;
-            const byReputation = b.player.reputation - a.player.reputation;
-            if (byReputation !== 0) return byReputation;
+            const byReputacao = b.player.reputation - a.player.reputation;
+            if (byReputacao !== 0) return byReputacao;
             return a.player.id.localeCompare(b.player.id); // stable, deterministic
         })
         .slice(0, limit);

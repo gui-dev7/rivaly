@@ -5,7 +5,7 @@
  *   welcome → setup-1 → setup-2 → setup-3 → dna → analysing → reveal → created
  *
  * It can also be re-entered later at ?stage=dna, which is how a user
- * who skipped setup completes their Gamer DNA from the Dashboard.
+ * who skipped setup completes their DNA Gamer from the Dashboard.
  */
 
 import { bootPublic, haltModule } from './app.js';
@@ -22,7 +22,9 @@ import { awardXp, awardOnce, checkAchievements, progressSnapshot } from './gamif
 import { addEntry } from './library-store.js';
 import { logActivity } from './activity.js';
 import { toastInfo } from './notifications.js';
-import { $, escapeHtml, icon, avatarSvg, formatNumber } from './ui.js';
+import { $, escapeHtml, icon, formatNumber } from './ui.js';
+import { userAvatarMarkup, resolveAvatar } from './avatar-service.js';
+import { openAvatarPicker } from './avatar-picker.js';
 import { countUp, runSequence, wait, prefersReducedMotion, attachPointerLight } from './animations.js';
 
 bootPublic();
@@ -43,14 +45,14 @@ if (user.onboardingComplete && startStage !== 'dna') {
    ============================================================ */
 
 const STAGE_PROGRESS = {
-    welcome: { step: 0, label: 'Welcome' },
-    'setup-1': { step: 1, label: 'Step 1 of 4 · Where you play' },
-    'setup-2': { step: 1, label: 'Step 2 of 4 · How you play' },
-    'setup-3': { step: 2, label: 'Step 3 of 4 · What you play' },
-    dna: { step: 3, label: 'Step 4 of 4 · Gamer DNA' },
-    analysing: { step: 4, label: 'Analysing' },
-    reveal: { step: 4, label: 'Your identity' },
-    created: { step: 4, label: 'Complete' },
+    welcome: { step: 0, label: 'Boas-vindas' },
+    'setup-1': { step: 1, label: 'Passo 1 de 4 · Onde você joga' },
+    'setup-2': { step: 1, label: 'Passo 2 de 4 · Como você joga' },
+    'setup-3': { step: 2, label: 'Passo 3 de 4 · O que você joga' },
+    dna: { step: 3, label: 'Passo 4 de 4 · DNA Gamer' },
+    analysing: { step: 4, label: 'Analisando' },
+    reveal: { step: 4, label: 'Sua identidade' },
+    created: { step: 4, label: 'Concluído' },
 };
 
 const stages = new Map(
@@ -139,6 +141,23 @@ function bindChipGroup(host, targetArray, onChange) {
     });
 }
 
+/* --- Avatar --- */
+function renderAvatarStep() {
+    const live = getUser();
+    const avatar = resolveAvatar(live);
+    $('#obAvatar').innerHTML = userAvatarMarkup(live, { size: 'xl', alt: 'Seu avatar' });
+    $('#obAvatarMeta').textContent = avatar.type === 'upload'
+        ? 'Imagem própria'
+        : `${avatar.style} · ${avatar.seed}`;
+}
+
+$('#obAvatarBtn').addEventListener('click', () => {
+    openAvatarPicker(getUser(), (selection) => {
+        updateUser({ avatar: selection });
+        renderAvatarStep();
+    });
+});
+
 /* --- Setup 1 --- */
 const platformHost = $('#platformChips');
 renderChipGroup(platformHost, PLATFORMS, draft.platforms, { name: 'platform' });
@@ -163,7 +182,7 @@ function setError(id, message) {
 $('#setupForm1').addEventListener('submit', (event) => {
     event.preventDefault();
     if (draft.platforms.length === 0) {
-        setError('platformsError', 'Choose at least one platform.');
+        setError('platformsError', 'Escolha pelo menos uma plataforma.');
         platformHost.querySelector('input')?.focus();
         return;
     }
@@ -211,15 +230,15 @@ $('#setupForm2').addEventListener('submit', (event) => {
     let valid = true;
 
     if (!draft.playstyle) {
-        setError('playstyleError', 'Pick the playstyle that fits you best.');
+        setError('playstyleError', 'Escolha o estilo de jogo que mais combina com você.');
         valid = false;
     }
     if (draft.schedules.length === 0) {
-        setError('schedulesError', 'Choose at least one time window.');
+        setError('schedulesError', 'Escolha pelo menos um horário.');
         valid = false;
     }
     if (draft.roles.length === 0) {
-        setError('rolesError', 'Choose at least one role.');
+        setError('rolesError', 'Escolha pelo menos uma função.');
         valid = false;
     }
 
@@ -262,7 +281,7 @@ function renderGameChips(query = '') {
                 <span>${escapeHtml(game.title)}</span>
             </label>
         `).join('')
-        : `<p class="field__hint">No game matches “${escapeHtml(query)}”. You can add it later from the Library.</p>`;
+        : `<p class="field__hint">Nenhum jogo corresponde a “${escapeHtml(query)}”. Você poderá adicioná-lo mais tarde pela Biblioteca.</p>`;
 }
 
 renderGameChips();
@@ -287,7 +306,7 @@ bioInput.addEventListener('input', () => {
 $('#setupForm3').addEventListener('submit', (event) => {
     event.preventDefault();
     if (draft.favoriteGenres.length === 0) {
-        setError('genresError', 'Choose at least one genre.');
+        setError('genresError', 'Escolha pelo menos um gênero.');
         genreHost.querySelector('input')?.focus();
         return;
     }
@@ -317,8 +336,8 @@ function persistProfileDraft() {
 document.querySelector('[data-skip-all]')?.addEventListener('click', () => {
     persistProfileDraft();
     updateUser({ onboardingComplete: true });
-    logActivity('passport', 'Skipped profile setup');
-    toastInfo('Setup skipped', 'You can complete your Passport any time from the Passport page.');
+    logActivity('passport', 'Pulou a montagem do perfil');
+    toastInfo('Montagem pulada', 'Você pode completar seu Passaporte quando quiser pela página Passaporte.');
     window.location.href = 'dashboard.html';
 });
 
@@ -332,7 +351,7 @@ let questionIndex = 0;
 const dnaTitle = $('#dnaTitle');
 const dnaOptions = $('#dnaOptions');
 const dnaCounter = $('#dnaCounter');
-const dnaBack = $('#dnaBack');
+const dnaVoltar = $('#dnaVoltar');
 
 function renderQuestion(index) {
     questionIndex = index;
@@ -352,12 +371,12 @@ function renderQuestion(index) {
         </label>
     `).join('');
 
-    dnaBack.disabled = index === 0;
+    dnaVoltar.disabled = index === 0;
 
     // The whole DNA bar reflects progress inside the questionnaire.
     const ratio = (3 + (index / DNA_QUESTIONS.length)) / 4;
     progressFill.style.transform = `scaleX(${ratio})`;
-    progressLabel.textContent = `Gamer DNA · ${index + 1} of ${DNA_QUESTIONS.length}`;
+    progressLabel.textContent = `DNA Gamer · ${index + 1} de ${DNA_QUESTIONS.length}`;
 
     dnaOptions.querySelector('input')?.focus();
 }
@@ -378,7 +397,7 @@ dnaOptions.addEventListener('change', async (event) => {
     }
 });
 
-dnaBack.addEventListener('click', () => {
+dnaVoltar.addEventListener('click', () => {
     if (questionIndex > 0) renderQuestion(questionIndex - 1);
 });
 
@@ -398,11 +417,11 @@ document.addEventListener('keydown', (event) => {
    ============================================================ */
 
 const ANALYSIS_LINES = [
-    'Reading your answers…',
-    'Weighting behavioural signals…',
-    'Normalising the six attributes…',
-    'Cross-referencing eleven archetypes…',
-    'Resolving your identity…',
+    'Lendo suas respostas…',
+    'Ponderando sinais comportamentais…',
+    'Normalizando os seis atributos…',
+    'Cruzando dados com onze arquétipos…',
+    'Definindo sua identidade…',
 ];
 
 let dnaProfile = null;
@@ -478,7 +497,7 @@ async function revealIdentity() {
     $('#revealTitle').focus?.();
 }
 
-$('#revealContinue').addEventListener('click', () => {
+$('#revealContinuar').addEventListener('click', () => {
     finaliseOnboarding();
 });
 
@@ -511,20 +530,20 @@ function finaliseOnboarding() {
     //    presents the rewards itself.
     if (isFirstDna) {
         awardXp('completeDna', { silent: true });
-        logActivity('dna', `Completed the Gamer DNA — ${getArchetypeById(dnaProfile.archetypeId).name}`);
+        logActivity('dna', `Concluiu o DNA Gamer — ${getArchetypeById(dnaProfile.archetypeId).name}`);
     } else {
-        logActivity('dna', `Re-ran the Gamer DNA — ${getArchetypeById(dnaProfile.archetypeId).name}`);
+        logActivity('dna', `Refez o DNA Gamer — ${getArchetypeById(dnaProfile.archetypeId).name}`);
     }
 
     addedGames.forEach(() => awardXp('addGame', { silent: true }));
     if (addedGames.length) {
-        logActivity('library', `Added ${addedGames.length} game${addedGames.length > 1 ? 's' : ''} to the Library`);
+        logActivity('library', `Adicionou ${addedGames.length} jogo${addedGames.length > 1 ? 's' : ''} à Biblioteca`);
     }
 
     if (profileCompletion(getUser()) >= 100) awardOnce('completeProfile', { silent: true });
     else if (isFirstRun) awardXp('updateProfile', { silent: true });
 
-    if (isFirstRun) logActivity('passport', 'Gamer Passport created');
+    if (isFirstRun) logActivity('passport', 'Passaporte Gamer criado');
     checkAchievements();
 
     renderCreated(addedGames);
@@ -543,26 +562,26 @@ function renderCreated(addedGames) {
             <header class="passport-card__head">
                 <div>
                     <p class="passport-card__brand">RIVALY</p>
-                    <p class="passport-card__type">Gamer Passport</p>
+                    <p class="passport-card__type">Passaporte Gamer</p>
                 </div>
                 <p class="passport-card__id numeric">${escapeHtml(current.gamerId)}</p>
             </header>
 
             <div class="passport-card__identity">
-                <span class="passport-card__avatar is-in">${avatarSvg(current.avatarSeed, { size: 52 })}</span>
+                <span class="passport-card__avatar is-in">${userAvatarMarkup(current, { size: 'lg', alt: `Avatar de ${current.nickname}` })}</span>
                 <div>
                     <p class="passport-card__nick is-in">${escapeHtml(current.nickname)}</p>
                     <p class="passport-card__archetype is-in">${escapeHtml(archetype.name)}</p>
                 </div>
                 <div class="passport-card__level">
                     <span class="passport-card__level-value numeric">${snapshot.level}</span>
-                    <span class="passport-card__level-label">Level</span>
+                    <span class="passport-card__level-label">Nível</span>
                 </div>
             </div>
 
             ${games.length ? `
                 <div class="passport-card__section">
-                    <p class="passport-card__section-title">Currently playing</p>
+                    <p class="passport-card__section-title">Jogando agora</p>
                     <ul class="passport-card__games">
                         ${games.map((game) => `
                             <li class="passport-card__game">
@@ -574,7 +593,7 @@ function renderCreated(addedGames) {
                 </div>` : ''}
 
             <div class="passport-card__section">
-                <p class="passport-card__section-title">Gamer DNA</p>
+                <p class="passport-card__section-title">DNA Gamer</p>
                 <div class="dna-list">
                     ${DNA_ATTRIBUTES.map((attribute) => `
                         <div class="dna-bar" style="--dna-color:${attribute.color}">
@@ -590,15 +609,15 @@ function renderCreated(addedGames) {
 
             <footer class="passport-card__foot">
                 <span class="passport-card__foot-item">
-                    <span class="passport-card__foot-label">Reputation</span>
+                    <span class="passport-card__foot-label">Reputação</span>
                     <span class="numeric">${snapshot.reputation}</span>
                 </span>
                 <span class="passport-card__foot-item">
-                    <span class="passport-card__foot-label">Gamer Score</span>
+                    <span class="passport-card__foot-label">Pontuação Gamer</span>
                     <span class="numeric">${formatNumber(snapshot.gamerScore)}</span>
                 </span>
                 <span class="passport-card__foot-item">
-                    <span class="passport-card__foot-label">Badges</span>
+                    <span class="passport-card__foot-label">Medalhas</span>
                     <span class="numeric">${snapshot.achievementsUnlocked}</span>
                 </span>
             </footer>
@@ -606,13 +625,13 @@ function renderCreated(addedGames) {
     `;
 
     const rewards = [
-        { label: 'Passport created', value: '+100 XP' },
-        { label: 'Gamer DNA completed', value: '+200 XP' },
+        { label: 'Passaporte criado', value: '+100 XP' },
+        { label: 'DNA Gamer concluído', value: '+200 XP' },
     ];
     if (addedGames.length) {
-        rewards.push({ label: `${addedGames.length} game${addedGames.length > 1 ? 's' : ''} added`, value: `+${addedGames.length * 50} XP` });
+        rewards.push({ label: `Jogos adicionados: ${addedGames.length}`, value: `+${addedGames.length * 50} XP` });
     }
-    rewards.push({ label: `${snapshot.achievementsUnlocked} achievement${snapshot.achievementsUnlocked === 1 ? '' : 's'}`, value: `+${snapshot.achievementsUnlocked * 40} XP` });
+    rewards.push({ label: `Conquistas desbloqueadas: ${snapshot.achievementsUnlocked}`, value: `+${snapshot.achievementsUnlocked * 40} XP` });
 
     $('#createdRewards').innerHTML = rewards.map((reward, index) => `
         <div class="ob-reward" style="animation-delay:${180 + index * 90}ms">
@@ -643,5 +662,6 @@ if (startStage === 'dna') {
     goToStage('dna');
     renderQuestion(0);
 } else {
+    renderAvatarStep();
     goToStage('welcome');
 }

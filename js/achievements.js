@@ -1,5 +1,5 @@
 /**
- * achievements.js — controller for the Achievements page.
+ * achievements.js — controller for the Conquistas page.
  *
  * Read-only. The unlock rules live in data.js next to the copy, and
  * the evaluation runs in gamification.js; this page only presents the
@@ -15,8 +15,8 @@ import { countUp } from './animations.js';
 
 const user = bootApp({
     page: 'achievements',
-    title: 'Achievements',
-    subtitle: 'Badges, rarities and progress',
+    title: 'Conquistas',
+    subtitle: 'Medalhas, raridades e progresso',
 });
 if (!user) await haltModule();
 
@@ -33,7 +33,7 @@ const percent = Math.round((unlocked.length / state.length) * 100);
 
 $('#totalCount').textContent = `/${state.length}`;
 $('#collectionBar').dataset.progress = String(percent);
-$('#progressMeta').textContent = `${percent}% of the collection · ${snapshot.achievementsUnlocked * 40} XP earned from badges`;
+$('#progressMeta').textContent = `${percent}% da coleção · ${snapshot.achievementsUnlocked * 40} XP ganhos com medalhas`;
 countUp($('#unlockedCount'), unlocked.length, { duration: 900 });
 
 render($('#rarityBreakdown'), Object.entries(RARITIES).map(([id, rarity]) => {
@@ -99,8 +99,8 @@ render($('#nextUp'), nextUp.length
     `).join('')}</div>`
     : emptyStateMarkup({
         iconName: 'crown',
-        title: 'Every measurable badge is yours.',
-        text: 'There is nothing left with a countable target — the rest unlock from single actions.',
+        title: 'Todas as medalhas com progresso mensurável são suas.',
+        text: 'Não resta nenhuma com meta quantitativa — as demais são desbloqueadas por ações específicas.',
     })
 );
 
@@ -109,9 +109,9 @@ render($('#nextUp'), nextUp.length
    ============================================================ */
 
 const FILTERS = [
-    { id: 'all', label: 'All' },
-    { id: 'unlocked', label: 'Unlocked' },
-    { id: 'locked', label: 'Locked' },
+    { id: 'all', label: 'Todas' },
+    { id: 'unlocked', label: 'Desbloqueadas' },
+    { id: 'locked', label: 'Bloqueadas' },
     ...Object.entries(RARITIES).map(([id, rarity]) => ({ id, label: rarity.label })),
 ];
 
@@ -148,12 +148,12 @@ function renderGrid() {
         ? `<div class="grid grid--badges stagger">${items.map(badgeMarkup).join('')}</div>`
         : emptyStateMarkup({
             iconName: 'trophy',
-            title: 'Nothing here yet.',
+            title: 'Nada por aqui ainda.',
             text: activeFilter === 'unlocked'
-                ? 'Your first achievement is closer than you think — adding one game unlocks Game On.'
-                : 'No achievement matches this filter.',
+                ? 'Sua primeira conquista está mais perto do que parece — adicionar um jogo desbloqueia Começou o Jogo.'
+                : 'Nenhuma conquista corresponde a este filtro.',
             action: activeFilter === 'unlocked'
-                ? '<a class="btn btn--primary btn--sm" href="library.html?action=add">Add a game</a>'
+                ? '<a class="btn btn--primary btn--sm" href="library.html?action=add">Adicionar um jogo</a>'
                 : '',
         })
     );

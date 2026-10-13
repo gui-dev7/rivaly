@@ -5,10 +5,12 @@
  * pure functions that return strings or DOM nodes. Pages own their own
  * markup; this module only removes duplication.
  *
- * It is also the reason the project ships with zero image assets —
- * avatars and cover art are generated deterministically from a seed,
- * so there is nothing to 404.
+ * Game artwork is resolved by game-assets.js; this module only turns
+ * the result into markup, and provides the procedural fallback that
+ * shows whenever artwork is missing, offline or still loading.
  */
+
+import { gameImageAttrs } from './game-assets.js';
 
 /* ============================================================
    DOM
@@ -50,12 +52,12 @@ export function fragmentFrom(htmlList) {
    FORMATTERS
    ============================================================ */
 
-export const formatNumber = (value) => Number(value ?? 0).toLocaleString('en-US');
+export const formatNumber = (value) => Number(value ?? 0).toLocaleString('pt-BR');
 
 export function formatHours(hours) {
     const value = Number(hours) || 0;
     if (value < 1 && value > 0) return `${Math.round(value * 60)}m`;
-    return `${Math.round(value).toLocaleString('en-US')}h`;
+    return `${Math.round(value).toLocaleString('pt-BR')}h`;
 }
 
 export function formatRelativeTime(isoString) {
@@ -63,15 +65,15 @@ export function formatRelativeTime(isoString) {
     if (Number.isNaN(then)) return '';
     const seconds = Math.round((Date.now() - then) / 1000);
 
-    if (seconds < 45) return 'just now';
-    if (seconds < 90) return 'a minute ago';
+    if (seconds < 45) return 'agora mesmo';
+    if (seconds < 90) return 'ha um minuto';
     const minutes = Math.round(seconds / 60);
-    if (minutes < 60) return `${minutes} min ago`;
+    if (minutes < 60) return `ha ${minutes} min`;
     const hours = Math.round(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return `ha ${hours}h`;
     const days = Math.round(hours / 24);
-    if (days < 7) return `${days}d ago`;
-    return new Date(then).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    if (days < 7) return `ha ${days}d`;
+    return new Date(then).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 
 /** Deterministic 32-bit hash (djb2). Used for every generated visual. */
@@ -161,7 +163,7 @@ const ICON_PATHS = {
     eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
     'eye-off': '<path d="M4 4l16 16"/><path d="M9.5 9.7a3 3 0 0 0 4.2 4.2"/><path d="M6.5 6.8C4 8.4 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3-.4 4.2-1"/><path d="M18.4 15.4c1.9-1.6 3.1-3.4 3.1-3.4S18 5.5 12 5.5c-.7 0-1.4.1-2 .3"/>',
 
-    /* --- Platform glyphs ---
+    /* --- Plataforma glyphs ---
        Drawn here rather than downloaded: the icon set is already
        hand-authored in this style, and original glyphs avoid shipping
        trademarked brand logos in an academic repository. */
@@ -238,34 +240,45 @@ export function avatarMarkup(seed, { size = 'md', ring = false, className = '' }
    a diagonal light sweep and its two-letter monogram.
    ============================================================ */
 
-export function coverArt(game, { className = '', eager = false } = {}) {
+export function coverArt(game, { className = '', eager = false, alt = '' } = {}) {
     const hue = game?.hue ?? hashString(game?.title) % 360;
     const glyph = escapeHtml(game?.glyph ?? initialsOf(game?.title));
     const hue2 = (hue + 34) % 360;
 
-    // The gradient + monogram stay underneath as the fallback layer. If the
-    // artwork is missing or fails to decode, app.js strips the <img> and this
-    // is what shows — no broken-image icon, no visible 404.
-    const art = game?.id
-        ? `<img class="cover__img" src="/assets/covers/${encodeURIComponent(game.id)}.webp"
-                alt="" decoding="async" ${eager ? '' : 'loading="lazy"'} data-fallback>`
-        : '';
+    // The gradient + monogram underneath IS the Rivaly fallback. If every
+    // URL in the chain fails, app.js strips the <img> and this shows —
+    // no broken-image icon, no layout shift, no visible 404.
+    const art = gameImageMarkup(game, {
+        type: 'cover', className: 'cover__img', eager, alt,
+    });
 
-    return `<span class="cover ${escapeHtml(className)}" style="--cover-a: hsl(${hue} 62% 26%); --cover-b: hsl(${hue2} 58% 12%); --cover-line: hsl(${hue} 78% 62% / 0.34);" aria-hidden="true">
+    return `<span class="cover ${escapeHtml(className)}${art ? ' is-loading' : ''}" style="--cover-a: hsl(${hue} 62% 26%); --cover-b: hsl(${hue2} 58% 12%); --cover-line: hsl(${hue} 78% 62% / 0.34);"${alt ? '' : ' aria-hidden="true"'}>
         <span class="cover__glyph">${glyph}</span>
         ${art}
     </span>`;
 }
 
+/** Wide key art. Returns '' when the game has no horizontal artwork. */
+export function bannerArt(game, { className = '', eager = false } = {}) {
+    return gameImageMarkup(game, {
+        type: 'hero', className: `banner-art ${className}`.trim(), eager,
+    });
+}
+
 /**
- * Wide key-art banner. Only the Steam-sourced titles have one, so callers
- * must tolerate an empty string.
+ * The one place a game <img> is built. Carries the whole fallback chain
+ * in `data-fallbacks`, which the global error handler walks before
+ * giving up and revealing the CSS artwork underneath.
  */
-export function bannerArt(game, { className = '' } = {}) {
-    if (!game?.steamAppId) return '';
-    return `<img class="banner-art ${escapeHtml(className)}"
-        src="/assets/banners/${encodeURIComponent(game.id)}.webp"
-        alt="" decoding="async" loading="lazy" data-fallback>`;
+export function gameImageMarkup(game, { type = 'cover', className = '', eager = false, alt = '' } = {}) {
+    const attrs = gameImageAttrs(game, { type, alt, eager });
+    if (!attrs) return '';
+
+    return `<img class="game-image ${escapeHtml(className)}"
+        src="${escapeHtml(attrs.src)}"
+        alt="${escapeHtml(attrs.alt)}"
+        loading="${attrs.loading}" decoding="${attrs.decoding}"
+        data-fallback${attrs.fallbacks.length ? ` data-fallbacks="${escapeHtml(attrs.fallbacks.join('|'))}"` : ''}>`;
 }
 
 /* ============================================================
@@ -295,7 +308,7 @@ export function tipMarkup(text, { end = false } = {}) {
 /** Star rating display (read-only). */
 export function starsMarkup(rating) {
     const value = clamp(Math.round(Number(rating) || 0), 0, 5);
-    return `<span class="stars" aria-label="${value} out of 5">${
+    return `<span class="stars" aria-label="${value} de 5">${
         Array.from({ length: 5 }, (_, index) =>
             `<span class="stars__item ${index < value ? 'is-on' : ''}">${icon('star', { size: 12 })}</span>`
         ).join('')

@@ -10,7 +10,7 @@
 .settings-block__title {
     font-size: var(--text-md);
     font-weight: var(--font-semibold);
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: var(--tracking-display);
 }
 
 .settings-block__text {
@@ -234,4 +234,63 @@
     .settings-block__actions .btn {
         flex: 1;
     }
+}
+
+/* ------------------------------------------------------------
+   SELETOR DE TEMA
+   ------------------------------------------------------------ */
+.settings-row--stack {
+    display: block;
+}
+
+.theme-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color var(--duration-fast) var(--ease-out),
+                background var(--duration-fast) var(--ease-out);
+}
+
+.theme-option:hover {
+    background: var(--color-surface-hover);
+}
+
+.theme-option.is-selected {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.theme-option__swatch {
+    display: flex;
+    flex-shrink: 0;
+    width: 34px;
+    height: 20px;
+    border-radius: var(--radius-xs);
+    overflow: hidden;
+    border: 1px solid var(--color-border-soft);
+}
+
+.theme-option__swatch span {
+    flex: 1;
+}
+
+.theme-option__name {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }

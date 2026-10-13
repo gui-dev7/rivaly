@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" data-motion="full">
+<html lang="pt-BR" data-motion="full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="RIVALY settings — motion, notifications, local data and demo reset.">
+    <meta name="description" content="Configurações da RIVALY — animações, notificações, dados locais e redefinição da demonstração.">
     <meta name="theme-color" content="#050505">
-    <title>Settings — RIVALY</title>
+    <title>Configurações — RIVALY</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+    <link rel="icon" type="image/png" href="/assets/brand/icon-rivaly.png">
+
+    <!-- ============================================================
+         SOCIAL PREVIEW
+         A imagem 1200x630 e o formato que Facebook, WhatsApp, LinkedIn,
+         Discord e X usam no card. A quadrada serve ao atalho de tela
+         inicial no iOS.
+         ============================================================ -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="RIVALY">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Configurações — RIVALY">
+    <meta property="og:description" content="Configurações da RIVALY — animações, notificações, dados locais e redefinição da demonstração.">
+    <meta property="og:image" content="/assets/brand/social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Marca RIVALY">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Configurações — RIVALY">
+    <meta name="twitter:description" content="Configurações da RIVALY — animações, notificações, dados locais e redefinição da demonstração.">
+    <meta name="twitter:image" content="/assets/brand/social.png">
+    <meta name="twitter:image:alt" content="Marca RIVALY">
+
+    <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
+
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -16,17 +42,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/avatar.css">
     <link rel="stylesheet" href="css/pages/settings.css">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="protocol-warning" id="protocolWarning" hidden>
         <div class="protocol-warning__inner">
-            <h2>Run RIVALY from a local server</h2>
-            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <h2>Abra a RIVALY por um servidor local</h2>
+            <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
             <pre>python -m http.server 5500
-# then open http://localhost:5500</pre>
+# depois abra http://localhost:5500</pre>
         </div>
     </div>
     <script>
@@ -36,7 +63,7 @@
     </script>
 
     <div class="app">
-        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Navegação principal"></aside>
 
         <div class="main">
             <header class="topbar" data-topbar></header>
@@ -44,24 +71,23 @@
             <main class="page page--narrow page-enter" id="main-content">
                 <div class="page__header">
                     <div>
-                        <h1 class="page__title">Settings</h1>
+                        <h1 class="page__title">Configurações</h1>
                         <p class="page__lede">
-                            Preferences, local data and everything this build stores about you.
+                            Preferências, dados locais e tudo que esta versão guarda sobre você.
                         </p>
                     </div>
                 </div>
 
-                <!-- Account -->
+                <!-- Conta -->
                 <section class="settings-block card" aria-labelledby="accountTitle">
-                    <h2 class="settings-block__title" id="accountTitle">Account</h2>
+                    <h2 class="settings-block__title" id="accountTitle">Conta</h2>
                     <p class="settings-block__text">
-                        This is a local academic simulation. There is no server, no password
-                        recovery and no synchronisation between devices.
+                        Esta é uma simulação local. Não há servidor, recuperação de senha nem sincronização entre dispositivos.
                     </p>
                     <div class="settings-account" id="accountInfo"></div>
                     <div class="settings-block__actions">
-                        <a class="btn btn--secondary btn--sm" href="passport.html?edit=1">Edit passport</a>
-                        <button type="button" class="btn btn--ghost btn--sm" id="signOutBtn">Sign out</button>
+                        <a class="btn btn--secondary btn--sm" href="passport.html?edit=1">Editar passaporte</a>
+                        <button type="button" class="btn btn--ghost btn--sm" id="signOutBtn">Sair</button>
                     </div>
                 </section>
 
@@ -69,93 +95,139 @@
                 <section class="settings-block card" aria-labelledby="prefsTitle">
                     <h2 class="settings-block__title" id="prefsTitle">Interface</h2>
 
+                    <div class="settings-row settings-row--stack">
+                        <div class="settings-row__body">
+                            <p class="settings-row__label">Tema visual</p>
+                            <p class="settings-row__hint">
+                                Troca a paleta de toda a aplicação. A escolha fica salva neste
+                                navegador e vale para todas as páginas.
+                            </p>
+                        </div>
+                        <div class="theme-picker" id="themePicker" role="radiogroup" aria-label="Tema visual">
+                            <button type="button" class="theme-option" role="radio" aria-checked="true" data-theme-id="rivaly">
+                                <span class="theme-option__swatch" aria-hidden="true">
+                                    <span style="background:#050505"></span><span style="background:#FFD400"></span>
+                                </span>
+                                <span class="theme-option__name">Preto e amarelo</span>
+                            </button>
+                            <button type="button" class="theme-option" role="radio" aria-checked="false" data-theme-id="marrom-rosa">
+                                <span class="theme-option__swatch" aria-hidden="true">
+                                    <span style="background:#201511"></span><span style="background:#FF8FB8"></span>
+                                </span>
+                                <span class="theme-option__name">Marrom e rosa</span>
+                            </button>
+                            <button type="button" class="theme-option" role="radio" aria-checked="false" data-theme-id="azul-verde">
+                                <span class="theme-option__swatch" aria-hidden="true">
+                                    <span style="background:#0B1F1B"></span><span style="background:#9FD8F5"></span>
+                                </span>
+                                <span class="theme-option__name">Azul-bebê e verde</span>
+                            </button>
+                            <button type="button" class="theme-option" role="radio" aria-checked="false" data-theme-id="preto-vermelho">
+                                <span class="theme-option__swatch" aria-hidden="true">
+                                    <span style="background:#050505"></span><span style="background:#FF2E3A"></span>
+                                </span>
+                                <span class="theme-option__name">Preto e vermelho</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="settings-row">
                         <div class="settings-row__body">
-                            <p class="settings-row__label">Reduce motion</p>
+                            <p class="settings-row__label">Tutorial guiado</p>
                             <p class="settings-row__hint">
-                                Disables animations, transitions and the reveal sequences. Your
-                                system preference is respected automatically; this forces it on.
+                                Refaz o passo a passo por todas as áreas da RIVALY,
+                                do Passaporte ao que ainda está por vir.
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn--secondary btn--sm" id="replayTourBtn">
+                            Refazer tutorial
+                        </button>
+                    </div>
+
+                    <div class="settings-row">
+                        <div class="settings-row__body">
+                            <p class="settings-row__label">Reduzir animações</p>
+                            <p class="settings-row__hint">
+                                Desativa animações, transições e as sequências de revelação. A preferência do sistema já é respeitada automaticamente; aqui você força a opção.
                             </p>
                         </div>
                         <label class="toggle">
                             <input type="checkbox" id="reducedMotionToggle">
                             <span class="toggle__track" aria-hidden="true"></span>
-                            <span class="visually-hidden">Reduce motion</span>
+                            <span class="visually-hidden">Reduzir animações</span>
                         </label>
                     </div>
 
                     <div class="settings-row">
                         <div class="settings-row__body">
-                            <p class="settings-row__label">Toast notifications</p>
+                            <p class="settings-row__label">Notificações</p>
                             <p class="settings-row__hint">
-                                In-app feedback for XP, updates and errors. Achievement and level-up
-                                celebrations are not affected.
+                                Avisos dentro do app para XP, atualizações e erros. As comemorações de conquista e de nível não são afetadas.
                             </p>
                         </div>
                         <label class="toggle">
                             <input type="checkbox" id="toastsToggle">
                             <span class="toggle__track" aria-hidden="true"></span>
-                            <span class="visually-hidden">Toast notifications</span>
+                            <span class="visually-hidden">Notificações</span>
                         </label>
                     </div>
 
                     <div class="settings-row">
                         <div class="settings-row__body">
-                            <p class="settings-row__label">Compact density</p>
+                            <p class="settings-row__label">Densidade compacta</p>
                             <p class="settings-row__hint">
-                                Tightens spacing across the application. Useful on smaller laptops.
+                                Reduz os espaçamentos em toda a aplicação. Útil em telas menores.
                             </p>
                         </div>
                         <label class="toggle">
                             <input type="checkbox" id="densityToggle">
                             <span class="toggle__track" aria-hidden="true"></span>
-                            <span class="visually-hidden">Compact density</span>
+                            <span class="visually-hidden">Densidade compacta</span>
                         </label>
                     </div>
                 </section>
 
                 <!-- Storage -->
                 <section class="settings-block card" aria-labelledby="storageTitle">
-                    <h2 class="settings-block__title" id="storageTitle">Local data</h2>
+                    <h2 class="settings-block__title" id="storageTitle">Dados locais</h2>
                     <p class="settings-block__text">
-                        Everything RIVALY knows about you lives under the
-                        <code>rivaly:</code> namespace in this browser's local storage.
+                        Tudo que a RIVALY sabe sobre você fica sob o namespace
+                        <code>rivaly:</code> no armazenamento local deste navegador.
                     </p>
                     <div class="storage-table" id="storageTable"></div>
                     <div class="settings-block__actions">
-                        <button type="button" class="btn btn--secondary btn--sm" id="exportBtn">Export my data</button>
-                        <button type="button" class="btn btn--ghost btn--sm" id="clearActivityBtn">Clear activity history</button>
+                        <button type="button" class="btn btn--secondary btn--sm" id="exportBtn">Exportar meus dados</button>
+                        <button type="button" class="btn btn--ghost btn--sm" id="clearActivityBtn">Limpar histórico de atividade</button>
                     </div>
                 </section>
 
                 <!-- Danger zone -->
                 <section class="settings-block card settings-block--danger" aria-labelledby="resetTitle">
-                    <h2 class="settings-block__title" id="resetTitle">Reset demo data</h2>
+                    <h2 class="settings-block__title" id="resetTitle">Resetar dados de demonstração</h2>
                     <p class="settings-block__text">
-                        Deletes your Passport, Gamer DNA, Library, achievements, activity and saved
-                        squad from this browser. Your sign-in account is kept so you can start over
-                        with the same email.
+                        Apaga deste navegador seu Passaporte, DNA Gamer, Biblioteca, conquistas,
+                        atividade e squad salvo. Sua conta de acesso é mantida, então você pode
+                        recomeçar com o mesmo e-mail.
                     </p>
                     <div class="settings-block__actions">
-                        <button type="button" class="btn btn--danger btn--sm" id="resetBtn">Reset demo data</button>
+                        <button type="button" class="btn btn--danger btn--sm" id="resetBtn">Resetar dados de demonstração</button>
                     </div>
                 </section>
 
                 <!-- About -->
                 <section class="settings-block card" aria-labelledby="aboutTitle">
-                    <h2 class="settings-block__title" id="aboutTitle">About this build</h2>
+                    <h2 class="settings-block__title" id="aboutTitle">Sobre esta versão</h2>
                     <dl class="about-list" id="aboutList"></dl>
                     <p class="settings-block__text">
-                        RIVALY V1 is built with HTML5, CSS3 and vanilla JavaScript only —
-                        no framework, no CSS library, no runtime dependency and no backend.
-                        Version 2 will remodel the same product using React and Tailwind CSS.
+                        A RIVALY usa apenas HTML5, CSS3 e JavaScript puro — sem framework,
+                        sem biblioteca CSS, sem dependência de runtime e sem backend.
                     </p>
                 </section>
             </main>
         </div>
     </div>
 
-    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+    <nav class="bottom-nav" data-bottom-nav aria-label="Navegação principal"></nav>
 
     <script type="module" src="js/settings.js"></script>
 </body>

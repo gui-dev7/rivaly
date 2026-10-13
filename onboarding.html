@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" data-motion="full">
+<html lang="pt-BR" data-motion="full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Set up your RIVALY profile and discover your Gamer DNA.">
+    <meta name="description" content="Configure seu perfil na RIVALY e descubra seu DNA Gamer.">
     <meta name="theme-color" content="#050505">
-    <title>Set up your Passport — RIVALY</title>
+    <title>Monte seu Passaporte — RIVALY</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+    <link rel="icon" type="image/png" href="/assets/brand/icon-rivaly.png">
+
+    <!-- ============================================================
+         SOCIAL PREVIEW
+         A imagem 1200x630 e o formato que Facebook, WhatsApp, LinkedIn,
+         Discord e X usam no card. A quadrada serve ao atalho de tela
+         inicial no iOS.
+         ============================================================ -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="RIVALY">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Monte seu Passaporte Gamer">
+    <meta property="og:description" content="Configure seu perfil na RIVALY e descubra seu DNA Gamer.">
+    <meta property="og:image" content="/assets/brand/social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Marca RIVALY">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Monte seu Passaporte Gamer">
+    <meta name="twitter:description" content="Configure seu perfil na RIVALY e descubra seu DNA Gamer.">
+    <meta name="twitter:image" content="/assets/brand/social.png">
+    <meta name="twitter:image:alt" content="Marca RIVALY">
+
+    <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
+
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -16,17 +42,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/avatar.css">
     <link rel="stylesheet" href="css/pages/onboarding.css">
 </head>
 <body class="onboarding-body">
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="protocol-warning" id="protocolWarning" hidden>
         <div class="protocol-warning__inner">
-            <h2>Run RIVALY from a local server</h2>
-            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <h2>Abra a RIVALY por um servidor local</h2>
+            <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
             <pre>python -m http.server 5500
-# then open http://localhost:5500</pre>
+# depois abra http://localhost:5500</pre>
         </div>
     </div>
     <script>
@@ -37,17 +64,15 @@
 
     <header class="ob-header">
         <span class="sidebar__brand" style="padding:0">
-            <span class="brand-mark" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z"/><path d="M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z"/></svg>
-            </span>
+            <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
             <span class="brand-name">
                 <span class="brand-name__top">RIVALY</span>
-                <span class="brand-name__sub">Passport setup</span>
+                <span class="brand-name__sub">Montagem do Passaporte</span>
             </span>
         </span>
 
         <div class="ob-progress" id="obProgress" hidden>
-            <span class="ob-progress__label" id="obProgressLabel">Step 1 of 4</span>
+            <span class="ob-progress__label" id="obProgressLabel">Passo 1 de 4</span>
             <span class="progress progress--thin">
                 <span class="progress__fill" id="obProgressFill" style="transform:scaleX(0)"></span>
             </span>
@@ -65,24 +90,23 @@
                     <span class="ob-welcome__ring-inner"></span>
                 </span>
 
-                <p class="eyebrow anim-fade-down">Passport initialised</p>
+                <p class="eyebrow anim-fade-down">Passaporte iniciado</p>
                 <h1 class="ob-welcome__title" id="welcomeTitle">
-                    Welcome, <span id="welcomeName">player</span>.
+                    Boas-vindas, <span id="welcomeName">jogador</span>.
                 </h1>
                 <p class="ob-welcome__text">
-                    Your Passport exists, but it is blank. A few details about how you play,
-                    then ten questions that produce your <strong>Gamer DNA</strong>.
+                    Seu Passaporte existe, mas está em branco. Conte alguns detalhes sobre como você joga e responda a dez perguntas que formarão seu <strong>DNA Gamer</strong>.
                 </p>
 
                 <div class="ob-welcome__xp" id="welcomeXp">
-                    <span class="ob-welcome__xp-label">Passport created</span>
+                    <span class="ob-welcome__xp-label">Passaporte criado</span>
                     <span class="ob-welcome__xp-value numeric">+100 XP</span>
                 </div>
 
                 <button type="button" class="btn btn--primary btn--lg" data-next="setup-1">
-                    Let's begin
+                    Começar
                 </button>
-                <p class="ob-welcome__hint">Takes about two minutes.</p>
+                <p class="ob-welcome__hint">Leva cerca de dois minutos.</p>
             </div>
         </section>
 
@@ -91,42 +115,54 @@
              ============================================================ -->
         <section class="ob-stage" data-stage="setup-1" hidden aria-labelledby="setup1Title">
             <div class="ob-panel">
-                <p class="eyebrow">Profile · 1 of 3</p>
-                <h2 class="ob-panel__title" id="setup1Title">Where do you play?</h2>
-                <p class="ob-panel__text">This tells the Squad Finder who it can realistically match you with.</p>
+                <p class="eyebrow">Perfil · 1 de 3</p>
+                <h2 class="ob-panel__title" id="setup1Title">Onde você joga?</h2>
+                <p class="ob-panel__text">Isso ajuda a Buscar Squad a encontrar quem combina com você.</p>
 
                 <form class="ob-form" id="setupForm1" novalidate>
                     <fieldset class="field">
-                        <legend class="field__label">Platforms <span class="ob-required">required</span></legend>
+                        <legend class="field__label">Seu avatar</legend>
+                        <div class="avatar-edit">
+                            <span class="avatar avatar--xl" id="obAvatar"></span>
+                            <div class="avatar-edit__body">
+                                <p class="avatar-edit__title">Escolha seu avatar</p>
+                                <p class="avatar-edit__meta" id="obAvatarMeta"></p>
+                            </div>
+                            <button type="button" class="btn btn--secondary btn--sm" id="obAvatarBtn">Trocar</button>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="field">
+                        <legend class="field__label">Plataformas <span class="ob-required">obrigatório</span></legend>
                         <div class="chip-set" id="platformChips"></div>
                         <p class="field__error" id="platformsError" role="alert"></p>
                     </fieldset>
 
                     <fieldset class="field">
-                        <legend class="field__label">Languages you play in</legend>
+                        <legend class="field__label">Idiomas em que você joga</legend>
                         <div class="chip-set" id="languageChips"></div>
                     </fieldset>
 
                     <div class="grid grid--form-2">
                         <div class="field">
-                            <label class="field__label" for="regionSelect">Region <span class="ob-optional">optional</span></label>
+                            <label class="field__label" for="regionSelect">Região <span class="ob-optional">opcional</span></label>
                             <div class="select-wrap">
                                 <select class="select" id="regionSelect">
-                                    <option value="">Prefer not to say</option>
+                                    <option value="">Prefiro não dizer</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="field">
-                            <label class="field__label" for="ageInput">Age <span class="ob-optional">optional</span></label>
+                            <label class="field__label" for="ageInput">Idade <span class="ob-optional">opcional</span></label>
                             <input class="input" type="number" id="ageInput" min="10" max="120" placeholder="—" inputmode="numeric">
-                            <p class="field__hint">Only used to describe your Passport. Never shared.</p>
+                            <p class="field__hint">Usado apenas para descrever seu Passaporte. Nunca compartilhado.</p>
                         </div>
                     </div>
 
                     <div class="ob-actions">
-                        <button type="button" class="btn btn--ghost" data-skip-all>Skip for now</button>
-                        <button type="submit" class="btn btn--primary">Continue</button>
+                        <button type="button" class="btn btn--ghost" data-skip-all>Pular por enquanto</button>
+                        <button type="submit" class="btn btn--primary">Continuar</button>
                     </div>
                 </form>
             </div>
@@ -134,27 +170,27 @@
 
         <section class="ob-stage" data-stage="setup-2" hidden aria-labelledby="setup2Title">
             <div class="ob-panel">
-                <p class="eyebrow">Profile · 2 of 3</p>
-                <h2 class="ob-panel__title" id="setup2Title">How do you play?</h2>
-                <p class="ob-panel__text">The Compatibility Engine weighs all four of these when it ranks teammates.</p>
+                <p class="eyebrow">Perfil · 2 de 3</p>
+                <h2 class="ob-panel__title" id="setup2Title">Como você joga?</h2>
+                <p class="ob-panel__text">O Motor de Compatibilidade pesa esses quatro itens ao ranquear companheiros.</p>
 
                 <form class="ob-form" id="setupForm2" novalidate>
                     <fieldset class="field">
-                        <legend class="field__label">Playstyle <span class="ob-required">required</span></legend>
-                        <div class="ob-options" id="playstyleOptions" role="radiogroup" aria-label="Playstyle"></div>
+                        <legend class="field__label">Estilo de jogo <span class="ob-required">obrigatório</span></legend>
+                        <div class="ob-options" id="playstyleOptions" role="radiogroup" aria-label="Estilo de jogo"></div>
                         <p class="field__error" id="playstyleError" role="alert"></p>
                     </fieldset>
 
                     <fieldset class="field">
-                        <legend class="field__label">When are you usually online? <span class="ob-required">required</span></legend>
+                        <legend class="field__label">Quando você costuma estar online? <span class="ob-required">obrigatório</span></legend>
                         <div class="chip-set" id="scheduleChips"></div>
                         <p class="field__error" id="schedulesError" role="alert"></p>
                     </fieldset>
 
                     <fieldset class="field">
-                        <legend class="field__label">Your role in a squad <span class="ob-required">required</span></legend>
+                        <legend class="field__label">Sua função em um squad <span class="ob-required">obrigatório</span></legend>
                         <div class="chip-set" id="roleChips"></div>
-                        <p class="field__hint">Pick everything that fits — complementary roles score higher in matchmaking.</p>
+                        <p class="field__hint">Marque tudo que se aplica — funções complementares pontuam mais no matchmaking.</p>
                         <p class="field__error" id="rolesError" role="alert"></p>
                     </fieldset>
 
@@ -162,13 +198,13 @@
                         <label class="toggle">
                             <input type="checkbox" id="voiceToggle" checked>
                             <span class="toggle__track" aria-hidden="true"></span>
-                            <span>I use voice chat</span>
+                            <span>Uso chat de voz</span>
                         </label>
                     </div>
 
                     <div class="ob-actions">
-                        <button type="button" class="btn btn--ghost" data-back="setup-1">Back</button>
-                        <button type="submit" class="btn btn--primary">Continue</button>
+                        <button type="button" class="btn btn--ghost" data-back="setup-1">Voltar</button>
+                        <button type="submit" class="btn btn--primary">Continuar</button>
                     </div>
                 </form>
             </div>
@@ -176,38 +212,38 @@
 
         <section class="ob-stage" data-stage="setup-3" hidden aria-labelledby="setup3Title">
             <div class="ob-panel">
-                <p class="eyebrow">Profile · 3 of 3</p>
-                <h2 class="ob-panel__title" id="setup3Title">What do you play?</h2>
-                <p class="ob-panel__text">Pick your genres, and optionally the games you are on right now.</p>
+                <p class="eyebrow">Perfil · 3 de 3</p>
+                <h2 class="ob-panel__title" id="setup3Title">O que você joga?</h2>
+                <p class="ob-panel__text">Escolha seus gêneros e, opcionalmente, os jogos que está jogando agora.</p>
 
                 <form class="ob-form" id="setupForm3" novalidate>
                     <fieldset class="field">
-                        <legend class="field__label">Favourite genres <span class="ob-required">required</span></legend>
+                        <legend class="field__label">Gêneros favoritos <span class="ob-required">obrigatório</span></legend>
                         <div class="chip-set" id="genreChips"></div>
                         <p class="field__error" id="genresError" role="alert"></p>
                     </fieldset>
 
                     <fieldset class="field">
-                        <legend class="field__label">Currently playing <span class="ob-optional">optional</span></legend>
+                        <legend class="field__label">Jogando agora <span class="ob-optional">opcional</span></legend>
                         <div class="input-group">
                             <span class="input-group__icon" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg>
                             </span>
-                            <input class="input" type="search" id="gameSearch" placeholder="Search the catalogue…" aria-label="Search games" aria-controls="currentGameChips">
+                            <input class="input" type="search" id="gameSearch" placeholder="Buscar no catálogo…" aria-label="Buscar jogos" aria-controls="currentGameChips">
                         </div>
                         <div class="chip-set ob-scroll" id="currentGameChips"></div>
-                        <p class="field__hint">Selected games are added to your Library as “Playing” when you finish setup.</p>
+                        <p class="field__hint">Os jogos marcados entram na sua Biblioteca como “Jogando” ao concluir o cadastro.</p>
                     </fieldset>
 
                     <div class="field">
-                        <label class="field__label" for="bioInput">One line about you <span class="ob-optional">optional</span></label>
-                        <textarea class="textarea" id="bioInput" maxlength="140" rows="2" placeholder="e.g. Support main, night player, allergic to solo queue."></textarea>
+                        <label class="field__label" for="bioInput">Uma linha sobre você <span class="ob-optional">opcional</span></label>
+                        <textarea class="textarea" id="bioInput" maxlength="140" rows="2" placeholder="ex.: main de suporte, jogo de noite, alérgico a solo queue."></textarea>
                         <p class="field__hint"><span id="bioCount">0</span>/140</p>
                     </div>
 
                     <div class="ob-actions">
-                        <button type="button" class="btn btn--ghost" data-back="setup-2">Back</button>
-                        <button type="submit" class="btn btn--primary">Start the Gamer DNA</button>
+                        <button type="button" class="btn btn--ghost" data-back="setup-2">Voltar</button>
+                        <button type="submit" class="btn btn--primary">Começar o DNA Gamer</button>
                     </div>
                 </form>
             </div>
@@ -219,17 +255,17 @@
         <section class="ob-stage" data-stage="dna" hidden aria-labelledby="dnaTitle">
             <div class="ob-panel ob-panel--dna">
                 <div class="ob-dna__meta">
-                    <p class="eyebrow">Gamer DNA</p>
+                    <p class="eyebrow">DNA Gamer</p>
                     <p class="ob-dna__counter numeric" id="dnaCounter">01 / 10</p>
                 </div>
 
-                <h2 class="ob-panel__title" id="dnaTitle">Question</h2>
+                <h2 class="ob-panel__title" id="dnaTitle">Pergunta</h2>
 
                 <div class="ob-options" id="dnaOptions" role="radiogroup" aria-labelledby="dnaTitle"></div>
 
                 <div class="ob-actions">
-                    <button type="button" class="btn btn--ghost" id="dnaBack">Back</button>
-                    <p class="ob-dna__hint">Pick the answer that feels most like you. There are no wrong ones.</p>
+                    <button type="button" class="btn btn--ghost" id="dnaVoltar">Voltar</button>
+                    <p class="ob-dna__hint">Escolha a resposta mais parecida com você. Não existe resposta errada.</p>
                 </div>
             </div>
         </section>
@@ -243,7 +279,7 @@
                     <span class="ob-analyse__helix"></span>
                     <span class="ob-analyse__sweep"></span>
                 </div>
-                <h2 class="ob-analyse__title" id="analysingTitle">Analysing Gamer DNA…</h2>
+                <h2 class="ob-analyse__title" id="analysingTitle">Analisando o DNA Gamer…</h2>
                 <ul class="ob-analyse__log" id="analyseLog" aria-live="polite"></ul>
             </div>
         </section>
@@ -254,18 +290,18 @@
         <section class="ob-stage" data-stage="reveal" hidden aria-labelledby="revealTitle">
             <div class="ob-reveal">
                 <div class="ob-reveal__scores">
-                    <p class="eyebrow">Attribute analysis</p>
+                    <p class="eyebrow">Análise de atributos</p>
                     <div class="dna-list" id="revealBars"></div>
                 </div>
 
                 <div class="ob-reveal__identity" id="revealIdentity">
-                    <p class="ob-reveal__found" id="revealFound">Identity found</p>
+                    <p class="ob-reveal__found" id="revealFound">Identidade encontrada</p>
                     <h2 class="ob-reveal__archetype" id="revealTitle">—</h2>
                     <p class="ob-reveal__tagline" id="revealTagline"></p>
                     <p class="ob-reveal__description" id="revealDescription"></p>
                     <ul class="ob-reveal__traits" id="revealTraits"></ul>
-                    <button type="button" class="btn btn--primary btn--lg" id="revealContinue">
-                        Generate my Passport
+                    <button type="button" class="btn btn--primary btn--lg" id="revealContinuar">
+                        Gerar meu Passaporte
                     </button>
                 </div>
             </div>
@@ -276,10 +312,10 @@
              ============================================================ -->
         <section class="ob-stage ob-stage--center" data-stage="created" hidden aria-labelledby="createdTitle">
             <div class="ob-created">
-                <p class="eyebrow anim-fade-down">Registration complete</p>
-                <h2 class="ob-created__title" id="createdTitle">Your Gamer Passport is live.</h2>
+                <p class="eyebrow anim-fade-down">Cadastro concluído</p>
+                <h2 class="ob-created__title" id="createdTitle">Seu Passaporte Gamer está no ar.</h2>
                 <p class="ob-created__text">
-                    Every game you add and every squad you find writes back to it.
+                    Cada jogo que você adiciona e cada squad que encontra passam a fazer parte dele.
                 </p>
 
                 <div class="ob-created__card" id="createdCard"></div>
@@ -287,7 +323,7 @@
                 <div class="ob-created__rewards" id="createdRewards"></div>
 
                 <a class="btn btn--primary btn--lg" href="dashboard.html" id="enterDashboard">
-                    Enter the dashboard
+                    Entrar no Início
                 </a>
             </div>
         </section>

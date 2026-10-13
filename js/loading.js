@@ -296,7 +296,7 @@ function convergeChevrons() {
     placeChevrons(GAP_CLOSED, TIMING.converge);
 }
 
-/** Contact: a tight overshoot plus one short horizontal rule. */
+/** Accountct: a tight overshoot plus one short horizontal rule. */
 function playImpact() {
     if (reduceMotion) return;
 

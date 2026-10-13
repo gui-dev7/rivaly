@@ -39,6 +39,7 @@ export default {
                 onboarding: resolve('onboarding.html'),
                 dashboard: resolve('dashboard.html'),
                 library: resolve('library.html'),
+                discover: resolve('discover.html'),
                 passport: resolve('passport.html'),
                 achievements: resolve('achievements.html'),
                 squads: resolve('squads.html'),

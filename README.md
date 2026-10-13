@@ -231,6 +231,128 @@ Two modules go beyond the original brief, for good reason:
 
 ---
 
+## Game assets
+
+Artwork is never stored in the catalogue. A game carries at most a Steam app id:
+
+```javascript
+{
+  id: "cyberpunk",
+  title: "Cyberpunk 2077",
+  steamId: 1091500
+}
+```
+
+`js/game-assets.js` derives all four formats from that single number:
+
+| Asset | Steam file | Used by |
+| --- | --- | --- |
+| `cover` | `library_600x900.jpg` | library cards, dashboard rows, passport tiles |
+| `hero` | `library_hero.jpg` | passport card banner, large features |
+| `header` | `header.jpg` | horizontal cards |
+| `capsule` | `capsule_616x353.jpg` | intermediate cards, horizontal fallback |
+
+Images are requested straight from the CDN by `<img src>`. There is no
+`fetch()`, no Blob conversion, no proxy, no backend and no download step.
+
+### Resolution order
+
+Per asset type, not per game — a title can take its cover from Steam and its
+hero from a local override:
+
+```text
+1. game.customAssets[type]    explicit override always wins
+2. Steam CDN                  derived from steamId
+3. Rivaly fallback            rendered in CSS, never a broken image
+```
+
+### Nothing breaks
+
+Steam does not ship every file for every app — `library_hero.jpg` in particular
+is often missing. Each image carries its remaining attempts in
+`data-fallbacks`, and one capture-phase listener in `js/app.js` walks them:
+
+```text
+library_hero.jpg -> header.jpg -> capsule_616x353.jpg -> custom -> CSS fallback
+```
+
+When the chain runs out the `<img>` is removed and the gradient + monogram
+underneath becomes the artwork. Blocking `*steamstatic.com*` entirely leaves the
+app fully usable with zero broken images — there is a test for exactly that.
+
+Images fade in on load (`.game-image.is-loaded`) over a skeleton, so a slow CDN
+never shows an empty box.
+
+### Adding a game
+
+```javascript
+{ id: "hades2", title: "Hades II", steamId: 1145350 }
+```
+
+No image URL required. For a title that is not on Steam:
+
+```javascript
+{
+  id: "valorant",
+  title: "Valorant",
+  steamId: null,
+  customAssets: { cover: "/assets/covers/valorant.webp" }
+}
+```
+
+**Migration status:** 25 of 32 games use the Steam CDN; the remaining 7 keep
+local art. Provenance: [`assets/ATTRIBUTION.md`](assets/ATTRIBUTION.md).
+
+---
+
+## Avatars
+
+Avatars come from the [DiceBear](https://dicebear.com) HTTP API — no package, no
+SDK, called by `<img src>`.
+
+```javascript
+getDiceBearAvatar("pixel-art", "rival-007")
+// https://api.dicebear.com/10.x/pixel-art/svg?seed=rival-007
+```
+
+That function in `js/avatar-service.js` is the only place a DiceBear URL is
+built. `js/avatar-data.js` holds 120 seeds across four styles, interleaved so
+the ALL tab shows every family on the first page.
+
+| Category | Style |
+| --- | --- |
+| Pixel | `pixel-art` |
+| Characters | `adventurer` |
+| Bots | `bottts` |
+| Minimal | `lorelei` |
+
+### One model for the whole app
+
+`resolveAvatar(user)` returns the same shape whatever the source, so the
+sidebar, passport, squads and settings share one code path:
+
+```javascript
+{ type: "dicebear", style, seed, src }   // src is rebuilt, never stored
+{ type: "upload",   src }                // a downscaled data URL
+```
+
+### Storage stays small
+
+Only `{ type, style, seed }` is persisted — never the SVG. A full passport with
+a DiceBear avatar is about **1 KB**. Uploads are centre-cropped and re-encoded to
+a 256×256 WebP in the browser before storage, because dropping a 4 MB phone photo
+into `localStorage` verbatim would take the whole passport down with a
+`QuotaExceededError`.
+
+### Defaults and fallbacks
+
+A new passport gets a stable avatar seeded from the nickname, so `gui-dev7`
+always produces the same face without the user choosing anything. If the API is
+unreachable the initials plate underneath becomes the avatar — never a broken
+image icon.
+
+---
+
 ## Design system
 
 ### Identity: black + yellow

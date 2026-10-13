@@ -1,5 +1,5 @@
 /**
- * library.js — controller for the Game Library page.
+ * library.js — controller for the Biblioteca de Jogos page.
  *
  * Owns: filtering, sorting, the add/edit dialog, removal, native
  * drag-and-drop between statuses, and the XP/achievement side effects
@@ -9,9 +9,11 @@
 import { bootApp, afterRender, haltModule } from './app.js';
 import {
     listHydrated, addEntry, updateEntry, removeEntry, findEntry,
-    statusCounts, librarySummary, hasGame,
+    statusCounts, librarySummary, hasGame, resolveGame,
 } from './library-store.js';
 import { GAMES, LIBRARY_STATUSES, PLATFORMS, getGameById } from './data.js';
+import { searchGames, getGame, coverUrl, platformNames, releaseYear, genreNames } from './gamedb.js';
+import { toCatalogueGame, externalIdFor } from './external-games.js';
 import { awardXp, checkAchievements } from './gamification.js';
 import { logActivity } from './activity.js';
 import { toast, toastInfo } from './notifications.js';
@@ -25,8 +27,8 @@ import { prefersReducedMotion } from './animations.js';
 
 const user = bootApp({
     page: 'library',
-    title: 'Game Library',
-    subtitle: 'Everything you play, in one record',
+    title: 'Biblioteca de Jogos',
+    subtitle: 'Tudo o que você joga, em um só registro',
 });
 if (!user) await haltModule();
 
@@ -52,23 +54,23 @@ function renderSummary() {
     const summary = librarySummary();
     render(summaryHost, [
         statMarkup({
-            label: 'Total games', value: summary.total, icon: 'library',
-            meta: summary.platforms.length ? `${summary.platforms.length} platform${summary.platforms.length > 1 ? 's' : ''}` : 'Nothing yet',
+            label: 'Total de jogos', value: summary.total, icon: 'library',
+            meta: summary.platforms.length ? `${summary.platforms.length} plataforma${summary.platforms.length > 1 ? 's' : ''}` : 'Nenhuma ainda',
             accent: 'var(--color-primary)',
         }),
         statMarkup({
-            label: 'Hours tracked', value: formatHours(summary.hours), icon: 'clock',
-            meta: summary.total ? `${Math.round(summary.hours / Math.max(1, summary.total))}h average` : '—',
+            label: 'Horas registradas', value: formatHours(summary.hours), icon: 'clock',
+            meta: summary.total ? `${Math.round(summary.hours / Math.max(1, summary.total))} h de média` : '—',
             accent: 'var(--color-text-muted)',
         }),
         statMarkup({
-            label: 'Completed', value: summary.completed, icon: 'check-circle',
-            meta: summary.total ? `${Math.round((summary.completed / summary.total) * 100)}% of your library` : '—',
+            label: 'Concluídos', value: summary.completed, icon: 'check-circle',
+            meta: summary.total ? `${Math.round((summary.completed / summary.total) * 100)}% da sua biblioteca` : '—',
             accent: 'var(--color-accent)',
         }),
         statMarkup({
-            label: 'Average rating', value: summary.averageRating || '—', icon: 'star',
-            meta: summary.topGenres[0] ? `Top genre: ${summary.topGenres[0].genre}` : 'Rate a game to start',
+            label: 'Nota média', value: summary.averageRating || '—', icon: 'star',
+            meta: summary.topGenres[0] ? `Gênero principal: ${summary.topGenres[0].genre}` : 'Avalie um jogo para começar',
             accent: 'var(--color-primary)',
         }),
     ].join(''));
@@ -80,7 +82,7 @@ function renderSummary() {
 
 function renderTabs() {
     const counts = statusCounts();
-    const tabs = [{ id: 'all', label: 'All' }, ...LIBRARY_STATUSES];
+    const tabs = [{ id: 'all', label: 'Todos' }, ...LIBRARY_STATUSES];
 
     render(tabsHost, tabs.map((status) => `
         <button type="button" class="segmented__item" role="tab" data-status="${escapeHtml(status.id)}"
@@ -152,17 +154,17 @@ function renderGrid() {
         render(gridHost, total === 0
             ? emptyStateMarkup({
                 iconName: 'library',
-                title: 'Your library is waiting.',
-                text: 'Add your first game and start building your Gamer Passport. Genres, platforms and hours all feed back into your identity.',
-                action: '<button type="button" class="btn btn--primary btn--sm" data-action="add">Add game</button>',
+                title: 'Sua biblioteca está esperando.',
+                text: 'Adicione seu primeiro jogo e comece a montar seu Passaporte Gamer. Gêneros, plataformas e horas ajudam a definir sua identidade.',
+                action: '<button type="button" class="btn btn--primary btn--sm" data-action="add">Adicionar jogo</button>',
             })
             : emptyStateMarkup({
                 iconName: 'search',
-                title: 'Nothing matches this view.',
+                title: 'Nada corresponde a esta visualização.',
                 text: view.query
-                    ? `No game in your library matches “${view.query}”.`
-                    : 'No games have this status yet. Drag a card onto this tab, or edit an entry to move it here.',
-                action: '<button type="button" class="btn btn--secondary btn--sm" data-action="clear-filters">Clear filters</button>',
+                    ? `Nenhum jogo da sua biblioteca corresponde a “${view.query}”.`
+                    : 'Nenhum jogo tem este status ainda. Arraste um cartão até esta aba ou edite uma entrada para movê-lo.',
+                action: '<button type="button" class="btn btn--secondary btn--sm" data-action="clear-filters">Limpar filtros</button>',
             })
         );
         return;
@@ -205,11 +207,11 @@ function platformOptions(game, selected) {
 function ratingInput(selected = 0) {
     // Reversed in the DOM so the CSS sibling selector can light up
     // every star to the left of the hovered one.
-    return `<div class="rating-input" role="radiogroup" aria-label="Rating">
+    return `<div class="rating-input" role="radiogroup" aria-label="Avaliação">
         ${[5, 4, 3, 2, 1].map((value) => `
             <input type="radio" name="rating" id="rating-${value}" value="${value}"${Number(selected) === value ? ' checked' : ''}>
-            <label for="rating-${value}" title="${value} star${value > 1 ? 's' : ''}">
-                ${icon('star', { size: 18, title: `${value} stars` })}
+            <label for="rating-${value}" title="${value} estrela${value > 1 ? 's' : ''}">
+                ${icon('star', { size: 18, title: `${value} estrela${value > 1 ? 's' : ''}` })}
             </label>
         `).join('')}
     </div>`;
@@ -217,14 +219,14 @@ function ratingInput(selected = 0) {
 
 function openGameDialog(entryId = null) {
     const existing = entryId ? findEntry(entryId) : null;
-    const existingGame = existing ? getGameById(existing.gameId) : null;
+    const existingGame = existing ? resolveGame(existing.gameId) : null;
 
     const available = GAMES
         .filter((game) => !hasGame(game.id) || game.id === existing?.gameId)
         .sort((a, b) => a.title.localeCompare(b.title));
 
     if (!existing && available.length === 0) {
-        toastInfo('Catalogue complete', 'Every game in the demo catalogue is already in your library.');
+        toastInfo('Catálogo completo', 'Todos os jogos do catálogo demo já estão na sua biblioteca.');
         return;
     }
 
@@ -239,13 +241,21 @@ function openGameDialog(entryId = null) {
                         </div>
                    </div>`
                 : `<div class="field">
-                        <label class="field__label" for="gameSelect">Game</label>
-                        <div class="select-wrap">
-                            <select class="select" id="gameSelect" required data-autofocus>
-                                ${available.map((game) => `<option value="${game.id}">${escapeHtml(game.title)} — ${escapeHtml(game.genre[0])}</option>`).join('')}
-                            </select>
+                        <label class="field__label" for="gameSearch">Jogo</label>
+                        <div class="input-group">
+                            <span class="input-group__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                            </span>
+                            <input class="input" type="search" id="gameSearch" autocomplete="off"
+                                   placeholder="Busque qualquer jogo pelo nome" data-autofocus
+                                   aria-describedby="gameSearchHint">
                         </div>
-                        <p class="field__hint">${available.length} game${available.length === 1 ? '' : 's'} still available in the demo catalogue.</p>
+                        <p class="field__hint" id="gameSearchHint">
+                            Digite duas letras ou mais. A busca cobre o catálogo da RIVALY e a base
+                            aberta do GameDB — qualquer jogo pode entrar na sua biblioteca.
+                        </p>
+                        <div class="game-picker" id="gameResults" role="listbox" aria-label="Resultados da busca"></div>
+                        <input type="hidden" id="gameSelect" required>
                    </div>`}
 
             <div class="grid grid--form-2">
@@ -257,7 +267,7 @@ function openGameDialog(entryId = null) {
                 </div>
 
                 <div class="field">
-                    <label class="field__label" for="platformSelect">Platform</label>
+                    <label class="field__label" for="platformSelect">Plataforma</label>
                     <div class="select-wrap">
                         <select class="select" id="platformSelect">
                             ${existing
@@ -270,41 +280,176 @@ function openGameDialog(entryId = null) {
 
             <div class="grid grid--form-2">
                 <div class="field">
-                    <label class="field__label" for="hoursInput">Hours played</label>
+                    <label class="field__label" for="hoursInput">Horas jogadas</label>
                     <input class="input" type="number" id="hoursInput" min="0" max="99999" step="1"
                            inputmode="numeric" value="${existing?.hours ?? 0}">
                 </div>
 
                 <div class="field">
-                    <span class="field__label">Your rating</span>
+                    <span class="field__label">Sua nota</span>
                     ${ratingInput(existing?.rating ?? 0)}
                 </div>
             </div>
 
             <div class="field">
-                <label class="field__label" for="noteInput">Note <span class="ob-optional">optional</span></label>
+                <label class="field__label" for="noteInput">Observação <span class="ob-optional">opcional</span></label>
                 <input class="input" type="text" id="noteInput" maxlength="200"
-                       placeholder="e.g. Waiting for the co-op patch" value="${escapeHtml(existing?.note ?? '')}">
+                       placeholder="Ex.: aguardando a atualização do modo cooperativo" value="${escapeHtml(existing?.note ?? '')}">
             </div>
         </form>
     `;
 
     const { close, root } = openModal({
-        title: existing ? 'Edit library entry' : 'Add a game',
-        subtitle: existing ? 'Update status, hours and rating.' : 'Pick a title from the demo catalogue.',
+        title: existing ? 'Editar entrada da biblioteca' : 'Adicionar um jogo',
+        subtitle: existing ? 'Atualize o status, as horas e a avaliação.' : 'Busque qualquer jogo e escolha o status.',
         body,
         footer: `
-            <button type="button" class="btn btn--ghost" data-modal-close>Cancel</button>
-            <button type="submit" form="gameForm" class="btn btn--primary">${existing ? 'Save changes' : 'Add to library'}</button>
+            <button type="button" class="btn btn--ghost" data-modal-close>Cancelar</button>
+            <button type="submit" form="gameForm" class="btn btn--primary">${existing ? 'Salvar alterações' : 'Adicionar à biblioteca'}</button>
         `,
     });
 
-    // Keep the platform list in sync with the chosen game.
     const gameSelect = root.querySelector('#gameSelect');
-    gameSelect?.addEventListener('change', () => {
-        const game = getGameById(gameSelect.value);
-        root.querySelector('#platformSelect').innerHTML = platformOptions(game, null);
-    });
+
+    /* --------------------------------------------------------
+       BUSCA DE JOGO
+
+       Duas fontes na mesma lista: o catalogo curado responde na hora e
+       tem arte propria; o GameDB cobre o resto do mundo. Guardamos o
+       registro do escolhido para que um jogo externo chegue completo ao
+       `addEntry` — sem isso a entrada apontaria para um catalogo que nao
+       o conhece.
+       -------------------------------------------------------- */
+    const results = root.querySelector('#gameResults');
+
+    if (results) {
+        let escolhido = null;      // registro pronto para a Biblioteca
+        let token = 0;
+        let debounce = null;
+
+        const linha = (id, titulo, meta, capa, externo) => `
+            <button type="button" class="game-picker__item" role="option" aria-selected="false"
+                    data-pick="${escapeHtml(id)}" data-externo="${externo ? '1' : ''}">
+                <span class="game-picker__art">${capa
+                    ? `<img src="${escapeHtml(capa)}" alt="" loading="lazy" decoding="async" data-fallback>`
+                    : `<span class="game-picker__initials">${escapeHtml(titulo.slice(0, 2).toUpperCase())}</span>`}</span>
+                <span class="game-picker__body">
+                    <span class="game-picker__name">${escapeHtml(titulo)}</span>
+                    <span class="game-picker__meta">${escapeHtml(meta)}</span>
+                </span>
+            </button>`;
+
+        const marcar = (id, registro) => {
+            if (!registro) return;
+            escolhido = registro;
+            gameSelect.value = id;
+
+            // Com o jogo escolhido a lista recolhe: mantê-la aberta empurra
+            // status, plataforma e nota para fora da tela no celular.
+            render(results, `
+                <div class="game-picker__chosen">
+                    <span class="game-picker__art">${registro.customAssets?.cover
+                        ? `<img src="${escapeHtml(registro.customAssets.cover)}" alt="" decoding="async" data-fallback>`
+                        : `<span class="game-picker__initials">${escapeHtml(registro.title.slice(0, 2).toUpperCase())}</span>`}</span>
+                    <span class="game-picker__body">
+                        <span class="game-picker__name">${escapeHtml(registro.title)}</span>
+                        <span class="game-picker__meta">${escapeHtml([registro.year, registro.genre?.[0]].filter(Boolean).join(' · '))}</span>
+                    </span>
+                    <button type="button" class="btn btn--ghost btn--sm" data-trocar>Trocar</button>
+                </div>
+            `);
+
+            // A lista de plataformas segue o jogo escolhido.
+            root.querySelector('#platformSelect').innerHTML = platformOptions(registro, null);
+        };
+
+        const buscar = async (termo) => {
+            const meu = ++token;
+            const query = termo.trim();
+
+            if (query.length < 2) {
+                render(results, '');
+                return;
+            }
+
+            // 1. Catalogo curado: instantaneo, e o que ja esta na Biblioteca fica de fora.
+            const locais = available.filter((g) => g.title.toLowerCase().includes(query.toLowerCase()));
+            render(results, [
+                ...locais.map((g) => linha(g.id, g.title, `${g.genre[0]} · ${g.year}`, null, false)),
+                `<p class="game-picker__status">Buscando no GameDB…</p>`,
+            ].join(''));
+
+            let achados = [];
+            try {
+                achados = await searchGames(query, { limit: 12 });
+            } catch {
+                if (meu !== token) return;
+                render(results, [
+                    ...locais.map((g) => linha(g.id, g.title, `${g.genre[0]} · ${g.year}`, null, false)),
+                    `<p class="game-picker__status">Não foi possível falar com o GameDB agora.</p>`,
+                ].join(''));
+                return;
+            }
+            if (meu !== token) return;
+
+            const registros = (await Promise.all(achados.map((h) => getGame(h.id)))).filter(Boolean);
+            if (meu !== token) return;
+
+            const externos = await Promise.all(registros.map(async (raw) => {
+                const nomes = await platformNames(raw);
+                return toCatalogueGame(raw, {
+                    cover: coverUrl(raw, 't_cover_big'),
+                    platformNames: nomes,
+                    year: releaseYear(raw),
+                    genres: genreNames(raw),
+                });
+            }));
+            if (meu !== token) return;
+
+            // Um titulo ja presente na Biblioteca nao pode ser adicionado de novo.
+            const disponiveis = externos.filter((g) => !hasGame(g.id));
+
+            render(results, [
+                ...locais.map((g) => linha(g.id, g.title, `${g.genre[0]} · ${g.year}`, null, false)),
+                ...disponiveis.map((g) => linha(
+                    g.id, g.title,
+                    [g.year, g.genre[0]].filter(Boolean).join(' · ') || 'GameDB',
+                    g.customAssets?.cover ?? null, true,
+                )),
+                (locais.length + disponiveis.length) === 0
+                    ? `<p class="game-picker__status">Nenhum jogo encontrado para "${escapeHtml(query)}".</p>`
+                    : '',
+            ].join(''));
+
+            // Guarda os registros externos para o clique nao ter de refazer a busca.
+            results._externos = new Map(disponiveis.map((g) => [g.id, g]));
+        };
+
+        root.querySelector('#gameSearch').addEventListener('input', (event) => {
+            clearTimeout(debounce);
+            const termo = event.target.value;
+            debounce = setTimeout(() => buscar(termo), 350);
+        });
+
+        results.addEventListener('click', (event) => {
+            if (event.target.closest('[data-trocar]')) {
+                escolhido = null;
+                gameSelect.value = '';
+                const campo = root.querySelector('#gameSearch');
+                campo.focus();
+                buscar(campo.value);
+                return;
+            }
+
+            const botao = event.target.closest('[data-pick]');
+            if (!botao) return;
+            const id = botao.dataset.pick;
+            marcar(id, botao.dataset.externo ? results._externos?.get(id) : getGameById(id));
+        });
+
+        // O submit precisa enxergar o registro escolhido.
+        root._escolhido = () => escolhido;
+    }
 
     root.querySelector('#gameForm').addEventListener('submit', (event) => {
         event.preventDefault();
@@ -320,7 +465,11 @@ function openGameDialog(entryId = null) {
         if (existing) {
             applyUpdate(existing.id, payload);
         } else {
-            applyAdd(gameSelect.value, payload);
+            if (!gameSelect.value) {
+                toast({ title: 'Escolha um jogo', message: 'Busque e selecione um título na lista.', type: 'warning' });
+                return;
+            }
+            applyAdd(gameSelect.value, payload, root._escolhido?.() ?? null);
         }
         close();
     });
@@ -339,17 +488,18 @@ function refreshAll() {
     afterRender(document);
 }
 
-function applyAdd(gameId, payload) {
-    const result = addEntry({ gameId, ...payload });
+function applyAdd(gameId, payload, registro = null) {
+    // Jogo do GameDB chega com o proprio registro de catalogo.
+    const result = addEntry({ gameId, ...payload, game: registro });
     if (!result.ok) {
-        toast({ title: 'Could not add the game', message: result.reason, type: 'warning' });
+        toast({ title: 'Não foi possível adicionar o jogo', message: result.reason, type: 'warning' });
         return;
     }
 
-    const game = getGameById(gameId);
-    logActivity('library', `Added ${game.title} to the Library`, { xp: 50 });
-    awardXp('addGame', { detail: `${game.title} added`, silent: true });
-    toast({ title: 'Game added.', message: game.title, type: 'success', xp: 50 });
+    const game = resolveGame(gameId);
+    logActivity('library', `Adicionou ${game.title} à Biblioteca`, { xp: 50 });
+    awardXp('addGame', { detail: `${game.title} adicionado`, silent: true });
+    toast({ title: 'Jogo adicionado.', message: game.title, type: 'success', xp: 50 });
 
     if (payload.rating > 0) awardXp('rateGame', { silent: true });
     if (payload.status === 'completed') awardXp('completeGame', { silent: true });
@@ -362,13 +512,13 @@ function applyUpdate(entryId, payload) {
     const result = updateEntry(entryId, payload);
     if (!result.ok) return;
 
-    const game = getGameById(result.entry.gameId);
+    const game = resolveGame(result.entry.gameId);
     let xp = 0;
 
     if (result.statusChanged && result.entry.status === 'completed') {
         awardXp('completeGame', { silent: true });
         xp += 75;
-        logActivity('library', `Completed ${game.title}`, { xp: 75 });
+        logActivity('library', `Zerou ${game.title}`, { xp: 75 });
     } else {
         awardXp('updateGame', { silent: true });
         xp += 10;
@@ -384,7 +534,7 @@ function applyUpdate(entryId, payload) {
         xp += 5 * Math.min(10, Math.floor(result.hoursAdded / 10));
     }
 
-    toast({ title: 'Passport updated.', message: `${game.title} · ${result.entry.status}`, type: 'success', xp });
+    toast({ title: 'Passaporte atualizado.', message: `${game.title} · ${result.entry.status}`, type: 'success', xp });
     checkAchievements();
     refreshAll();
 }
@@ -392,19 +542,19 @@ function applyUpdate(entryId, payload) {
 async function applyRemove(entryId) {
     const entry = findEntry(entryId);
     if (!entry) return;
-    const game = getGameById(entry.gameId);
+    const game = resolveGame(entry.gameId);
 
     const confirmed = await confirmDialog({
-        title: `Remove ${game.title}?`,
-        message: 'The entry is deleted from your library. XP you already earned stays on your Passport.',
-        confirmLabel: 'Remove',
+        title: `Remover ${game.title}?`,
+        message: 'A entrada será apagada da sua biblioteca. O XP já ganho permanecerá no seu Passaporte.',
+        confirmLabel: 'Remover',
         danger: true,
     });
     if (!confirmed) return;
 
     removeEntry(entryId);
-    logActivity('library', `Removed ${game.title} from the Library`);
-    toast({ title: 'Removed from library.', message: game.title, type: 'info' });
+    logActivity('library', `Removeu ${game.title} da Biblioteca`);
+    toast({ title: 'Removido da biblioteca.', message: game.title, type: 'info' });
     refreshAll();
 }
 
@@ -493,7 +643,7 @@ tabsHost.addEventListener('drop', (event) => {
 
 // Touch devices get no drag events; say so instead of leaving a dead affordance.
 if (window.matchMedia('(hover: none)').matches) {
-    $('#libraryHint').textContent = 'Tip: use the edit button on a card to change its status, hours or rating.';
+    $('#libraryHint').textContent = 'Dica: use o botão de edição do cartão para alterar o status, as horas ou a avaliação.';
 }
 
 /* ============================================================

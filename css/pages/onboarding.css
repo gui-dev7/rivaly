@@ -136,7 +136,7 @@
 .ob-welcome__title {
     font-size: clamp(1.9rem, 4.6vw, 2.9rem);
     font-weight: var(--font-black);
-    letter-spacing: var(--tracking-tighter);
+    letter-spacing: var(--tracking-display);
     animation: fade-up var(--duration-slow) var(--ease-out) 120ms both;
 }
 
@@ -471,7 +471,7 @@
 .ob-analyse__title {
     font-size: var(--text-2xl);
     font-weight: var(--font-bold);
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: var(--tracking-display);
 }
 
 .ob-analyse__log {
@@ -625,7 +625,7 @@
 .ob-created__title {
     font-size: clamp(1.7rem, 4vw, 2.6rem);
     font-weight: var(--font-black);
-    letter-spacing: var(--tracking-tighter);
+    letter-spacing: var(--tracking-display);
     animation: fade-up var(--duration-slow) var(--ease-out) both;
 }
 

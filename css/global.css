@@ -49,15 +49,15 @@ body::after {
 
 /* ------------------------------------------------------------
    TYPOGRAPHY SCALE
-   h1/h2 take the display face (Anton); h3 and below stay in
+   h1/h2 take the display face (Jersey 10); h3 and below stay in
    Chakra Petch so long headings never turn into a wall of
    condensed caps.
    ------------------------------------------------------------ */
 h1,
 h2 {
     font-family: var(--font-display);
-    font-weight: 400; /* Anton ships a single weight */
-    letter-spacing: var(--tracking-tighter);
+    font-weight: 400; /* Jersey 10 ships a single weight */
+    letter-spacing: var(--tracking-display);
     line-height: var(--leading-tight);
 }
 
@@ -86,7 +86,7 @@ h6 {
 .display {
     font-family: var(--font-display);
     font-weight: 400;
-    letter-spacing: var(--tracking-tighter);
+    letter-spacing: var(--tracking-display);
 }
 
 strong,
@@ -160,6 +160,7 @@ kbd {
     font-family: var(--font-display);
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+    letter-spacing: var(--tracking-display);
 }
 
 /* ------------------------------------------------------------

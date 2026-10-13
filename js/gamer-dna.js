@@ -69,7 +69,7 @@ export function calculateDnaScores(answers) {
     return scores;
 }
 
-/** Attributes sorted strongest → weakest, with deterministic tie-breaking. */
+/** Atributos sorted strongest → weakest, with deterministic tie-breaking. */
 export function rankAttributes(scores) {
     return [...ATTRIBUTE_IDS].sort((a, b) => {
         const diff = (scores[b] ?? 0) - (scores[a] ?? 0);
@@ -130,7 +130,7 @@ export const getAttributeById = (id) =>
 
 /**
  * A single 0-100 summary of how "intense" a profile is.
- * Used by the Gamer Score, never for compatibility.
+ * Used by the Pontuacao Gamer, never for compatibility.
  */
 export function dnaIntensity(scores) {
     if (!scores) return 0;

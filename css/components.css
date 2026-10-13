@@ -211,7 +211,7 @@
 .card__title {
     font-size: var(--text-md);
     font-weight: var(--font-semibold);
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: var(--tracking-display);
 }
 
 .card__subtitle {
@@ -857,7 +857,7 @@
     font-variant-numeric: tabular-nums;
     font-size: var(--text-2xl);
     font-weight: var(--font-bold);
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: var(--tracking-display);
     line-height: 1;
     color: var(--color-text);
 }
@@ -1075,6 +1075,7 @@
     font-family: var(--font-display);
     font-size: var(--text-2xs);
     color: var(--color-primary);
+    letter-spacing: var(--tracking-display);
 }
 
 /* ============================================================
@@ -1127,7 +1128,7 @@
 .modal__title {
     font-size: var(--text-lg);
     font-weight: var(--font-semibold);
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: var(--tracking-display);
 }
 
 .modal__subtitle {
@@ -1353,6 +1354,7 @@ body.is-locked {
     font-family: var(--font-display);
     font-size: var(--text-2xs);
     color: var(--color-text-inverse);
+    letter-spacing: var(--tracking-display);
 }
 
 .level-pill__label {
@@ -1676,6 +1678,7 @@ body.is-locked {
     font-size: var(--text-xl);
     line-height: 1;
     color: var(--color-secondary);
+    letter-spacing: var(--tracking-display);
 }
 
 .passport-card__level-label {
@@ -1868,6 +1871,7 @@ body.is-locked {
     font-family: var(--font-display);
     font-size: var(--text-4xl);
     line-height: 1;
+    letter-spacing: var(--tracking-display);
 }
 
 .celebration__level--old {
@@ -1961,4 +1965,429 @@ body.is-locked {
 .passport-card.has-banner > *:not(.passport-card__banner) {
     position: relative;
     z-index: var(--z-base);
+}
+
+/* ============================================================
+   GAME ARTWORK
+   Artwork is loaded straight from the CDN, so it arrives after the
+   card is already laid out. The gradient + monogram underneath is
+   the Rivaly fallback: it is what shows while loading, when a game
+   has no artwork, and when the browser is offline.
+   ============================================================ */
+.game-image {
+    opacity: 0;
+    transition: opacity 200ms ease;
+}
+
+.game-image.is-loaded {
+    opacity: 1;
+}
+
+/* Skeleton: a slow sweep over the fallback while the CDN responds.
+   Stops the moment the image loads or the chain is exhausted. */
+.cover.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        100deg,
+        transparent 38%,
+        rgba(var(--rgb-bone), 0.07) 50%,
+        transparent 62%
+    );
+    animation: shimmer 1.6s var(--ease-in-out) infinite;
+    pointer-events: none;
+}
+
+/* The wide banner has no gradient behind it, so it gets its own
+   resting surface instead of a hole in the layout. */
+.banner-art {
+    background: var(--color-surface-inset);
+}
+
+/* ============================================================
+   RIVALY ARTWORK FALLBACK
+   Used where a bare gradient is not enough context — large
+   horizontal slots that would otherwise read as an empty box.
+   ============================================================ */
+.art-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+    width: 100%;
+    height: 100%;
+    background: var(--color-surface-inset);
+    border: 1px solid var(--color-border-soft);
+    text-align: center;
+}
+
+.art-fallback__mark {
+    color: var(--color-primary);
+}
+
+.art-fallback__mark svg {
+    width: 28px;
+    height: 28px;
+}
+
+.art-fallback__name {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-widest);
+    color: var(--color-text);
+}
+
+.art-fallback__note {
+    font-size: 9px;
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+/* ============================================================
+   RODAPE INSTITUCIONAL
+   ============================================================ */
+.site-footer {
+    margin-top: var(--space-2xl);
+    padding: var(--space-xl) var(--space-lg);
+    border-top: 1px solid var(--color-border-soft);
+    background: var(--color-background-elevated);
+}
+
+.site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.site-footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    min-width: 0;
+}
+
+.site-footer__logo {
+    width: auto;
+    height: 44px;
+    object-fit: contain;
+}
+
+.site-footer__tagline {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.site-footer__socials {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    flex-wrap: wrap;
+}
+
+.site-footer__social {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    transition: color var(--duration-fast) var(--ease-out),
+                border-color var(--duration-fast) var(--ease-out),
+                background var(--duration-fast) var(--ease-out);
+}
+
+a.site-footer__social:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: var(--color-primary-ghost);
+}
+
+/* Sem perfil cadastrado ainda: fica visivel, mas nao finge ser um link. */
+.site-footer__social--empty {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.site-footer__legal {
+    flex-basis: 100%;
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-soft);
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+}
+
+@media (max-width: 720px) {
+    .site-footer {
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .site-footer__inner {
+        gap: var(--space-md);
+    }
+}
+
+/* ============================================================
+   TUTORIAL GUIADO
+   ============================================================ */
+.tour {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal, 900);
+    pointer-events: none;
+}
+
+body.is-touring {
+    overflow: hidden;
+}
+
+/* O veu existe sempre para bloquear cliques na pagina; escurecer e
+   trabalho do recorte, senao a tela ficaria escura duas vezes. */
+.tour__veil {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    pointer-events: auto;
+}
+
+.tour--flat .tour__veil {
+    background: rgba(0, 0, 0, 0.72);
+}
+
+/* O recorte usa uma sombra gigante em vez de mascara: funciona em
+   qualquer navegador e acompanha o elemento sem redesenhar a pagina. */
+.tour__spot {
+    position: fixed;
+    border-radius: var(--radius-md);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72);
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    pointer-events: none;
+    transition: top var(--duration-normal) var(--ease-out),
+                left var(--duration-normal) var(--ease-out),
+                width var(--duration-normal) var(--ease-out),
+                height var(--duration-normal) var(--ease-out);
+}
+
+.tour__card {
+    position: fixed;
+    width: min(420px, calc(100vw - 24px));
+    padding: var(--space-md);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+}
+
+.tour__card--center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(520px, calc(100vw - 24px));
+}
+
+.tour__step {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-primary);
+}
+
+.tour__title {
+    margin-top: var(--space-2xs);
+    font-size: var(--text-xl);
+    letter-spacing: var(--tracking-display);
+}
+
+.tour__text {
+    margin-top: var(--space-xs);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--color-text-secondary);
+}
+
+.tour__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.tour__nav {
+    display: flex;
+    gap: var(--space-2xs);
+}
+
+/* ---------- EM BREVE ---------- */
+.tour__soon {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-soft);
+}
+
+.tour__soon-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.tour__soon-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-primary);
+}
+
+.tour__soon-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+@media (max-width: 560px) {
+    .tour__card {
+        left: 12px !important;
+        right: 12px;
+        width: auto;
+    }
+
+    /* Com left/right fixos o translate horizontal empurraria o cartao
+       para fora da tela; so a centralizacao vertical continua valendo. */
+    .tour__card--center {
+        transform: translateY(-50%);
+    }
+
+    .tour__actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .tour__nav {
+        justify-content: space-between;
+    }
+}
+
+[data-motion="reduced"] .tour__spot {
+    transition: none;
+}
+
+/* ============================================================
+   MOBILE — ALVOS DE TOQUE E AJUSTES DE LAYOUT
+
+   Um alvo de 15px funciona com mouse e nao funciona com o dedo. Aqui os
+   controles pequenos ganham area clicavel de verdade, sem crescer
+   visualmente: o pseudo-elemento estende a area sem mexer no desenho.
+   ============================================================ */
+@media (max-width: 720px), (pointer: coarse) {
+    /* 20px + pseudo-elemento ainda perdia a disputa do ponto de toque
+       para os vizinhos em linhas apertadas; 26px resolve sem virar botao. */
+    .tip {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+        /* Espaco real ao redor: o texto vizinho estava disputando o ponto
+           de toque e encolhendo a area util do botao. */
+        margin-inline: 6px;
+        vertical-align: middle;
+    }
+
+    /* Area de toque maior que o desenho, sem deslocar o layout. */
+    .tip::after,
+    .toast__close::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 52px;
+        height: 52px;
+        transform: translate(-50%, -50%);
+    }
+
+    .toast__close {
+        position: relative;
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Links que agem como botao precisam de altura de botao. */
+    .link,
+    a.link,
+    button.link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+    }
+
+    .site-footer__links a,
+    .landing-footer .site-footer__links a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 0 4px;
+    }
+
+    /* O rotulo do DNA encostava na barra em telas estreitas. */
+    .dna-bar {
+        grid-template-columns: 76px 1fr 32px;
+        gap: var(--space-xs);
+    }
+
+    .dna-bar__label {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    /* Tres estatisticas lado a lado quebravam o rotulo e desalinhavam
+       os valores; empilhar mantem cada par junto. */
+    .passport-card__foot {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+
+    .passport-card__foot-item {
+        flex: 1 1 30%;
+        min-width: 0;
+    }
+
+    .passport-card__foot-label {
+        overflow-wrap: anywhere;
+    }
+
+    /* "RIVAL + ALLY" quebrava em duas linhas e engordava o cabecalho. */
+    .brand-name__sub {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 420px) {
+    .brand-name__sub {
+        display: none;
+    }
+}
+
+/* O fundo do dialogo tambem rolava, entao no celular o gesto ora movia o
+   conteudo do dialogo, ora o fundo atras dele. Com o dialogo limitado a
+   altura visivel, quem rola e so o corpo dele. */
+@media (max-width: 720px), (pointer: coarse) {
+    .modal-backdrop {
+        overflow: hidden;
+        padding: var(--space-xs);
+        align-items: stretch;
+    }
+
+    .modal {
+        max-height: calc(100dvh - var(--space-md));
+        width: 100%;
+    }
 }

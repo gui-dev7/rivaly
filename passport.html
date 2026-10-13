@@ -1,13 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" data-motion="full">
+<html lang="pt-BR" data-motion="full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Your Gamer Passport — identity, Gamer DNA, archetype, level, reputation, badges and play preferences.">
+    <meta name="description" content="Seu Passaporte Gamer — identidade, DNA Gamer, arquétipo, nível, reputação, medalhas e preferências de jogo.">
     <meta name="theme-color" content="#050505">
-    <title>Gamer Passport — RIVALY</title>
+    <title>Passaporte Gamer — RIVALY</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23050505'/><path d='M3.5 3.5 11 12l-7.5 8.5V15L6 12 3.5 9z' fill='%23FFD400'/><path d='M20.5 3.5 13 12l7.5 8.5V15L18 12l2.5-3z' fill='%23FFD400'/></svg>">
+    <link rel="icon" type="image/png" href="/assets/brand/icon-rivaly.png">
+
+    <!-- ============================================================
+         SOCIAL PREVIEW
+         A imagem 1200x630 e o formato que Facebook, WhatsApp, LinkedIn,
+         Discord e X usam no card. A quadrada serve ao atalho de tela
+         inicial no iOS.
+         ============================================================ -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="RIVALY">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Passaporte Gamer — RIVALY">
+    <meta property="og:description" content="Seu Passaporte Gamer — identidade, DNA Gamer, arquétipo, nível, reputação, medalhas e preferências de jogo.">
+    <meta property="og:image" content="/assets/brand/social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Marca RIVALY">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Passaporte Gamer — RIVALY">
+    <meta name="twitter:description" content="Seu Passaporte Gamer — identidade, DNA Gamer, arquétipo, nível, reputação, medalhas e preferências de jogo.">
+    <meta name="twitter:image" content="/assets/brand/social.png">
+    <meta name="twitter:image:alt" content="Marca RIVALY">
+
+    <link rel="apple-touch-icon" href="/assets/brand/social-square.png">
+
 
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reset.css">
@@ -16,17 +42,18 @@
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/avatar.css">
     <link rel="stylesheet" href="css/pages/passport.css">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="protocol-warning" id="protocolWarning" hidden>
         <div class="protocol-warning__inner">
-            <h2>Run RIVALY from a local server</h2>
-            <p>This project uses native ES Modules, which browsers refuse to load from <code>file://</code>. Start any static server in the project folder and reopen the page.</p>
+            <h2>Abra a RIVALY por um servidor local</h2>
+            <p>Este projeto usa ES Modules nativos, que o navegador recusa carregar via <code>file://</code>. Suba qualquer servidor estático na pasta do projeto e reabra a página.</p>
             <pre>python -m http.server 5500
-# then open http://localhost:5500</pre>
+# depois abra http://localhost:5500</pre>
         </div>
     </div>
     <script>
@@ -36,7 +63,7 @@
     </script>
 
     <div class="app">
-        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Main navigation"></aside>
+        <aside class="sidebar" id="sidebar" data-sidebar aria-label="Navegação principal"></aside>
 
         <div class="main">
             <header class="topbar" data-topbar></header>
@@ -44,23 +71,22 @@
             <main class="page page-enter" id="main-content">
                 <div class="page__header">
                     <div>
-                        <h1 class="page__title">Gamer Passport</h1>
+                        <h1 class="page__title">Passaporte Gamer</h1>
                         <p class="page__lede">
-                            Your identity inside RIVALY. Every feature here either reads this
-                            record or writes to it.
+                            Sua identidade dentro da RIVALY. Todo recurso aqui lê ou escreve neste registro.
                         </p>
                     </div>
                     <div class="page__actions">
                         <button type="button" class="btn btn--secondary" id="editPassportBtn">
                             <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m14.5 5.5 4 4"/></svg>
-                            Edit passport
+                            Editar passaporte
                         </button>
                     </div>
                 </div>
 
                 <!-- Hero: card + identity -->
                 <section class="passport-hero" aria-labelledby="cardTitle">
-                    <h2 class="visually-hidden" id="cardTitle">Your shareable passport card</h2>
+                    <h2 class="visually-hidden" id="cardTitle">Seu card de passaporte compartilhável</h2>
                     <div class="passport-hero__card" id="passportCardHost"></div>
                     <div class="passport-hero__side">
                         <div id="passportIdentity"></div>
@@ -71,7 +97,7 @@
                 <!-- Stats -->
                 <section aria-labelledby="statsTitle">
                     <div class="section-head">
-                        <h2 class="section-head__title" id="statsTitle">Passport stats</h2>
+                        <h2 class="section-head__title" id="statsTitle">Números do Passaporte</h2>
                     </div>
                     <div class="grid grid--stats stagger" id="passportStats"></div>
                 </section>
@@ -81,8 +107,8 @@
                         <!-- DNA -->
                         <section aria-labelledby="dnaFullTitle">
                             <div class="section-head">
-                                <h2 class="section-head__title" id="dnaFullTitle">Gamer DNA</h2>
-                                <a class="link" href="onboarding.html?stage=dna" id="redoDna">Re-run analysis</a>
+                                <h2 class="section-head__title" id="dnaFullTitle">DNA Gamer</h2>
+                                <a class="link" href="onboarding.html?stage=dna" id="redoDna">Refazer análise</a>
                             </div>
                             <div id="dnaFull"></div>
                         </section>
@@ -90,8 +116,8 @@
                         <!-- Library snapshot -->
                         <section aria-labelledby="librarySnapTitle">
                             <div class="section-head">
-                                <h2 class="section-head__title" id="librarySnapTitle">Library signature</h2>
-                                <a class="link" href="library.html">Open library</a>
+                                <h2 class="section-head__title" id="librarySnapTitle">Assinatura da biblioteca</h2>
+                                <a class="link" href="library.html">Abrir biblioteca</a>
                             </div>
                             <div id="librarySnapshot"></div>
                         </section>
@@ -101,16 +127,16 @@
                         <!-- Preferences -->
                         <section aria-labelledby="prefsTitle">
                             <div class="section-head">
-                                <h2 class="section-head__title" id="prefsTitle">Play preferences</h2>
+                                <h2 class="section-head__title" id="prefsTitle">Preferências de jogo</h2>
                             </div>
                             <div id="preferences"></div>
                         </section>
 
-                        <!-- Badges -->
+                        <!-- Medalhas -->
                         <section aria-labelledby="passBadgesTitle">
                             <div class="section-head">
-                                <h2 class="section-head__title" id="passBadgesTitle">Badge case</h2>
-                                <a class="link" href="achievements.html">See all</a>
+                                <h2 class="section-head__title" id="passBadgesTitle">Estante de medalhas</h2>
+                                <a class="link" href="achievements.html">Ver tudo</a>
                             </div>
                             <div id="passportBadges"></div>
                         </section>
@@ -120,7 +146,7 @@
         </div>
     </div>
 
-    <nav class="bottom-nav" data-bottom-nav aria-label="Primary navigation"></nav>
+    <nav class="bottom-nav" data-bottom-nav aria-label="Navegação principal"></nav>
 
     <script type="module" src="js/passport.js"></script>
 </body>

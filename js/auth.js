@@ -62,23 +62,23 @@ export const VALIDATION = {
 
 export function validateNickname(value) {
     const nickname = String(value ?? '').trim();
-    if (nickname.length < VALIDATION.nickname.min) return 'Nickname must be at least 3 characters.';
-    if (nickname.length > VALIDATION.nickname.max) return 'Nickname must be 18 characters or fewer.';
-    if (!VALIDATION.nickname.pattern.test(nickname)) return 'Use letters, numbers, spaces, hyphens or underscores.';
+    if (nickname.length < VALIDATION.nickname.min) return 'O apelido precisa de pelo menos 3 caracteres.';
+    if (nickname.length > VALIDATION.nickname.max) return 'O apelido pode ter no máximo 18 caracteres.';
+    if (!VALIDATION.nickname.pattern.test(nickname)) return 'Use letras, números, espaços, hífens ou sublinhados.';
     return '';
 }
 
 export function validateEmail(value) {
     const email = normaliseEmail(value);
-    if (!email) return 'Email is required.';
-    if (!VALIDATION.email.pattern.test(email)) return 'Enter a valid email address.';
+    if (!email) return 'E-mail é obrigatório.';
+    if (!VALIDATION.email.pattern.test(email)) return 'Digite um endereço de e-mail válido.';
     return '';
 }
 
 export function validatePassword(value) {
     const password = String(value ?? '');
-    if (password.length < VALIDATION.password.min) return 'Password must be at least 6 characters.';
-    if (password.length > VALIDATION.password.max) return 'Password is too long.';
+    if (password.length < VALIDATION.password.min) return 'A senha deve ter pelo menos 6 caracteres.';
+    if (password.length > VALIDATION.password.max) return 'A senha é longa demais.';
     return '';
 }
 
@@ -104,7 +104,7 @@ export async function register({ nickname, email, password }) {
     if (passwordError) return { ok: false, field: 'password', error: passwordError };
 
     if (findAccountByEmail(email)) {
-        return { ok: false, field: 'email', error: 'An account already exists for this email.' };
+        return { ok: false, field: 'email', error: 'Já existe uma conta com este e-mail.' };
     }
 
     const account = {
@@ -128,12 +128,12 @@ export async function register({ nickname, email, password }) {
 export async function login({ email, password }) {
     const account = findAccountByEmail(email);
     if (!account) {
-        return { ok: false, field: 'email', error: 'No account found for this email.' };
+        return { ok: false, field: 'email', error: 'Nenhuma conta encontrada para este e-mail.' };
     }
 
     const hash = await hashPassword(password);
     if (hash !== account.passwordHash) {
-        return { ok: false, field: 'password', error: 'Incorrect password.' };
+        return { ok: false, field: 'password', error: 'Senha incorreta.' };
     }
 
     const storedUser = getUser();
@@ -152,7 +152,7 @@ export async function login({ email, password }) {
     return { ok: true, account };
 }
 
-/** Completes a login that required replacing the local passport. */
+/** Completes a login that requires replacing the local passport. */
 export function switchProfile(account) {
     resetAll({ keepAccounts: true });
     saveUser(createUser({ nickname: account.nickname, email: account.email }));

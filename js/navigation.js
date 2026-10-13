@@ -8,7 +8,8 @@
  * drawer. One implementation, six pages, no duplicated markup.
  */
 
-import { icon, escapeHtml, avatarMarkup, formatNumber } from './ui.js';
+import { icon, escapeHtml, formatNumber } from './ui.js';
+import { userAvatarMarkup } from './avatar-service.js';
 import { getUser } from './storage.js';
 import { levelProgress } from './gamification.js';
 import { archetypeName } from './profile.js';
@@ -20,25 +21,29 @@ import { confirmDialog } from './modal.js';
  * share 390px without truncating.
  */
 export const NAV_ITEMS = [
-    { id: 'dashboard', label: 'Home', short: 'Home', href: 'dashboard.html', icon: 'home' },
-    { id: 'passport', label: 'Passport', short: 'Passport', href: 'passport.html', icon: 'id' },
-    { id: 'library', label: 'Library', short: 'Library', href: 'library.html', icon: 'library' },
+    { id: 'dashboard', label: 'Início', short: 'Início', href: 'dashboard.html', icon: 'home' },
+    { id: 'passport', label: 'Passaporte', short: 'Passe', href: 'passport.html', icon: 'id' },
+    { id: 'library', label: 'Biblioteca', short: 'Biblio', href: 'library.html', icon: 'library' },
+    { id: 'discover', label: 'Descobrir', short: 'Buscar', href: 'discover.html', icon: 'search' },
     { id: 'squads', label: 'Squads', short: 'Squads', href: 'squads.html', icon: 'users' },
-    { id: 'achievements', label: 'Achievements', short: 'Badges', href: 'achievements.html', icon: 'trophy' },
-    { id: 'settings', label: 'Settings', short: 'Settings', href: 'settings.html', icon: 'settings' },
+    { id: 'achievements', label: 'Conquistas', short: 'Medalhas', href: 'achievements.html', icon: 'trophy' },
+    { id: 'settings', label: 'Configurações', short: 'Config', href: 'settings.html', icon: 'settings' },
 ];
 
 /** Honest placeholders — rendered disabled, never clickable. */
 const NAV_SOON = [
     { label: 'Arena', icon: 'target' },
     { label: 'Feed', icon: 'globe' },
-    { label: 'Clans', icon: 'shield' },
+    { label: 'Clãs', icon: 'shield' },
 ];
 
-const BOTTOM_ITEMS = ['dashboard', 'passport', 'library', 'squads', 'achievements'];
+// Cinco e o limite confortavel em 390px. Descobrir entra no lugar de
+// Conquistas: buscar jogo e acao primaria, ver medalhas e consulta —
+// e Conquistas continua a um toque, na gaveta.
+const BOTTOM_ITEMS = ['dashboard', 'passport', 'library', 'discover', 'squads'];
 
 const brandMarkup = () => `
-    <span class="brand-mark">${icon('rivaly', { size: 18 })}</span>
+    <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
     <span class="brand-name">
         <span class="brand-name__top">RIVALY</span>
         <span class="brand-name__sub">Rival + Ally</span>
@@ -57,32 +62,32 @@ function sidebarMarkup(currentPage, user, progress) {
         <span class="nav-item nav-item--soon" aria-disabled="true">
             ${icon(item.icon, { size: 17, className: 'nav-item__icon' })}
             <span>${item.label}</span>
-            <span class="nav-item__badge">Soon</span>
+            <span class="nav-item__badge">Em breve</span>
         </span>
     `).join('');
 
     return `
-        <a class="sidebar__brand" href="dashboard.html" aria-label="RIVALY — go to dashboard">
+        <a class="sidebar__brand" href="dashboard.html" aria-label="RIVALY — ir para o início">
             ${brandMarkup()}
         </a>
 
-        <nav class="sidebar__nav" aria-label="Sections">
+        <nav class="sidebar__nav" aria-label="Seções">
             ${items}
-            <p class="sidebar__group-label">Coming next</p>
+            <p class="sidebar__group-label">Em breve</p>
             ${soon}
         </nav>
 
         <div class="sidebar__footer">
             <a class="mini-passport" href="passport.html">
                 <span class="mini-passport__top">
-                    ${avatarMarkup(user.avatarSeed, { size: 'sm' })}
+                    ${userAvatarMarkup(user, { size: 'sm' })}
                     <span class="mini-passport__name">
                         <span class="mini-passport__nick">${escapeHtml(user.nickname)}</span>
                         <span class="mini-passport__archetype">${escapeHtml(archetypeName(user))}</span>
                     </span>
                 </span>
                 <span class="mini-passport__xp">
-                    <span>LV ${progress.level}</span>
+                    <span>NV ${progress.level}</span>
                     <span>${formatNumber(progress.currentLevelXp)} / ${formatNumber(progress.nextLevelXp)}</span>
                 </span>
                 <span class="progress progress--thin progress--xp">
@@ -95,7 +100,7 @@ function sidebarMarkup(currentPage, user, progress) {
 
 function topbarMarkup({ title, subtitle }, progress) {
     return `
-        <button type="button" class="menu-toggle" data-menu-toggle aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
+        <button type="button" class="menu-toggle" data-menu-toggle aria-label="Abrir navegação" aria-expanded="false" aria-controls="sidebar">
             ${icon('menu', { size: 17 })}
         </button>
         <div class="topbar__heading">
@@ -103,17 +108,17 @@ function topbarMarkup({ title, subtitle }, progress) {
             ${subtitle ? `<p class="topbar__subtitle">${escapeHtml(subtitle)}</p>` : ''}
         </div>
         <div class="topbar__actions">
-            <div class="topbar__xp" title="Experience toward the next level">
+            <div class="topbar__xp" title="Experiência até o próximo nível">
                 <span class="level-pill">
                     <span class="level-pill__num numeric">${progress.level}</span>
-                    <span class="level-pill__label">Level</span>
+                    <span class="level-pill__label">Nível</span>
                 </span>
                 <span class="progress progress--thin progress--xp topbar__xp-bar">
                     <span class="progress__fill" data-progress="${progress.percent}"></span>
                 </span>
                 <span class="topbar__xp-text">${formatNumber(progress.currentLevelXp)}/${formatNumber(progress.nextLevelXp)}</span>
             </div>
-            <button type="button" class="btn btn--secondary btn--icon btn--sm" data-logout aria-label="Sign out">
+            <button type="button" class="btn btn--secondary btn--icon btn--sm" data-logout aria-label="Sair">
                 ${icon('logout', { size: 15 })}
             </button>
         </div>
@@ -202,9 +207,9 @@ export function mountNavigation({ page, title, subtitle = '' }) {
 
     document.querySelector('[data-logout]')?.addEventListener('click', async () => {
         const confirmed = await confirmDialog({
-            title: 'Sign out?',
-            message: 'Your Passport, Library and achievements stay saved in this browser. You can sign back in at any time.',
-            confirmLabel: 'Sign out',
+            title: 'Sair?',
+            message: 'Seu Passaporte, Biblioteca e conquistas continuam salvos neste navegador. Você pode entrar de novo quando quiser.',
+            confirmLabel: 'Sair',
         });
         if (!confirmed) return;
         logout();
@@ -228,7 +233,7 @@ export function refreshNavigationProgress() {
         node.textContent = `${formatNumber(progress.currentLevelXp)}/${formatNumber(progress.nextLevelXp)}`;
     });
     document.querySelectorAll('.mini-passport__xp').forEach((node) => {
-        node.innerHTML = `<span>LV ${progress.level}</span><span>${formatNumber(progress.currentLevelXp)} / ${formatNumber(progress.nextLevelXp)}</span>`;
+        node.innerHTML = `<span>NV ${progress.level}</span><span>${formatNumber(progress.currentLevelXp)} / ${formatNumber(progress.nextLevelXp)}</span>`;
     });
     document.querySelectorAll('.progress--xp .progress__fill').forEach((fill) => {
         fill.dataset.progress = String(progress.percent);

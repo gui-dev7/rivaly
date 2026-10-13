@@ -1,5 +1,5 @@
 /**
- * profile.js — the shape of a Gamer Passport and everything derived
+ * profile.js — the shape of a Passaporte Gamer and everything derived
  * directly from it (Gamer ID, completion, display helpers).
  *
  * The passport is the product's central record: every other feature
@@ -9,6 +9,7 @@
 import { getUser, saveUser } from './storage.js';
 import { hashString } from './ui.js';
 import { getArchetypeById } from './gamer-dna.js';
+import { defaultAvatarFor } from './avatar-service.js';
 
 /* ------------------------------------------------------------------
    GAMER ID
@@ -38,7 +39,9 @@ export function createUser({ nickname, email }) {
         email,
         createdAt,
         gamerId: generateGamerId(nickname, createdAt),
-        avatarSeed: `${nickname}-${hashString(createdAt) % 997}`,
+        // Unified avatar model. A brand-new passport gets a stable
+        // DiceBear avatar seeded from the nickname, so it is never blank.
+        avatar: defaultAvatarFor(nickname),
 
         // Optional identity fields, filled during onboarding.
         age: null,
@@ -86,7 +89,7 @@ export function updateUser(patch) {
 
 const COMPLETION_FIELDS = [
     { key: 'nickname', weight: 10, filled: (user) => Boolean(user.nickname) },
-    { key: 'avatarSeed', weight: 5, filled: (user) => Boolean(user.avatarSeed) },
+    { key: 'avatar', weight: 5, filled: (user) => Boolean(user.avatar?.seed || user.avatar?.src) },
     { key: 'dna', weight: 20, filled: (user) => Boolean(user.dna) },
     { key: 'platforms', weight: 12, filled: (user) => user.platforms?.length > 0 },
     { key: 'favoriteGenres', weight: 10, filled: (user) => user.favoriteGenres?.length > 0 },
@@ -124,12 +127,12 @@ export function archetypeOf(user) {
 }
 
 export function archetypeName(user) {
-    return archetypeOf(user)?.name ?? 'Unclassified';
+    return archetypeOf(user)?.name ?? 'Não classificado';
 }
 
 /**
  * The user's own "player record", shaped exactly like a simulated
- * player so the Compatibility Engine can compare like with like.
+ * player so the Motor de Compatibilidade can compare like with like.
  */
 export function toPlayerShape(user, { reputation = 75 } = {}) {
     return {

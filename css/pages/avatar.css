@@ -1,0 +1,435 @@
+/* ============================================================
+   RIVALY — AVATAR PICKER
+   Character-select, not a settings form. Square frames, hard
+   edges, yellow only on the active state.
+   ============================================================ */
+
+/* ---------- Avatar frame ---------- */
+.avatar {
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 180ms var(--ease-out);
+}
+
+.avatar__img.is-loaded {
+    opacity: 1;
+}
+
+/*
+   The initials plate underneath. It is the resting state while the
+   DiceBear request is in flight, and becomes the avatar for good if the
+   request fails — so a broken image never reaches the user.
+*/
+.avatar__initials {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--color-surface-tertiary);
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 0.42em;
+    letter-spacing: var(--tracking-wide);
+    transform: rotate(var(--tilt, 0deg));
+}
+
+/* ---------- Dialog layout ---------- */
+.picker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 208px;
+    grid-template-areas:
+        "tabs    preview"
+        "panel   preview";
+    gap: var(--space-lg);
+    align-items: start;
+}
+
+.picker__tabs {
+    grid-area: tabs;
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-inset);
+}
+
+.picker__tab {
+    flex: 1;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
+}
+
+.picker__tab:hover {
+    color: var(--color-text);
+}
+
+.picker__tab[aria-selected="true"] {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.picker__panel {
+    grid-area: panel;
+    min-width: 0;
+}
+
+.picker__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.picker__search {
+    flex: 1;
+    min-width: 160px;
+}
+
+.picker__search .input {
+    height: 36px;
+    font-size: var(--text-sm);
+}
+
+/* ---------- Grid ---------- */
+.picker__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: var(--space-xs);
+    max-height: 46vh;
+    overflow-y: auto;
+    padding: 2px;
+}
+
+.picker__grid:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+}
+
+.picker__option {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-inset);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+.picker__option:hover {
+    border-color: var(--color-border-strong);
+    transform: translateY(-2px);
+}
+
+.picker__option.is-selected {
+    border-color: var(--color-primary);
+    box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+/* A corner notch marks the active pick without hiding the artwork. */
+.picker__option.is-selected::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-width: 0 14px 14px 0;
+    border-style: solid;
+    border-color: transparent var(--color-primary) transparent transparent;
+}
+
+.picker__option .avatar__initials {
+    font-size: 0.9rem;
+}
+
+.picker__empty {
+    grid-column: 1 / -1;
+    padding: var(--space-xl);
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.picker__actions {
+    display: flex;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.picker__count {
+    margin-top: var(--space-xs);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-faint);
+}
+
+/* ---------- Preview ---------- */
+.picker__preview {
+    grid-area: preview;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-inset);
+    text-align: center;
+}
+
+.picker__preview-name {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    letter-spacing: var(--tracking-wide);
+}
+
+.picker__preview-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-faint);
+    overflow-wrap: anywhere;
+}
+
+/* ---------- Upload ---------- */
+.upload {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.upload__drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xl) var(--space-lg);
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-inset);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out);
+}
+
+.upload__drop:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-ghost);
+}
+
+.upload__input:focus-visible + .upload__drop {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+}
+
+.upload__glyph {
+    color: var(--color-primary);
+}
+
+.upload__title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+}
+
+.upload__hint,
+.upload__note {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.upload__note {
+    line-height: var(--leading-snug);
+}
+
+.upload__preview {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+}
+
+.upload__preview-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    align-items: flex-start;
+}
+
+/* ---------- Trigger ---------- */
+.avatar-edit {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-inset);
+}
+
+.avatar-edit__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.avatar-edit__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+}
+
+.avatar-edit__meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+    .picker {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "preview"
+            "tabs"
+            "panel";
+    }
+
+    /* The preview becomes a compact row. Without min-width:0 on the text
+       column, break-all turns the seed into one character per line. */
+    .picker__preview {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: var(--space-md);
+        padding: var(--space-sm) var(--space-md);
+        text-align: left;
+    }
+
+    .picker__preview .eyebrow {
+        display: none;
+    }
+
+    .picker__preview .avatar--2xl {
+        width: 64px;
+        height: 64px;
+        flex-shrink: 0;
+    }
+
+    .picker__preview-name,
+    .picker__preview-meta {
+        min-width: 0;
+        word-break: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .picker__grid {
+        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+        max-height: 38vh;
+    }
+
+    .picker__actions .btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 420px) {
+    .picker__grid {
+        grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+    }
+}
+
+/* The dialog footer is sticky, so the last row of controls needs room
+   to breathe rather than sitting flush against it. */
+.picker__panel {
+    padding-bottom: var(--space-xs);
+}
+
+/* ============================================================
+   PICKER NO CELULAR — UM SCROLL SO
+
+   No desktop a grade tem rolagem propria, o que mantem os controles
+   (buscar, carregar mais) sempre visiveis. No celular isso vira uma
+   armadilha: a grade rolava dentro do corpo do dialogo, que tambem
+   rolava, e o resultado era a grade cortada pelo rodape com os botoes
+   de "carregar mais" fora de alcance.
+
+   Aqui a grade deixa de rolar e o corpo do dialogo passa a ser o unico
+   scroller: um gesto so percorre avatares e controles.
+   ============================================================ */
+@media (max-width: 720px), (pointer: coarse) {
+    .picker__grid {
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    /* 100vh mente no celular (a barra do navegador entra na conta);
+       dvh acompanha a altura realmente visivel. */
+    .modal {
+        max-height: calc(100dvh - var(--space-md));
+    }
+
+    /* O subtitulo repete o que as abas ja dizem e custa uma linha
+       preciosa de altura. */
+    .modal__subtitle {
+        display: none;
+    }
+
+    /* A previa vira uma faixa compacta: ela e referencia, nao o conteudo. */
+    .picker__preview {
+        padding: var(--space-xs);
+    }
+
+    .picker__preview .avatar--2xl {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* As categorias passam de quatro: sem rolagem lateral a ultima fica
+       inalcancavel, e sem a borda esmaecida ninguem descobre que rola. */
+    #pickerCats {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    }
+
+    #pickerCats::-webkit-scrollbar {
+        display: none;
+    }
+
+    #pickerCats > * {
+        flex: 0 0 auto;
+    }
+
+    /* Espaco para o rodape fixo nao encostar na ultima fileira. */
+    .picker__panel {
+        padding-bottom: var(--space-md);
+    }
+}
+
+@media (max-width: 420px) {
+    .picker__grid {
+        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    }
+}

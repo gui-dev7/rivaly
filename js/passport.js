@@ -1,5 +1,5 @@
 /**
- * passport.js — controller for the Gamer Passport page.
+ * passport.js — controller for the Passaporte Gamer page.
  *
  * Renders the shareable card, the full DNA analysis, the play
  * preferences and the library signature, and owns the edit dialog.
@@ -21,15 +21,16 @@ import { openModal } from './modal.js';
 import { toast } from './notifications.js';
 import { refreshNavigationProgress } from './navigation.js';
 import {
-    $, render, escapeHtml, icon, avatarSvg, formatNumber, formatHours, hashString,
-    emptyStateMarkup, tipMarkup, bannerArt,
+    $, render, escapeHtml, icon, formatNumber, formatHours, emptyStateMarkup, tipMarkup, bannerArt,
 } from './ui.js';
+import { userAvatarMarkup, resolveAvatar } from './avatar-service.js';
+import { openAvatarPicker } from './avatar-picker.js';
 import { attachPointerLight, countUp } from './animations.js';
 
 let user = bootApp({
     page: 'passport',
-    title: 'Gamer Passport',
-    subtitle: 'Your identity record',
+    title: 'Passaporte Gamer',
+    subtitle: 'Seu registro de identidade',
 });
 if (!user) await haltModule();
 
@@ -59,26 +60,26 @@ function renderCard() {
             <header class="passport-card__head">
                 <div>
                     <p class="passport-card__brand">RIVALY</p>
-                    <p class="passport-card__type">Gamer Passport</p>
+                    <p class="passport-card__type">Passaporte Gamer</p>
                 </div>
                 <p class="passport-card__id numeric">${escapeHtml(user.gamerId)}</p>
             </header>
 
             <div class="passport-card__identity">
-                <span class="passport-card__avatar is-in">${avatarSvg(user.avatarSeed, { size: 52 })}</span>
+                <span class="passport-card__avatar is-in">${userAvatarMarkup(user, { size: 'lg', alt: `Avatar de ${user.nickname}` })}</span>
                 <div>
                     <p class="passport-card__nick is-in">${escapeHtml(user.nickname)}</p>
-                    <p class="passport-card__archetype is-in">${escapeHtml(archetype?.name ?? 'DNA not analysed')}</p>
+                    <p class="passport-card__archetype is-in">${escapeHtml(archetype?.name ?? 'DNA não analisado')}</p>
                 </div>
                 <div class="passport-card__level">
                     <span class="passport-card__level-value numeric">${snapshot.level}</span>
-                    <span class="passport-card__level-label">Level</span>
+                    <span class="passport-card__level-label">Nível</span>
                 </div>
             </div>
 
             <div class="passport-card__xp">
                 <div class="passport-card__xp-head">
-                    <span>Level ${snapshot.level}</span>
+                    <span>Nível ${snapshot.level}</span>
                     <span class="numeric">${formatNumber(snapshot.currentLevelXp)} / ${formatNumber(snapshot.nextLevelXp)} XP</span>
                 </div>
                 <span class="progress progress--thin progress--xp">
@@ -88,7 +89,7 @@ function renderCard() {
 
             ${games.length ? `
                 <div class="passport-card__section">
-                    <p class="passport-card__section-title">Currently playing</p>
+                    <p class="passport-card__section-title">Jogando agora</p>
                     <ul class="passport-card__games">
                         ${games.map((game) => `
                             <li class="passport-card__game">
@@ -101,21 +102,21 @@ function renderCard() {
 
             ${user.dna ? `
                 <div class="passport-card__section">
-                    <p class="passport-card__section-title">Gamer DNA</p>
+                    <p class="passport-card__section-title">DNA Gamer</p>
                     ${dnaListMarkup(user.dna.scores)}
                 </div>` : ''}
 
             <footer class="passport-card__foot">
                 <span class="passport-card__foot-item">
-                    <span class="passport-card__foot-label">Reputation</span>
+                    <span class="passport-card__foot-label">Reputação</span>
                     <span class="numeric">${snapshot.reputation}</span>
                 </span>
                 <span class="passport-card__foot-item">
-                    <span class="passport-card__foot-label">Gamer Score</span>
+                    <span class="passport-card__foot-label">Pontuação Gamer</span>
                     <span class="numeric">${formatNumber(snapshot.gamerScore)}</span>
                 </span>
                 <span class="passport-card__foot-item">
-                    <span class="passport-card__foot-label">Badges</span>
+                    <span class="passport-card__foot-label">Medalhas</span>
                     <span class="numeric">${snapshot.achievementsUnlocked}</span>
                 </span>
             </footer>
@@ -132,36 +133,37 @@ function renderCard() {
 
 function renderIdentity() {
     const archetype = archetypeOf(user);
-    const joined = new Date(user.createdAt).toLocaleDateString('en-GB', {
+    const joined = new Date(user.createdAt).toLocaleDateString('pt-BR', {
         day: '2-digit', month: 'long', year: 'numeric',
     });
 
     render($('#passportIdentity'), `
         <div class="card identity">
-            <p class="eyebrow">Identity</p>
+            <p class="eyebrow">Identidade</p>
+            <span class="avatar avatar--xl identity__avatar">${userAvatarMarkup(user, { size: 'xl', alt: `Avatar de ${user.nickname}` })}</span>
             <h2 class="identity__nick">${escapeHtml(user.nickname)}</h2>
             ${archetype ? `<p class="identity__archetype" style="color:${archetype.accent}">${escapeHtml(archetype.name)}</p>` : ''}
             ${user.bio ? `<p class="identity__bio">${escapeHtml(user.bio)}</p>` : ''}
 
             <dl class="identity__facts">
                 <div>
-                    <dt>Gamer ID ${tipMarkup('A local visual identifier generated from your nickname and creation date. It carries no security meaning.')}</dt>
+                    <dt>Gamer ID ${tipMarkup('Um identificador visual local, gerado a partir do seu apelido e da data de criação. Não tem função de segurança.')}</dt>
                     <dd class="numeric">${escapeHtml(user.gamerId)}</dd>
                 </div>
                 <div>
-                    <dt>Member since</dt>
+                    <dt>Membro desde</dt>
                     <dd>${escapeHtml(joined)}</dd>
                 </div>
-                ${user.region ? `<div><dt>Region</dt><dd>${escapeHtml(user.region)}</dd></div>` : ''}
-                ${user.age ? `<div><dt>Age</dt><dd>${escapeHtml(String(user.age))}</dd></div>` : ''}
-                ${user.rank && user.rank !== 'Unranked' ? `<div><dt>Rank</dt><dd>${escapeHtml(user.rank)}</dd></div>` : ''}
+                ${user.region ? `<div><dt>Região</dt><dd>${escapeHtml(user.region)}</dd></div>` : ''}
+                ${user.age ? `<div><dt>Idade</dt><dd>${escapeHtml(String(user.age))}</dd></div>` : ''}
+                ${user.rank && user.rank !== 'Unranked' ? `<div><dt>Ranking</dt><dd>${escapeHtml(user.rank)}</dd></div>` : ''}
             </dl>
 
             <div class="identity__actions">
-                <button type="button" class="btn btn--secondary btn--sm" id="rerollAvatar">
-                    ${icon('spark', { size: 14 })} New avatar
+                <button type="button" class="btn btn--secondary btn--sm" id="chooseAvatar">
+                    ${icon('user', { size: 14 })} Alterar avatar
                 </button>
-                <button type="button" class="btn btn--ghost btn--sm" id="editFromIdentity">Edit details</button>
+                <button type="button" class="btn btn--ghost btn--sm" id="editFromIdentity">Editar dados</button>
             </div>
         </div>
     `);
@@ -176,20 +178,20 @@ function renderCompletion() {
     const missing = missingProfileFields(user);
 
     const LABELS = {
-        nickname: 'Nickname', avatarSeed: 'Avatar', dna: 'Gamer DNA', platforms: 'Platforms',
-        favoriteGenres: 'Favourite genres', playstyle: 'Playstyle', schedules: 'Schedule',
-        roles: 'Squad roles', languages: 'Languages', region: 'Region', bio: 'Short bio',
+        nickname: 'Apelido', avatarSeed: 'Avatar', dna: 'DNA Gamer', platforms: 'Plataformas',
+        favoriteGenres: 'Gêneros favoritos', playstyle: 'Estilo de jogo', schedules: 'Disponibilidade',
+        roles: 'Funções no squad', languages: 'Idiomas', region: 'Região', bio: 'Bio curta',
     };
 
     render($('#completionHost'), `
         <div class="card completion">
             <div class="completion__head">
                 <div>
-                    <p class="completion__title">Passport completion</p>
+                    <p class="completion__title">Conclusão do Passaporte</p>
                     <p class="completion__text">
                         ${completion >= 100
-                            ? 'Fully registered. Every field the Compatibility Engine can use is filled in.'
-                            : 'Missing fields reduce how precisely the engine can match you.'}
+                            ? 'Cadastro completo. Todos os campos usados pelo Motor de Compatibilidade estão preenchidos.'
+                            : 'Campos ausentes reduzem a precisão das combinações do motor.'}
                     </p>
                 </div>
                 <span class="completion__value numeric" data-count="${completion}">${completion}%</span>
@@ -201,7 +203,7 @@ function renderCompletion() {
                 <ul class="completion__missing">
                     ${missing.map((field) => `<li class="tag">${escapeHtml(LABELS[field] ?? field)}</li>`).join('')}
                 </ul>
-                <button type="button" class="btn btn--primary btn--sm" data-open-edit>Complete my passport</button>
+                <button type="button" class="btn btn--primary btn--sm" data-open-edit>Completar meu passaporte</button>
             ` : ''}
         </div>
     `);
@@ -217,34 +219,34 @@ function renderStats() {
 
     render($('#passportStats'), [
         statMarkup({
-            label: 'Gamer Score', value: formatNumber(snapshot.gamerScore), icon: 'spark',
-            meta: 'Overall passport strength', accent: 'var(--color-primary)',
-            tooltip: 'level × 500 + XP × 0.25 + achievement rarity × 250 + games × 80 + completed × 120 + hours × 2 + reputation × 10 + squad × 100.',
+            label: 'Pontuação Gamer', value: formatNumber(snapshot.gamerScore), icon: 'spark',
+            meta: 'Força geral do Passaporte', accent: 'var(--color-primary)',
+            tooltip: 'nível × 500 + XP × 0,25 + raridade das conquistas × 250 + jogos × 80 + zerados × 120 + horas × 2 + reputação × 10 + squad × 100.',
             count: snapshot.gamerScore,
         }),
         statMarkup({
-            label: 'Level', value: snapshot.level, icon: 'arrow-up',
+            label: 'Nível', value: snapshot.level, icon: 'arrow-up',
             meta: `${formatNumber(snapshot.xp)} XP total`, accent: 'var(--color-primary)',
             count: snapshot.level,
         }),
         statMarkup({
-            label: 'Reputation', value: snapshot.reputation, icon: 'shield',
-            meta: 'Out of 100', accent: 'var(--color-accent)',
-            tooltip: 'Base 50, plus your level, achievements, completed games, squad size and profile completion.',
+            label: 'Reputação', value: snapshot.reputation, icon: 'shield',
+            meta: 'De 100', accent: 'var(--color-accent)',
+            tooltip: 'Base 50, mais seu nível, conquistas, jogos zerados, tamanho do squad e o quanto o perfil está completo.',
             count: snapshot.reputation,
         }),
         statMarkup({
-            label: 'Library', value: summary.total, icon: 'library',
-            meta: `${formatHours(summary.hours)} · ${summary.completed} completed`,
+            label: 'Biblioteca', value: summary.total, icon: 'library',
+            meta: `${formatHours(summary.hours)} · ${summary.completed} zerados`,
             accent: 'var(--color-text-muted)', count: summary.total,
         }),
         statMarkup({
-            label: 'Badges', value: `${snapshot.achievementsUnlocked}/${snapshot.achievementsTotal}`,
-            icon: 'trophy', meta: 'Achievements', accent: 'var(--color-primary)',
+            label: 'Medalhas', value: `${snapshot.achievementsUnlocked}/${snapshot.achievementsTotal}`,
+            icon: 'trophy', meta: 'Conquistas', accent: 'var(--color-primary)',
         }),
         statMarkup({
             label: 'Squad', value: snapshot.squadCount, icon: 'users',
-            meta: snapshot.squadCount ? 'Saved teammates' : 'No teammates yet',
+            meta: snapshot.squadCount ? 'Parceiros salvos' : 'Nenhum parceiro ainda',
             accent: 'var(--color-text-muted)', count: snapshot.squadCount,
         }),
     ].join(''));
@@ -258,9 +260,9 @@ function renderDna() {
     if (!user.dna) {
         render($('#dnaFull'), emptyStateMarkup({
             iconName: 'dna',
-            title: 'Your DNA is unmapped.',
-            text: 'Ten questions produce six attributes and one archetype. Everything from suggested roles to your match quality depends on it.',
-            action: '<a class="btn btn--primary btn--sm" href="onboarding.html?stage=dna">Run the analysis</a>',
+            title: 'Seu DNA ainda não foi mapeado.',
+            text: 'Dez perguntas definem seis atributos e um arquétipo. As funções sugeridas e a qualidade das combinações dependem desse resultado.',
+            action: '<a class="btn btn--primary btn--sm" href="onboarding.html?stage=dna">Fazer a análise</a>',
         }));
         $('#redoDna').hidden = true;
         return;
@@ -288,15 +290,15 @@ function renderDna() {
             </ul>
 
             <div class="dna-full__bars">
-                <p class="eyebrow">Attributes ${tipMarkup('Each attribute is a weighted sum of your ten answers, normalised to a 18–98 range. The same answers always produce the same values.')}</p>
+                <p class="eyebrow">Atributos ${tipMarkup('Cada atributo é uma soma ponderada das suas dez respostas, normalizada para a faixa de 18 a 98. As mesmas respostas sempre produzem os mesmos valores.')}</p>
                 ${dnaListMarkup(user.dna.scores, { large: true })}
             </div>
 
             <div class="dna-full__summary">
-                <p><strong>Strongest:</strong> ${escapeHtml(strongest?.label ?? '—')} — ${escapeHtml(strongest?.description ?? '')}</p>
-                <p><strong>Lowest:</strong> ${escapeHtml(weakest?.label ?? '—')} — ${escapeHtml(weakest?.description ?? '')}</p>
+                <p><strong>Mais forte:</strong> ${escapeHtml(strongest?.label ?? '—')} — ${escapeHtml(strongest?.description ?? '')}</p>
+                <p><strong>Menor pontuação:</strong> ${escapeHtml(weakest?.label ?? '—')} — ${escapeHtml(weakest?.description ?? '')}</p>
                 <p class="dna-full__roles">
-                    <strong>Suggested roles:</strong>
+                    <strong>Funções sugeridas:</strong>
                     ${archetype.roles.map((role) => `<span class="tag tag--primary">${escapeHtml(labelOf(ROLES, role))}</span>`).join('')}
                 </p>
             </div>
@@ -320,36 +322,36 @@ function renderPreferences() {
         <div class="card preferences">
             <dl class="preferences__list">
                 <div class="preferences__row">
-                    <dt>Platforms</dt>
-                    <dd>${tagList((user.platforms ?? []).map((id) => labelOf(PLATFORMS, id)), 'None selected')}</dd>
+                    <dt>Plataformas</dt>
+                    <dd>${tagList((user.platforms ?? []).map((id) => labelOf(PLATFORMS, id)), 'Nenhuma selecionada')}</dd>
                 </div>
                 <div class="preferences__row">
-                    <dt>Favourite genres</dt>
-                    <dd>${tagList(user.favoriteGenres, 'None selected')}</dd>
+                    <dt>Gêneros favoritos</dt>
+                    <dd>${tagList(user.favoriteGenres, 'Nenhum selecionado')}</dd>
                 </div>
                 <div class="preferences__row">
-                    <dt>Playstyle</dt>
+                    <dt>Estilo de jogo</dt>
                     <dd>${user.playstyle
                         ? `<span class="tag tag--primary">${escapeHtml(labelOf(PLAYSTYLES, user.playstyle))}</span>`
-                        : '<span class="preferences__empty">Not set</span>'}</dd>
+                        : '<span class="preferences__empty">Não definido</span>'}</dd>
                 </div>
                 <div class="preferences__row">
-                    <dt>Availability</dt>
-                    <dd>${tagList((user.schedules ?? []).map((id) => labelOf(SCHEDULES, id)), 'Not set')}</dd>
+                    <dt>Disponibilidade</dt>
+                    <dd>${tagList((user.schedules ?? []).map((id) => labelOf(SCHEDULES, id)), 'Não informada')}</dd>
                 </div>
                 <div class="preferences__row">
-                    <dt>Squad roles</dt>
-                    <dd>${tagList((user.roles ?? []).map((id) => labelOf(ROLES, id)), 'Not set')}</dd>
+                    <dt>Funções no squad</dt>
+                    <dd>${tagList((user.roles ?? []).map((id) => labelOf(ROLES, id)), 'Não informadas')}</dd>
                 </div>
                 <div class="preferences__row">
-                    <dt>Languages</dt>
-                    <dd>${tagList((user.languages ?? []).map((id) => labelOf(LANGUAGES, id)), 'Not set')}</dd>
+                    <dt>Idiomas</dt>
+                    <dd>${tagList((user.languages ?? []).map((id) => labelOf(LANGUAGES, id)), 'Não informados')}</dd>
                 </div>
                 <div class="preferences__row">
-                    <dt>Voice chat</dt>
+                    <dt>Chat de voz</dt>
                     <dd><span class="tag ${user.voiceChat ? 'tag--accent' : ''}">
                         ${icon(user.voiceChat ? 'mic' : 'mic-off', { size: 11 })}
-                        ${user.voiceChat ? 'Enabled' : 'Text only'}
+                        ${user.voiceChat ? 'Ativado' : 'Somente texto'}
                     </span></dd>
                 </div>
             </dl>
@@ -367,9 +369,9 @@ function renderLibrarySnapshot() {
     if (summary.total === 0) {
         render($('#librarySnapshot'), emptyStateMarkup({
             iconName: 'library',
-            title: 'Your library is waiting.',
-            text: 'Add your first game and your Passport starts describing what you actually play.',
-            action: '<a class="btn btn--primary btn--sm" href="library.html?action=add">Add a game</a>',
+            title: 'Sua biblioteca está esperando.',
+            text: 'Adicione seu primeiro jogo e o Passaporte começará a descrever o que você realmente joga.',
+            action: '<a class="btn btn--primary btn--sm" href="library.html?action=add">Adicionar um jogo</a>',
         }));
         return;
     }
@@ -379,13 +381,13 @@ function renderLibrarySnapshot() {
     render($('#librarySnapshot'), `
         <div class="card signature">
             <div class="signature__stats">
-                <div><span class="numeric">${summary.total}</span><span>games</span></div>
-                <div><span class="numeric">${formatHours(summary.hours)}</span><span>tracked</span></div>
-                <div><span class="numeric">${summary.completed}</span><span>completed</span></div>
-                <div><span class="numeric">${summary.averageRating || '—'}</span><span>avg rating</span></div>
+                <div><span class="numeric">${summary.total}</span><span>jogos</span></div>
+                <div><span class="numeric">${formatHours(summary.hours)}</span><span>registradas</span></div>
+                <div><span class="numeric">${summary.completed}</span><span>concluídos</span></div>
+                <div><span class="numeric">${summary.averageRating || '—'}</span><span>nota média</span></div>
             </div>
 
-            <p class="eyebrow signature__label">Genre distribution</p>
+            <p class="eyebrow signature__label">Distribuição por gênero</p>
             <div class="dna-list">
                 ${summary.topGenres.map((genre) => `
                     <div class="dna-bar" style="--dna-color:var(--color-primary)">
@@ -398,7 +400,7 @@ function renderLibrarySnapshot() {
                 `).join('')}
             </div>
 
-            <p class="eyebrow signature__label">Platforms in use</p>
+            <p class="eyebrow signature__label">Plataformas em uso</p>
             <div class="chip-set">
                 ${summary.platforms.map((id) => `<span class="tag">${escapeHtml(labelOf(PLATFORMS, id))}</span>`).join('')}
             </div>
@@ -420,9 +422,9 @@ function renderBadges() {
         ? `<div class="grid grid--badges">${unlocked.map(badgeMarkup).join('')}</div>`
         : emptyStateMarkup({
             iconName: 'trophy',
-            title: 'Your badge case is empty.',
-            text: 'Your first achievement is closer than you think — adding a single game unlocks one.',
-            action: '<a class="btn btn--secondary btn--sm" href="achievements.html">See the list</a>',
+            title: 'Sua estante de medalhas está vazia.',
+            text: 'Sua primeira conquista está mais perto do que parece — adicionar um único jogo desbloqueia uma.',
+            action: '<a class="btn btn--secondary btn--sm" href="achievements.html">Ver a lista</a>',
         })
     );
 }
@@ -440,18 +442,73 @@ function chipGroup(name, items, selected) {
     `).join('')}</div>`;
 }
 
-function openEditDialog() {
+/** Captura o estado do formulario antes de ceder o modal ao picker. */
+function snapshotEditForm(root) {
+    const form = root.querySelector('#passportForm');
+    if (!form) return null;
+
+    const values = {};
+    const checked = [];
+    form.querySelectorAll('input, select, textarea').forEach((el) => {
+        if (el.type === 'checkbox' || el.type === 'radio') {
+            if (el.checked) checked.push(`${el.name}=${el.value}`);
+        } else if (el.id) {
+            values[el.id] = el.value;
+        }
+    });
+    return { values, checked };
+}
+
+/** Devolve ao formulario o que o usuario ja tinha preenchido. */
+function restoreEditForm(root, draft) {
+    if (!draft) return;
+    const form = root.querySelector('#passportForm');
+    if (!form) return;
+
+    Object.entries(draft.values).forEach(([id, value]) => {
+        const el = form.querySelector(`#${CSS.escape(id)}`);
+        if (el) el.value = value;
+    });
+
+    const wanted = new Set(draft.checked);
+    form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((el) => {
+        el.checked = wanted.has(`${el.name}=${el.value}`);
+    });
+}
+
+function openEditDialog(draft = null) {
+    // A escolha do avatar so e gravada quando o formulario e salvo, entao
+    // fechar no Cancelar nao deixa um avatar novo para tras.
+    let pendingAvatar = draft?.avatar ?? null;
+    const shownUser = pendingAvatar ? { ...user, avatar: pendingAvatar } : user;
+
     const body = `
+        <div class="edit-avatar">
+            <span class="avatar avatar--xl edit-avatar__preview" id="editAvatarPreview">
+                ${userAvatarMarkup(shownUser, { size: 'xl', alt: `Avatar de ${user.nickname}` })}
+            </span>
+            <div class="edit-avatar__body">
+                <p class="field__label">Seu avatar</p>
+                <p class="settings-row__hint">
+                    Gerado pelo DiceBear a partir de uma semente — a mesma semente
+                    devolve sempre o mesmo desenho. Você também pode enviar sua própria imagem.
+                </p>
+                <button type="button" class="btn btn--secondary btn--sm" id="editChooseAvatar">
+                    Escolher avatar
+                </button>
+            </div>
+        </div>
+
         <form class="stack stack-lg" id="passportForm" novalidate>
             <div class="grid grid--form-2">
                 <div class="field">
-                    <label class="field__label" for="editNickname">Nickname</label>
+                    <label class="field__label" for="editNickname">Apelido</label>
                     <input class="input" type="text" id="editNickname" value="${escapeHtml(user.nickname)}"
                            minlength="3" maxlength="18" required data-autofocus>
                     <p class="field__error" id="editNicknameError" role="alert"></p>
                 </div>
                 <div class="field">
-                    <label class="field__label" for="editRank">Your rank</label>
+                    <label class="field__label" for="editRank">Seu rank</label>
                     <div class="select-wrap">
                         <select class="select" id="editRank">
                             ${RANK_LADDER.map((rank) => `<option value="${rank}"${(user.rank ?? 'Unranked') === rank ? ' selected' : ''}>${rank}</option>`).join('')}
@@ -462,37 +519,37 @@ function openEditDialog() {
 
             <div class="grid grid--form-2">
                 <div class="field">
-                    <label class="field__label" for="editRegion">Region</label>
+                    <label class="field__label" for="editRegion">Região</label>
                     <div class="select-wrap">
                         <select class="select" id="editRegion">
-                            <option value="">Prefer not to say</option>
+                            <option value="">Prefiro não dizer</option>
                             ${REGIONS.map((region) => `<option value="${escapeHtml(region)}"${user.region === region ? ' selected' : ''}>${escapeHtml(region)}</option>`).join('')}
                         </select>
                     </div>
                 </div>
                 <div class="field">
-                    <label class="field__label" for="editAge">Age</label>
+                    <label class="field__label" for="editAge">Idade</label>
                     <input class="input" type="number" id="editAge" min="10" max="120" value="${user.age ?? ''}" placeholder="—">
                 </div>
             </div>
 
             <div class="field">
-                <label class="field__label" for="editBio">Short bio</label>
+                <label class="field__label" for="editBio">Bio curta</label>
                 <textarea class="textarea" id="editBio" maxlength="140" rows="2">${escapeHtml(user.bio ?? '')}</textarea>
             </div>
 
             <fieldset class="field">
-                <legend class="field__label">Platforms</legend>
+                <legend class="field__label">Plataformas</legend>
                 ${chipGroup('platforms', PLATFORMS, user.platforms ?? [])}
             </fieldset>
 
             <fieldset class="field">
-                <legend class="field__label">Favourite genres</legend>
+                <legend class="field__label">Gêneros favoritos</legend>
                 ${chipGroup('genres', GENRES.map((genre) => ({ id: genre, label: genre })), user.favoriteGenres ?? [])}
             </fieldset>
 
             <div class="field">
-                <label class="field__label" for="editPlaystyle">Playstyle</label>
+                <label class="field__label" for="editPlaystyle">Estilo de jogo</label>
                 <div class="select-wrap">
                     <select class="select" id="editPlaystyle">
                         ${PLAYSTYLES.map((style) => `<option value="${style.id}"${user.playstyle === style.id ? ' selected' : ''}>${escapeHtml(style.label)} — ${escapeHtml(style.hint)}</option>`).join('')}
@@ -501,17 +558,17 @@ function openEditDialog() {
             </div>
 
             <fieldset class="field">
-                <legend class="field__label">Availability</legend>
+                <legend class="field__label">Disponibilidade</legend>
                 ${chipGroup('schedules', SCHEDULES, user.schedules ?? [])}
             </fieldset>
 
             <fieldset class="field">
-                <legend class="field__label">Squad roles</legend>
+                <legend class="field__label">Funções no squad</legend>
                 ${chipGroup('roles', ROLES, user.roles ?? [])}
             </fieldset>
 
             <fieldset class="field">
-                <legend class="field__label">Languages</legend>
+                <legend class="field__label">Idiomas</legend>
                 ${chipGroup('languages', LANGUAGES, user.languages ?? [])}
             </fieldset>
 
@@ -519,29 +576,40 @@ function openEditDialog() {
                 <label class="toggle">
                     <input type="checkbox" id="editVoice"${user.voiceChat ? ' checked' : ''}>
                     <span class="toggle__track" aria-hidden="true"></span>
-                    <span>I use voice chat</span>
+                    <span>Uso chat de voz</span>
                 </label>
             </div>
         </form>
     `;
 
     const { close, root } = openModal({
-        title: 'Edit your Passport',
-        subtitle: 'Everything here feeds the Compatibility Engine.',
+        title: 'Editar seu Passaporte',
+        subtitle: 'Tudo aqui alimenta o Motor de Compatibilidade.',
         wide: true,
         body,
         footer: `
-            <button type="button" class="btn btn--ghost" data-modal-close>Cancel</button>
-            <button type="submit" form="passportForm" class="btn btn--primary">Save passport</button>
+            <button type="button" class="btn btn--ghost" data-modal-close>Cancelar</button>
+            <button type="submit" form="passportForm" class="btn btn--primary">Salvar passaporte</button>
         `,
     });
+
+    root.querySelector('#editChooseAvatar').addEventListener('click', () => {
+        const pending = snapshotEditForm(root);
+        openAvatarPicker(
+            { ...user, avatar: pendingAvatar ?? user.avatar },
+            (selection) => openEditDialog({ ...pending, avatar: selection }),
+            { onCancel: () => openEditDialog({ ...pending, avatar: pendingAvatar }) },
+        );
+    });
+
+    restoreEditForm(root, draft);
 
     root.querySelector('#passportForm').addEventListener('submit', (event) => {
         event.preventDefault();
 
         const nickname = root.querySelector('#editNickname').value.trim();
         if (nickname.length < 3 || nickname.length > 18) {
-            root.querySelector('#editNicknameError').textContent = 'Nickname must be 3–18 characters.';
+            root.querySelector('#editNicknameError').textContent = 'O apelido precisa ter de 3 a 18 caracteres.';
             root.querySelector('#editNickname').focus();
             return;
         }
@@ -552,6 +620,7 @@ function openEditDialog() {
         const age = Number(root.querySelector('#editAge').value);
 
         updateUser({
+            ...(pendingAvatar ? { avatar: pendingAvatar } : {}),
             nickname,
             rank: root.querySelector('#editRank').value,
             region: root.querySelector('#editRegion').value,
@@ -567,7 +636,7 @@ function openEditDialog() {
         });
 
         close();
-        afterSave('Passport updated.');
+        afterSave('Passaporte atualizado.');
     });
 }
 
@@ -578,7 +647,7 @@ function afterSave(message) {
     if (completion >= 100) awardOnce('completeProfile', { silent: true });
     else awardXp('updateProfile', { silent: true });
 
-    toast({ title: message, message: `Profile completion: ${completion}%`, type: 'success' });
+    toast({ title: message, message: `Conclusão do perfil: ${completion}%`, type: 'success' });
     checkAchievements();
     renderAll();
     refreshNavigationProgress();
@@ -618,14 +687,15 @@ document.getElementById('main-content').addEventListener('click', (event) => {
         return;
     }
 
-    if (event.target.closest('#rerollAvatar')) {
-        // Deterministic: the seed advances by a stable hash, not by random.
-        const nextSeed = `${user.nickname}-${hashString(user.avatarSeed + user.gamerId) % 9973}`;
-        updateUser({ avatarSeed: nextSeed });
-        user = getUser();
-        renderCard();
-        renderIdentity();
-        toast({ title: 'Avatar regenerated.', message: 'Your card has a new look.', type: 'info' });
+    if (event.target.closest('#chooseAvatar')) {
+        openAvatarPicker(user, (selection) => {
+            updateUser({ avatar: selection });
+            user = getUser();
+            renderCard();
+            renderIdentity();
+            const label = selection.type === 'upload' ? 'Sua imagem foi definida.' : `${selection.style} · ${selection.seed}`;
+            toast({ title: 'Avatar atualizado.', message: label, type: 'success' });
+        });
     }
 });
 

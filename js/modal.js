@@ -25,7 +25,7 @@ let active = null;
  * @param {(context:{close:Function, root:HTMLElement}) => void} [options.onMount]
  * @returns {{close: Function, root: HTMLElement}}
  */
-export function openModal({ title, subtitle = '', body, footer = '', wide = false, onMount }) {
+export function openModal({ title, subtitle = '', body, footer = '', wide = false, onMount, onClose }) {
     closeModal();
 
     const previouslyFocused = document.activeElement;
@@ -39,7 +39,7 @@ export function openModal({ title, subtitle = '', body, footer = '', wide = fals
                     <h2 class="modal__title" id="modal-title">${escapeHtml(title)}</h2>
                     ${subtitle ? `<p class="modal__subtitle">${escapeHtml(subtitle)}</p>` : ''}
                 </div>
-                <button type="button" class="modal__close" data-modal-close aria-label="Close dialog">${icon('close', { size: 15 })}</button>
+                <button type="button" class="modal__close" data-modal-close aria-label="Fechar janela">${icon('close', { size: 15 })}</button>
             </header>
             <div class="modal__body">${body}</div>
             ${footer ? `<footer class="modal__footer">${footer}</footer>` : ''}
@@ -57,6 +57,10 @@ export function openModal({ title, subtitle = '', body, footer = '', wide = fals
         active = null;
         document.removeEventListener('keydown', onKeyDown, true);
         backdrop.classList.add('is-leaving');
+
+        // Avisado so agora, com o slot ja livre: um onClose que abre outro
+        // dialogo entra sem reentrar neste close.
+        onClose?.();
 
         window.setTimeout(() => {
             backdrop.remove();
@@ -127,8 +131,8 @@ export function closeModal() {
 export function confirmDialog({
     title,
     message,
-    confirmLabel = 'Confirm',
-    cancelLabel = 'Cancel',
+    confirmLabel = 'Confirmar',
+    cancelLabel = 'Cancelar',
     danger = false,
 }) {
     return new Promise((resolve) => {

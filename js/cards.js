@@ -8,7 +8,7 @@
  */
 
 import {
-    icon, escapeHtml, coverArt, avatarMarkup, starsMarkup, platformIcon,
+    icon, escapeHtml, coverArt, avatarMarkup, starsMarkup, platformIcon, gameImageMarkup,
     formatHours, formatRelativeTime, formatNumber,
 } from './ui.js';
 import {
@@ -16,6 +16,7 @@ import {
     DNA_ATTRIBUTES, LANGUAGES,
 } from './data.js';
 import { ACTIVITY_ICONS } from './activity.js';
+import { RARITIES } from './data.js';
 
 const labelOf = (collection, id) => collection.find((item) => item.id === id)?.label ?? id;
 
@@ -40,10 +41,10 @@ export function gameCardMarkup(entry, { draggable = false } = {}) {
                 ${draggable ? `<span class="game-card__grip" aria-hidden="true">${icon('drag', { size: 14 })}</span>` : ''}
 
                 <div class="game-card__actions">
-                    <button type="button" class="btn btn--secondary btn--icon btn--sm" data-action="edit" data-entry="${escapeHtml(entry.id)}" aria-label="Edit ${escapeHtml(game.title)}">
+                    <button type="button" class="btn btn--secondary btn--icon btn--sm" data-action="edit" data-entry="${escapeHtml(entry.id)}" aria-label="Editar ${escapeHtml(game.title)}">
                         ${icon('edit', { size: 14 })}
                     </button>
-                    <button type="button" class="btn btn--secondary btn--icon btn--sm" data-action="remove" data-entry="${escapeHtml(entry.id)}" aria-label="Remove ${escapeHtml(game.title)} from your library">
+                    <button type="button" class="btn btn--secondary btn--icon btn--sm" data-action="remove" data-entry="${escapeHtml(entry.id)}" aria-label="Remover ${escapeHtml(game.title)} da sua biblioteca">
                         ${icon('trash', { size: 14 })}
                     </button>
                 </div>
@@ -58,7 +59,7 @@ export function gameCardMarkup(entry, { draggable = false } = {}) {
                     <span>${escapeHtml(formatHours(entry.hours))}</span>
                 </p>
                 <div class="game-card__footer">
-                    ${entry.rating ? starsMarkup(entry.rating) : '<span class="game-card__unrated">Not rated</span>'}
+                    ${entry.rating ? starsMarkup(entry.rating) : '<span class="game-card__unrated">Sem nota</span>'}
                     <span class="game-card__genre">${escapeHtml(game.genre[0])}</span>
                 </div>
             </div>
@@ -66,7 +67,7 @@ export function gameCardMarkup(entry, { draggable = false } = {}) {
     `;
 }
 
-/** Compact row used on the Dashboard "Currently playing" list. */
+/** Compact row used on the Dashboard "Jogando agora" list. */
 export function gameRowMarkup(entry) {
     const { game } = entry;
     return `
@@ -94,8 +95,8 @@ export function gameRowMarkup(entry) {
 export function gameMarkMarkup(game) {
     const hue2 = (game.hue + 34) % 360;
     return `<span class="passport-card__game-mark"
-        style="--cover-a:hsl(${game.hue} 62% 30%);--cover-b:hsl(${hue2} 58% 14%)">${escapeHtml(game.glyph)}<img
-        src="/assets/covers/${encodeURIComponent(game.id)}.webp" alt="" decoding="async" loading="lazy" data-fallback></span>`;
+        style="--cover-a:hsl(${game.hue} 62% 30%);--cover-b:hsl(${hue2} 58% 14%)">${escapeHtml(game.glyph)}${
+        gameImageMarkup(game, { type: 'cover' })}</span>`;
 }
 
 /* ============================================================
@@ -158,7 +159,7 @@ export function squadCardMarkup(player, result, { saved = false, compact = false
                     ${player.schedules.map((slot) => `<span class="tag">${escapeHtml(labelOf(SCHEDULES, slot))}</span>`).join('')}
                     <span class="tag ${player.voiceChat ? 'tag--accent' : ''}">
                         ${icon(player.voiceChat ? 'mic' : 'mic-off', { size: 11 })}
-                        ${player.voiceChat ? 'Voice' : 'Text only'}
+                        ${player.voiceChat ? 'Voz' : 'Somente texto'}
                     </span>
                     ${player.languages.map((language) => `<span class="tag">${escapeHtml(labelOf(LANGUAGES, language))}</span>`).join('')}
                 </div>
@@ -166,10 +167,10 @@ export function squadCardMarkup(player, result, { saved = false, compact = false
 
             <footer class="squad-card__foot">
                 <button type="button" class="btn btn--secondary btn--sm" data-action="breakdown" data-player="${escapeHtml(player.id)}">
-                    ${icon('info', { size: 14 })} Breakdown
+                    ${icon('info', { size: 14 })} Detalhes
                 </button>
                 <button type="button" class="btn ${saved ? 'btn--ghost' : 'btn--primary'} btn--sm" data-action="save" data-player="${escapeHtml(player.id)}"${saved ? ' disabled' : ''}>
-                    ${saved ? 'Saved to squad' : 'Add to squad'}
+                    ${saved ? 'Salvo no squad' : 'Adicionar ao squad'}
                 </button>
             </footer>
         </article>
@@ -203,7 +204,7 @@ export function badgeMarkup(achievement) {
             <span class="badge__medal">${icon(unlocked ? achievement.icon : 'lock', { size: 24 })}</span>
             <span class="badge__name">${escapeHtml(achievement.name)}</span>
             <span class="badge__desc">${escapeHtml(unlocked ? achievement.description : achievement.hint)}</span>
-            <span class="badge__rarity">${escapeHtml(rarity)}</span>
+            <span class="badge__rarity">${escapeHtml(RARITIES[rarity]?.label ?? rarity)}</span>
             ${unlocked && achievement.unlockedAt
                 ? `<span class="badge__date">${escapeHtml(formatRelativeTime(achievement.unlockedAt))}</span>`
                 : ''}

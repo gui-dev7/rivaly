@@ -13,6 +13,7 @@
 
 import { icon, escapeHtml } from './ui.js';
 import { getSettings } from './storage.js';
+import { RARITIES } from './data.js';
 
 const TOAST_ICONS = {
     success: 'check-circle',
@@ -74,7 +75,7 @@ export function toast({ title, message = '', type = 'info', xp = 0, duration = D
             ${message ? `<p class="toast__message">${escapeHtml(message)}</p>` : ''}
             ${xp ? `<p class="toast__xp">+${xp} XP</p>` : ''}
         </div>
-        <button type="button" class="toast__close" aria-label="Dismiss notification">${icon('close', { size: 12 })}</button>
+        <button type="button" class="toast__close" aria-label="Fechar notificação">${icon('close', { size: 12 })}</button>
     `;
 
     node.querySelector('.toast__close').addEventListener('click', () => dismiss(node));
@@ -147,13 +148,13 @@ export function showAchievement(achievement, context = '') {
         const overlay = document.createElement('div');
         overlay.className = 'celebration';
         overlay.innerHTML = `
-            <div class="celebration__card celebration__card--achievement rarity-${escapeHtml(achievement.rarity)}" role="alertdialog" aria-label="Achievement unlocked: ${escapeHtml(achievement.name)}">
-                <p class="celebration__eyebrow">Achievement Unlocked</p>
+            <div class="celebration__card celebration__card--achievement rarity-${escapeHtml(achievement.rarity)}" role="alertdialog" aria-label="Conquista desbloqueada: ${escapeHtml(achievement.name)}">
+                <p class="celebration__eyebrow">Conquista desbloqueada</p>
                 <div class="celebration__medal">${icon(achievement.icon ?? 'trophy', { size: 34 })}</div>
                 <p class="celebration__title">${escapeHtml(achievement.name)}</p>
                 <p class="celebration__text">${escapeHtml(context || achievement.description)}</p>
-                <p class="celebration__rarity">${escapeHtml(achievement.rarity)}</p>
-                <button type="button" class="btn btn--secondary btn--sm" data-dismiss>Dismiss</button>
+                <p class="celebration__rarity">${escapeHtml(RARITIES[achievement.rarity]?.label ?? achievement.rarity)}</p>
+                <button type="button" class="btn btn--secondary btn--sm" data-dismiss>Fechar</button>
             </div>
         `;
         return overlay;
@@ -169,15 +170,15 @@ export function showLevelUp(from, to) {
         const overlay = document.createElement('div');
         overlay.className = 'celebration';
         overlay.innerHTML = `
-            <div class="celebration__card celebration__card--level" role="alertdialog" aria-label="Level up. You reached level ${to}">
-                <p class="celebration__eyebrow">Level Up</p>
+            <div class="celebration__card celebration__card--level" role="alertdialog" aria-label="Você chegou ao nível ${to}">
+                <p class="celebration__eyebrow">Subiu de nível</p>
                 <div class="celebration__levels">
                     <span class="celebration__level celebration__level--old numeric">${from}</span>
                     <span class="celebration__arrow">${icon('arrow-right', { size: 22 })}</span>
                     <span class="celebration__level celebration__level--new numeric">${to}</span>
                 </div>
-                <p class="celebration__text">Your Gamer Passport just got heavier.</p>
-                <button type="button" class="btn btn--primary btn--sm" data-dismiss>Continue</button>
+                <p class="celebration__text">Seu Passaporte Gamer ficou mais pesado.</p>
+                <button type="button" class="btn btn--primary btn--sm" data-dismiss>Continuar</button>
             </div>
         `;
         return overlay;

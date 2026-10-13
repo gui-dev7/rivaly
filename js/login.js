@@ -34,8 +34,8 @@ const titleNode = $('#authFormTitle');
 const subtitleNode = $('#authSubtitle');
 
 const COPY = {
-    signin: { title: 'Welcome back', subtitle: 'Sign back into your Gamer Passport.' },
-    create: { title: 'Create your Passport', subtitle: 'Three fields, then the interesting part begins.' },
+    signin: { title: 'Bem-vindo de volta', subtitle: 'Volte para o seu Passaporte Gamer.' },
+    create: { title: 'Crie seu Passaporte', subtitle: 'Três campos e a parte interessante começa.' },
 };
 
 function activateTab(mode, { focus = false } = {}) {
@@ -96,7 +96,7 @@ document.querySelectorAll('[data-reveal-password]').forEach((button) => {
     const paint = () => {
         const shown = input.type === 'text';
         button.innerHTML = icon(shown ? 'eye-off' : 'eye', { size: 16 });
-        button.setAttribute('aria-label', shown ? 'Hide password' : 'Show password');
+        button.setAttribute('aria-label', shown ? 'Ocultar senha' : 'Mostrar senha');
         button.setAttribute('aria-pressed', String(shown));
     };
     paint();
@@ -157,7 +157,7 @@ panels.signin.addEventListener('submit', async (event) => {
         return;
     }
     if (!password) {
-        setFieldError('signinPassword', 'Password is required.');
+        setFieldError('signinPassword', 'A senha é obrigatória.');
         $('#signinPassword').focus();
         return;
     }
@@ -168,16 +168,16 @@ panels.signin.addEventListener('submit', async (event) => {
 
     if (!result.ok) {
         setFieldError(result.field === 'password' ? 'signinPassword' : 'signinEmail', result.error);
-        toastError('Could not sign in', result.error);
+        toastError('Não foi possível entrar', result.error);
         return;
     }
 
     if (result.needsProfileSwitch) {
         const confirmed = await confirmDialog({
-            title: 'Replace the local Passport?',
-            message: `This browser currently holds a Passport for a different account. Version 1 keeps one Passport per browser, so signing in as ${result.account.nickname} will clear the existing Library, achievements and activity.`,
-            confirmLabel: 'Replace and continue',
-            cancelLabel: 'Cancel',
+            title: 'Substituir o Passaporte local?',
+            message: `Este navegador guarda um Passaporte de outra conta. A versão 1 mantém um Passaporte por navegador, então entrar como ${result.account.nickname} apagará a Biblioteca, as conquistas e as atividades existentes.`,
+            confirmLabel: 'Substituir e continuar',
+            cancelLabel: 'Cancelar',
             danger: true,
         });
         if (!confirmed) return;
@@ -186,8 +186,8 @@ panels.signin.addEventListener('submit', async (event) => {
         return;
     }
 
-    toastSuccess('Signed in', `Welcome back, ${result.account.nickname}.`);
-    logActivity('account', 'Signed in');
+    toastSuccess('Login realizado', `Bem-vindo de volta, ${result.account.nickname}.`);
+    logActivity('account', 'Entrou na conta');
     window.location.href = params.get('redirect') || 'dashboard.html';
 });
 
@@ -202,10 +202,10 @@ $('#demoLoginBtn').addEventListener('click', async (event) => {
     const button = event.currentTarget;
 
     const confirmed = await confirmDialog({
-        title: 'Load the demo Passport?',
-        message: 'This replaces any Passport, library and achievements currently stored in this browser with a finished demo profile.',
-        confirmLabel: 'Load demo',
-        cancelLabel: 'Cancel',
+        title: 'Carregar o Passaporte demo?',
+        message: 'Isto substitui qualquer Passaporte, biblioteca e conquistas guardados neste navegador por um perfil demo completo.',
+        confirmLabel: 'Carregar demo',
+        cancelLabel: 'Cancelar',
     });
     if (!confirmed) return;
 
@@ -213,8 +213,11 @@ $('#demoLoginBtn').addEventListener('click', async (event) => {
     const { seedDemoAccount } = await import('./demo.js');
     const { nickname } = seedDemoAccount();
 
-    toastSuccess('Demo Passport ready', `Signed in as ${nickname}.`);
-    window.location.href = 'dashboard.html';
+    toastSuccess('Passaporte demo pronto', `Você entrou como ${nickname}.`);
+
+    // O tour comeca ja no Inicio: startTour() cuida do redirecionamento.
+    const { startTour } = await import('./tour.js');
+    startTour();
 });
 
 /* ============================================================
@@ -249,14 +252,14 @@ panels.create.addEventListener('submit', async (event) => {
     if (!result.ok) {
         withLoading(submit, false);
         setFieldError(`create${result.field.charAt(0).toUpperCase()}${result.field.slice(1)}`, result.error);
-        toastError('Could not create the account', result.error);
+        toastError('Não foi possível criar a conta', result.error);
         return;
     }
 
     // First XP of the journey, awarded silently — the onboarding
     // welcome screen presents it as part of the experience instead.
     awardXp('createPassport', { silent: true });
-    logActivity('account', 'Created a Gamer Passport');
+    logActivity('account', 'Criou um Passaporte Gamer');
     checkAchievements();
 
     window.location.href = 'onboarding.html';

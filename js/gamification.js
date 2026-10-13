@@ -1,5 +1,5 @@
 /**
- * gamification.js — XP, levels, achievements, reputation, Gamer Score.
+ * gamification.js — XP, levels, achievements, reputation, Pontuacao Gamer.
  *
  * The single authority on progression. Pages never mutate `xp` or
  * `level` themselves; they call `awardXp()` and let this module handle
@@ -103,7 +103,7 @@ export function awardXp(ruleKey, { detail = '', multiplier = 1, silent = false }
     if (!silent) {
         toast({
             title: detail || rule.label,
-            message: `Experience added to your Passport.`,
+            message: 'Experiência adicionada ao seu Passaporte.',
             type: 'success',
             xp: amount,
         });
@@ -111,7 +111,7 @@ export function awardXp(ruleKey, { detail = '', multiplier = 1, silent = false }
 
     if (result.leveledUp) {
         showLevelUp(result.levelBefore, result.levelAfter);
-        logActivity('level', `Reached Level ${result.levelAfter}`, { level: result.levelAfter });
+        logActivity('level', `Chegou ao Nível ${result.levelAfter}`, { level: result.levelAfter });
     }
 
     // A level change (or the action itself) may satisfy new achievements.
@@ -165,14 +165,14 @@ export function buildContext() {
         reputation: 0,
     };
 
-    context.reputation = calculateReputation(context);
+    context.reputation = calculateReputacao(context);
     return context;
 }
 
 /* ============================================================
    REPUTATION
    ------------------------------------------------------------
-   A transparent, additive score. Reputation is *earned by
+   A transparent, additive score. Reputacao is *earned by
    activity*, not assigned randomly:
 
      50  base
@@ -185,7 +185,7 @@ export function buildContext() {
    Capped at 100.
    ============================================================ */
 
-export function calculateReputation(context) {
+export function calculateReputacao(context) {
     const completedGames = context.library.filter((entry) => entry.status === 'completed').length;
     const raw =
         50 +
@@ -283,7 +283,7 @@ export function checkAchievements(extra = {}) {
             found.forEach((achievement) => {
                 newlyUnlocked.push(achievement);
                 grantXp(XP_RULES.achievement.amount);
-                logActivity('achievement', `Unlocked ${achievement.name}`, { id: achievement.id });
+                logActivity('achievement', `Desbloqueou ${achievement.name}`, { id: achievement.id });
             });
         }
     } finally {

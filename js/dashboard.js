@@ -3,7 +3,7 @@
  *
  * Reads only; it never mutates progression. Everything shown here is
  * derived from the passport, the library, the activity ledger and the
- * Compatibility Engine.
+ * Motor de Compatibilidade.
  */
 
 import { bootApp, afterRender, haltModule } from './app.js';
@@ -19,8 +19,8 @@ import { getGameById } from './data.js';
 
 const user = bootApp({
     page: 'dashboard',
-    title: 'Dashboard',
-    subtitle: 'Your Passport at a glance',
+    title: 'Início',
+    subtitle: 'Seu Passaporte num relance',
 });
 if (!user) await haltModule();
 
@@ -34,13 +34,13 @@ const archetype = archetypeOf(user);
 
 function greetingLine() {
     const hour = new Date().getHours();
-    if (hour < 6) return 'Late session?';
-    if (hour < 12) return 'Ready to play?';
-    if (hour < 18) return 'What are we playing today?';
-    return 'Prime time. Ready to play?';
+    if (hour < 6) return 'Sessão até tarde?';
+    if (hour < 12) return 'Pronto para jogar?';
+    if (hour < 18) return 'O que vamos jogar hoje?';
+    return 'Horário nobre. Pronto para jogar?';
 }
 
-document.getElementById('greetingTitle').textContent = `Welcome back, ${user.nickname}.`;
+document.getElementById('greetingTitle').textContent = `Bem-vindo de volta, ${user.nickname}.`;
 document.getElementById('greetingSub').textContent = greetingLine();
 
 /* ============================================================
@@ -57,10 +57,10 @@ if (completion < 100) {
         <aside class="nudge" role="note">
             <span class="nudge__icon">${icon(needsDna ? 'dna' : 'id', { size: 20 })}</span>
             <div class="nudge__body">
-                <p class="nudge__title">${needsDna ? 'Your Gamer DNA is still missing.' : 'Your Passport is ' + completion + '% complete.'}</p>
+                <p class="nudge__title">${needsDna ? 'Seu DNA Gamer ainda não foi mapeado.' : 'Seu Passaporte está ' + completion + '% completo.'}</p>
                 <p class="nudge__text">${needsDna
-                    ? 'Ten questions produce your six attributes and your archetype — the rest of the platform uses them.'
-                    : 'Finishing it improves your match quality and unlocks the Fully Registered badge.'}</p>
+                    ? 'Dez perguntas definem seus seis atributos e seu arquétipo — o restante da plataforma usa esses dados.'
+                    : 'Concluir o Passaporte melhora a qualidade das combinações e desbloqueia a medalha Cadastro Completo.'}</p>
                 <div class="nudge__meter">
                     <span class="progress progress--thin">
                         <span class="progress__fill" data-progress="${completion}"></span>
@@ -69,7 +69,7 @@ if (completion < 100) {
                 </div>
             </div>
             <a class="btn btn--primary btn--sm" href="${needsDna ? 'onboarding.html?stage=dna' : 'passport.html?edit=1'}">
-                ${needsDna ? 'Start the DNA' : 'Complete it'}
+                ${needsDna ? 'Começar o DNA' : 'Completar'}
             </a>
         </aside>
     `);
@@ -81,53 +81,53 @@ if (completion < 100) {
 
 render(document.getElementById('overviewStats'), [
     statMarkup({
-        label: 'Level',
+        label: 'Nível',
         value: snapshot.level,
-        meta: `${formatNumber(snapshot.remaining)} XP to level ${snapshot.level + 1}`,
+        meta: `${formatNumber(snapshot.remaining)} XP para o nível ${snapshot.level + 1}`,
         icon: 'arrow-up',
         accent: 'var(--color-primary)',
-        tooltip: 'Levels come from XP. Each level costs 500 XP more than the previous one.',
+        tooltip: 'Os níveis vêm do XP. Cada nível custa 500 XP a mais que o anterior.',
         count: snapshot.level,
     }),
     statMarkup({
-        label: 'Experience',
+        label: 'Experiência',
         value: formatNumber(snapshot.xp),
-        meta: `${Math.round(snapshot.percent)}% into this level`,
+        meta: `${Math.round(snapshot.percent)}% deste nível`,
         icon: 'bolt',
         accent: 'var(--color-primary)',
-        tooltip: 'XP is awarded for real actions: adding games, completing them, finding squads and completing your Passport.',
+        tooltip: 'O XP vem de ações reais: adicionar jogos, zerá-los, encontrar squads e completar seu Passaporte.',
         count: snapshot.xp,
     }),
     statMarkup({
-        label: 'Gamer Score',
+        label: 'Pontuação Gamer',
         value: formatNumber(snapshot.gamerScore),
-        meta: 'Overall passport strength',
+        meta: 'Força geral do Passaporte',
         icon: 'spark',
         accent: 'var(--color-primary)',
-        tooltip: 'A single number combining level, XP, achievement rarity, library size, hours played, reputation and squad activity.',
+        tooltip: 'Um número único que combina nível, XP, raridade das conquistas, tamanho da biblioteca, horas jogadas, reputação e atividade de squad.',
         count: snapshot.gamerScore,
     }),
     statMarkup({
-        label: 'Reputation',
+        label: 'Reputação',
         value: snapshot.reputation,
-        meta: 'Earned through activity',
+        meta: 'Ganha com atividade',
         icon: 'shield',
         accent: 'var(--color-accent)',
-        tooltip: 'Starts at 50 and grows with your level, achievements, completed games, squad size and profile completeness. Capped at 100.',
+        tooltip: 'Começa em 50 e cresce com seu nível, conquistas, jogos zerados, tamanho do squad e o quanto o perfil está completo. Limite de 100.',
         count: snapshot.reputation,
     }),
     statMarkup({
-        label: 'Games',
+        label: 'Jogos',
         value: snapshot.libraryCount,
-        meta: `${formatHours(summary.hours)} tracked`,
+        meta: `${formatHours(summary.hours)} registradas`,
         icon: 'controller',
         accent: 'var(--color-text-muted)',
         count: snapshot.libraryCount,
     }),
     statMarkup({
-        label: 'Badges',
+        label: 'Medalhas',
         value: `${snapshot.achievementsUnlocked}/${snapshot.achievementsTotal}`,
-        meta: 'Achievements unlocked',
+        meta: 'Conquistas desbloqueadas',
         icon: 'trophy',
         accent: 'var(--color-primary)',
     }),
@@ -146,9 +146,9 @@ render(document.getElementById('currentlyPlaying'), playing.length
     ? `<ul class="game-row-list card card--flat">${playing.map(gameRowMarkup).join('')}</ul>`
     : emptyStateMarkup({
         iconName: 'controller',
-        title: 'Nothing in progress.',
-        text: 'Add a game and set it to Playing — your Passport starts describing what you actually play.',
-        action: '<a class="btn btn--primary btn--sm" href="library.html?action=add">Add a game</a>',
+        title: 'Nenhum jogo em andamento.',
+        text: 'Adicione um jogo e marque como Jogando — o Passaporte começa a descrever o que você joga de verdade.',
+        action: '<a class="btn btn--primary btn--sm" href="library.html?action=add">Adicionar um jogo</a>',
     })
 );
 
@@ -159,16 +159,20 @@ render(document.getElementById('currentlyPlaying'), playing.length
    ============================================================ */
 
 const squadHost = document.getElementById('suggestedSquad');
+// A Biblioteca agora pode conter titulos do GameDB, mas o pool de jogadores
+// demo so conhece o catalogo curado. Sugerir squad para um jogo que ninguem
+// da base joga daria um resultado vazio de sentido, entao a sugestao fica
+// ancorada no primeiro jogo curado que o usuario esta jogando.
 const preferredGame = user.currentGames?.[0]
-    ?? summary.playing[0]?.gameId
+    ?? summary.playing.map((entry) => entry.gameId).find((id) => getGameById(id))
     ?? null;
 
 if (!preferredGame) {
     render(squadHost, emptyStateMarkup({
         iconName: 'users',
-        title: 'No squad yet.',
-        text: "Let's find your team. Add a game you are playing and the engine can start matching you.",
-        action: '<a class="btn btn--primary btn--sm" href="squads.html">Open Squad Finder</a>',
+        title: 'Nenhum squad ainda.',
+        text: "Vamos encontrar seu time. Adicione um jogo que você está jogando e o motor começa a buscar combinações.",
+        action: '<a class="btn btn--primary btn--sm" href="squads.html">Abrir Buscar Squad</a>',
     }));
 } else {
     const criteria = {
@@ -186,11 +190,11 @@ if (!preferredGame) {
     render(squadHost, `
         <div class="card card--flat">
             <p class="suggested__intro">
-                Based on your Passport · <strong>${escapeHtml(game.title)}</strong>
+                Com base no seu Passaporte · <strong>${escapeHtml(game.title)}</strong>
             </p>
             <ul class="squad-row-list">${matches.map(({ player, result }) => squadRowMarkup(player, result)).join('')}</ul>
             <a class="btn btn--secondary btn--sm btn--block" href="squads.html?game=${encodeURIComponent(preferredGame)}">
-                Run a full search
+                Fazer uma busca completa
             </a>
         </div>
     `);
@@ -206,8 +210,8 @@ render(document.getElementById('recentActivity'), activity.length
     ? `<ul class="activity-list card card--flat">${activity.map(activityItemMarkup).join('')}</ul>`
     : emptyStateMarkup({
         iconName: 'clock',
-        title: 'No activity yet.',
-        text: 'Everything you do in RIVALY is recorded here — locally, in this browser.',
+        title: 'Nenhuma atividade ainda.',
+        text: 'Tudo o que você faz na RIVALY é registrado aqui, localmente, neste navegador.',
     })
 );
 
@@ -226,14 +230,14 @@ render(document.getElementById('dnaSummary'), user.dna
                 <span class="dna-summary__glyph" style="color:${archetype.accent}">${icon('dna', { size: 22 })}</span>
             </div>
             ${dnaListMarkup(user.dna.scores)}
-            <a class="link dna-summary__link" href="passport.html">Read the full analysis</a>
+            <a class="link dna-summary__link" href="passport.html">Ver a análise completa</a>
         </div>
     `
     : emptyStateMarkup({
         iconName: 'dna',
-        title: 'Your DNA is unmapped.',
-        text: 'Ten questions is all it takes. The result drives your archetype, your suggested roles and your matches.',
-        action: '<a class="btn btn--primary btn--sm" href="onboarding.html?stage=dna">Run the analysis</a>',
+        title: 'Seu DNA ainda não foi mapeado.',
+        text: 'Bastam dez perguntas. O resultado define seu arquétipo, as funções sugeridas e suas combinações.',
+        action: '<a class="btn btn--primary btn--sm" href="onboarding.html?stage=dna">Fazer a análise</a>',
     })
 );
 
@@ -250,9 +254,9 @@ render(document.getElementById('latestBadges'), unlockedBadges.length
     ? `<div class="grid grid--badges">${unlockedBadges.map(badgeMarkup).join('')}</div>`
     : emptyStateMarkup({
         iconName: 'trophy',
-        title: 'Your first achievement is closer than you think.',
-        text: 'Add a game, complete your DNA or run a squad search — any of them unlocks something.',
-        action: '<a class="btn btn--secondary btn--sm" href="achievements.html">See what is available</a>',
+        title: 'Sua primeira conquista está mais perto do que parece.',
+        text: 'Adicione um jogo, complete seu DNA ou faça uma busca de squad — qualquer uma dessas ações desbloqueia algo.',
+        action: '<a class="btn btn--secondary btn--sm" href="achievements.html">Ver o que existe</a>',
     })
 );
 

@@ -1,0 +1,322 @@
+achievements.html|Abra a RIVALY por um servidor local
+achievements.html|Achievement filters
+achievements.html|Filtrar conquistas
+achievements.html|Todas as conquistas
+achievements.html|Twenty badges, five rarities. Each one is tied to something you did. None are granted for free.
+achievements.js|;
+import { RARITIES } from
+achievements.js|;
+import { badgeMarkup } from
+achievements.js|Add a game
+achievements.js|rarity-chip rarity-${escapeHtml(id)}
+app.js|)?.classList.remove(
+auth.js|Apelido must be 18 characters or fewer.
+avatar-picker.js|Avatar source
+avatar-picker.js|Choose an image
+avatar-picker.js|Confirmar avatar
+avatar-picker.js|Current avatar
+avatar-picker.js|Load more
+avatar-picker.js|Upload your own
+avatar-picker.js|Uploaded image
+avatar-picker.js|Use the library instead
+avatar-picker.js|for=
+avatar-upload.js|Use a JPEG, PNG or WebP image.
+cards.js|--cover-a:hsl(${game.hue} 62% 30%);--cover-b:hsl(${hue2} 58% 14%)
+cards.js|Not rated
+compatibility.js|Horario flexivel solicitado
+compatibility.js|Uses voice chat
+dashboard.html|Abra a RIVALY por um servidor local
+dashboard.html|Abrir biblioteca
+dashboard.html|Abrir busca de squad
+dashboard.html|Atividade recente
+dashboard.html|Buscar squad
+dashboard.html|Conquistas recentes
+dashboard.html|Jogando agora
+dashboard.html|Passaporte completo
+dashboard.html|Squad sugerido
+dashboard.html|Ver tudo
+dashboard.html|Visao geral
+dashboard.js|% complete.
+dashboard.js|;
+import { getGameById } from
+dashboard.js|Add a game
+dashboard.js|Based on your Passport ·
+dashboard.js|Comecar o DNA
+dashboard.js|Complete it
+dashboard.js|Forca geral do passaporte
+dashboard.js|Open Buscar Squad
+dashboard.js|Run a full search
+dashboard.js|Run the analysis
+dashboard.js|See what is available
+dashboard.js|Ver a analise completa
+data.js|,
+        check: (ctx) => ctx.level >= 10,
+    },
+    {
+        id:
+data.js|,
+        check: (ctx) => ctx.level >= 5,
+    },
+    {
+        id:
+data.js|,
+        games: [
+data.js|, rarity:
+data.js|, status:
+data.js|, weight: 2 },
+    rare: { label:
+data.js|, weight: 4 },
+    epic: { label:
+data.js|Faz as chamadas
+data.js|Passaporte Gamer created
+data.js|Passport updated
+data.js|Playtime logged
+data.js|Positive comms, zero flame. Ask my duo.
+data.js|Subiram os Creditos
+data.js|Utilitario e cobertura
+data.js|World of Warcraft
+demo.js|;
+import { DNA_QUESTIONS } from
+discover.html|Abra a RIVALY por um servidor local
+discover.html|Meus registros
+discover.js|;
+import { logActivity } from
+discover.js|;
+import { toast } from
+discover.js|Status atualizado
+discover.js|Ver na Biblioteca
+footer.js|Redes sociais
+index.html|A plataforma
+index.html|Abra a RIVALY por um servidor local
+index.html|Atributos do DNA
+index.html|Criar meu Passaporte Gamer
+index.html|Criar passaporte
+index.html|Dois minutos.
+index.html|Everything you do here writes back to the Passport, and the Passport makes the next thing sharper.
+index.html|Explorar a plataforma
+index.html|Fatores de match
+index.html|Fora da V1.
+index.html|Jogando agora
+index.html|Mesma busca, mesmo ranking. Sempre.
+index.html|Motor de Compatibilidade
+index.html|Page sections
+index.html|Quatro passos.
+index.html|Seis sistemas.
+index.html|Seven factors, scored separately and added up. You see where a player gained points and where they lost them.
+index.html|Telas da RIVALY
+index.html|Testar o motor
+index.html|Um registro.
+index.html|V1 is the identity core. The rest is planned, not faked. You will not find a dead button for any of it.
+index.html|Veja por dentro
+landing.js|).classList.add(
+landing.js|,
+    games: [
+landing.js|Game compatibility
+landing.js|Motor de Compatibilidade
+landing.js|a[href^="#"]
+landing.js|}">${item.status ===
+library.html|Abra a RIVALY por um servidor local
+library.html|Adicionados recentemente
+library.html|Atualizados recentemente
+library.html|Everything you have played, are playing, or plan to. Genres, platforms, hours and completion all feed your Passport.
+library.html|Filtrar por status
+library.html|Library filters
+library.html|Melhor avaliados
+library.html|Ordenar biblioteca
+library.html|Titulo A–Z
+library.js|).forEach((tab) => tab.classList.remove(
+library.js|);
+    tabsHost.classList.add(
+library.js|);
+    tabsHost.classList.remove(
+library.js|)?.classList.remove(
+library.js|,
+    sort:
+library.js|;
+import { gameCardMarkup, statMarkup } from
+library.js|;
+import { logActivity } from
+library.js|Catalogue complete
+library.js|Clear filters
+library.js|Game added.
+library.js|Horas registradas
+library.js|Hours played
+library.js|Passport updated.
+library.js|Removido da biblioteca.
+library.js|Your rating
+loading.js|);
+    pageRoot?.classList.add(
+loading.js|);
+    pageRoot?.classList.remove(
+login.html|Abra a RIVALY por um servidor local
+login.html|Authentication mode
+login.html|Aviso importante sobre este demo
+login.html|Builds a finished Passport (DNA, 14 games, saved squad, badges) and drops you straight into the dashboard. Replaces any local data
+login.html|Create an account, answer the DNA questionnaire, get your archetype. Every game and every match you log after that sharpens it.
+login.html|Criar meu Passaporte Gamer
+login.html|Criar passaporte
+login.html|Responda o DNA Gamer
+login.html|Show password
+login.html|There is no server and no real authentication. Your account lives only in this browser's local storage and can be read by anyone w
+login.js|),
+    create: $(
+login.js|, result.error);
+        toastError(
+login.js|;
+import { logActivity } from
+login.js|;
+import { toastError, toastSuccess } from
+login.js|Carregar demo
+login.js|Carregar o Passaporte demo?
+login.js|Hide password
+login.js|Show password
+login.js|Substituir o Passaporte local?
+login.js|},
+    create: { title:
+modal.js|a[href]
+navigation.js|;
+import { archetypeName } from
+navigation.js|;
+import { logout } from
+navigation.js|Em breve
+notifications.js|Achievement Unlocked
+notifications.js|Your Passaporte Gamer just got heavier.
+onboarding.html|Abra a RIVALY por um servidor local
+onboarding.html|Attribute analysis
+onboarding.html|Buscar no catalogo…
+onboarding.html|Comecar o DNA Gamer
+onboarding.html|Entrar no inicio
+onboarding.html|Favourite genres
+onboarding.html|Generate my Passport
+onboarding.html|Identity found
+onboarding.html|Jogando agora
+onboarding.html|Leva cerca de dois minutos.
+onboarding.html|O Motor de Compatibilidade pesa esses quatro itens ao ranquear companheiros.
+onboarding.html|Passport created
+onboarding.html|Passport initialised
+onboarding.html|Passport setup
+onboarding.html|Pular por enquanto
+onboarding.html|Registration complete
+onboarding.html|Your Passport exists, but it is blank. A few details about how you play, then ten questions that produce your
+onboarding.js|);
+    void target.offsetWidth;
+    target.classList.add(
+onboarding.js|Jogando agora
+onboarding.js|Passaporte Gamer created
+onboarding.js|Passport created
+onboarding.js|Setup skipped
+onboarding.js|Skipped profile setup
+passport.html|Abra a RIVALY por um servidor local
+passport.html|Abrir biblioteca
+passport.html|Badge case
+passport.html|Editar passaporte
+passport.html|Library signature
+passport.html|Passport stats
+passport.html|Play preferences
+passport.html|Refazer analise
+passport.html|Ver tudo
+passport.html|Your identity inside RIVALY. Every feature here either reads this record or writes to it.
+passport.js|).checked,
+        });
+
+        close();
+        afterSave(
+passport.js|;
+import {
+    PLATFORMS, GENRES, SCHEDULES, PLAYSTYLES, ROLES, LANGUAGES, REGIONS,
+    DNA_ATTRIBUTES, RANK_LADDER, getGameById,
+
+passport.js|;
+import { librarySummary } from
+passport.js|Add a game
+passport.js|Apelido must be 3–18 characters.
+passport.js|Avatar updated.
+passport.js|Complete my passport
+passport.js|Edit details
+passport.js|Escolher avatar
+passport.js|Favourite genres
+passport.js|Forca geral do passaporte
+passport.js|Genre distribution
+passport.js|Jogando agora
+passport.js|Member since
+passport.js|Not set
+passport.js|Passport completion
+passport.js|Plataformas in use
+passport.js|Run the analysis
+passport.js|Save passport
+passport.js|Saved teammates
+passport.js|See the list
+passport.js|Short bio
+passport.js|Squad roles
+passport.js|Suggested roles:
+passport.js|Voice chat
+passport.js|Your rank
+passport.js|avatar avatar--xl edit-avatar__preview
+passport.js|for=
+profile.js|;
+import { defaultAvatarFor } from
+settings.html|Abra a RIVALY por um servidor local
+settings.html|Azul bebe e verde
+settings.html|Dados locais
+settings.html|Densidade compacta
+settings.html|Disables animations, transitions and the reveal sequences. Your system preference is respected automatically; this forces it on.
+settings.html|Editar passaporte
+settings.html|Exportar meus dados
+settings.html|In-app feedback for XP, updates and errors. Achievement and level-up celebrations are not affected.
+settings.html|Limpar historico de atividade
+settings.html|Marrom e rosa
+settings.html|Preto e amarelo
+settings.html|Preto e vermelho
+settings.html|RIVALY V1 is built with HTML5, CSS3 and vanilla JavaScript only — no framework, no CSS library, no runtime dependency and no backe
+settings.html|Refazer tutorial
+settings.html|Tema visual
+settings.html|This is a local academic simulation. There is no server, no password recovery and no synchronisation between devices.
+settings.html|Tutorial guiado
+settings.html|no armazenamento local deste navegador.
+settings.js|Activity history cleared.
+settings.js|Azul bebe e verde
+settings.js|Data exported.
+settings.js|Keep my data
+settings.js|Limpar historico
+settings.js|Limpar o historico de atividade?
+settings.js|Local storage is unavailable in this browser context. The app is running from memory and nothing will survive a refresh.
+settings.js|Marrom e rosa
+settings.js|Preto e amarelo
+settings.js|Preto e vermelho
+settings.js|Resetar todos os dados demo?
+settings.js|Resetar tudo
+settings.js|Sessao ativa
+settings.js|Tema aplicado
+settings.js|Toasts disabled
+settings.js|Versao do schema
+squads.html|Abra a RIVALY por um servidor local
+squads.html|Filtros de busca
+squads.html|Find players
+squads.html|Limpar squad
+squads.html|Seven weighted factors, one score, full breakdown. No randomness: run the same search twice and you get the same ranking.
+squads.html|Text only
+squads.html|Voice chat
+squads.js|, weight: WEIGHTS.game },
+    { label:
+squads.js|;
+import { logActivity } from
+squads.js|;
+import { squadCardMarkup } from
+squads.js|;
+import { toast } from
+squads.js|Limpar squad
+squads.js|Motor de Compatibilidade · 7 weighted factors
+squads.js|Scanning players…
+squads.js|Squad cleared.
+tour.js|);
+    root.classList.remove(
+tour.js|Pular tutorial
+ui.js|',
+    close: '
+ui.js|',
+    edit: '
+ui.js|',
+    filter: '
+ui.js|',
+    search: '
+ui.js|game-image ${escapeHtml(className)}

@@ -1,5 +1,5 @@
 /**
- * squads.js — controller for the Squad Finder.
+ * squads.js — controller for the Buscar Squad.
  *
  * Flow: build the search from the passport → scan (a staged, honest
  * progress sequence that mirrors the actual computation) → rank →
@@ -26,8 +26,8 @@ import { runSequence, countUp, prefersReducedMotion, wait } from './animations.j
 
 const user = bootApp({
     page: 'squads',
-    title: 'Squad Finder',
-    subtitle: 'Compatibility Engine · 7 weighted factors',
+    title: 'Buscar Squad',
+    subtitle: 'Motor de Compatibilidade · 7 fatores ponderados',
 });
 if (!user) await haltModule();
 
@@ -233,7 +233,7 @@ $('#squadForm').addEventListener('submit', async (event) => {
     logActivity('squad', `Searched for a ${game.title} squad — best match ${best}%`, { xp: 150 });
     awardXp('squadSearch', { silent: true });
     toast({
-        title: 'Search complete.',
+        title: 'Busca concluida.',
         message: `${matches.length} candidates ranked · best match ${best}%`,
         type: 'success',
         xp: 150,
@@ -307,7 +307,7 @@ function renderSaved() {
     if (squads.length === 0) {
         render(savedHost, emptyStateMarkup({
             iconName: 'shield',
-            title: 'No squad yet.',
+            title: 'Nenhum squad ainda.',
             text: "Let's find your team. Run a search and add the teammates you would actually queue with.",
         }));
         return;
@@ -373,7 +373,7 @@ function saveTeammate(playerId) {
         button.disabled = true;
         button.classList.remove('btn--primary');
         button.classList.add('btn--ghost');
-        button.textContent = 'Saved to squad';
+        button.textContent = 'Salvo no squad';
     }
 
     renderSaved();
@@ -383,9 +383,9 @@ function saveTeammate(playerId) {
 async function unsaveTeammate(playerId) {
     const player = PLAYERS.find((candidate) => candidate.id === playerId);
     const confirmed = await confirmDialog({
-        title: `Remove ${player?.nickname ?? 'this player'}?`,
-        message: 'They are removed from your saved squad. Reputation and XP you already earned are unaffected.',
-        confirmLabel: 'Remove',
+        title: `Remove ${player?.nickname ?? 'este jogador'}?`,
+        message: 'They are removed from your saved squad. Reputacao and XP you already earned are unaffected.',
+        confirmLabel: 'Remover',
         danger: true,
     });
     if (!confirmed) return;
@@ -398,17 +398,17 @@ async function unsaveTeammate(playerId) {
         button.disabled = false;
         button.classList.add('btn--primary');
         button.classList.remove('btn--ghost');
-        button.textContent = 'Add to squad';
+        button.textContent = 'Adicionar ao squad';
     }
 
-    toast({ title: 'Removed from your squad.', message: player?.nickname ?? '', type: 'info' });
+    toast({ title: 'Removido do seu squad.', message: player?.nickname ?? '', type: 'info' });
 }
 
 $('#clearSquadBtn').addEventListener('click', async () => {
     const confirmed = await confirmDialog({
-        title: 'Clear your whole squad?',
+        title: 'Limpar seu squad inteiro?',
         message: 'Every saved teammate is removed. This does not affect your level, XP or achievements.',
-        confirmLabel: 'Clear squad',
+        confirmLabel: 'Limpar squad',
         danger: true,
     });
     if (!confirmed) return;
@@ -416,7 +416,7 @@ $('#clearSquadBtn').addEventListener('click', async () => {
     renderSaved();
     // Re-render the result cards so their buttons return to "Add to squad".
     if (lastResults.length && lastCriteria) renderResults(lastResults, lastCriteria);
-    toast({ title: 'Squad cleared.', type: 'info' });
+    toast({ title: 'Squad limpo.', type: 'info' });
 });
 
 /* ============================================================
