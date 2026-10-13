@@ -15,7 +15,7 @@ import { getUser } from './storage.js';
 import { updateUser, profileCompletion } from './profile.js';
 import {
     PLATFORMS, LANGUAGES, REGIONS, GENRES, SCHEDULES, PLAYSTYLES, ROLES,
-    GAMES, DNA_QUESTIONS, DNA_ATTRIBUTES, getGameById,
+    GAMES, DNA_QUESTIONS, DNA_ATTRIBUTES, getGameById, regionLabel, genreLabel,
 } from './data.js';
 import { buildDnaProfile, getArchetypeById, suggestedRoles } from './gamer-dna.js';
 import { awardXp, awardOnce, checkAchievements, progressSnapshot } from './gamification.js';
@@ -26,8 +26,11 @@ import { $, escapeHtml, icon, formatNumber } from './ui.js';
 import { userAvatarMarkup, resolveAvatar } from './avatar-service.js';
 import { openAvatarPicker } from './avatar-picker.js';
 import { countUp, runSequence, wait, prefersReducedMotion, attachPointerLight } from './animations.js';
+import {
+    validateForm, bindLiveValidation, focusFirstInvalid, required, numberRange, maxLength, noHtml,
+} from './validation.js';
 
-bootPublic();
+bootPublic({ page: 'onboarding' });
 if (!requireAuth({ requireOnboarding: false })) await haltModule();
 
 const user = getUser();
@@ -161,7 +164,7 @@ $('#obAvatarBtn').addEventListener('click', () => {
 /* --- Setup 1 --- */
 const platformHost = $('#platformChips');
 renderChipGroup(platformHost, PLATFORMS, draft.platforms, { name: 'platform' });
-bindChipGroup(platformHost, draft.platforms, () => setError('platformsError', ''));
+bindChipGroup(platformHost, draft.platforms);
 
 const languageHost = $('#languageChips');
 renderChipGroup(languageHost, LANGUAGES, draft.languages, { name: 'language' });
@@ -169,23 +172,41 @@ bindChipGroup(languageHost, draft.languages);
 
 const regionSelect = $('#regionSelect');
 regionSelect.insertAdjacentHTML('beforeend', REGIONS.map(
-    (region) => `<option value="${escapeHtml(region)}"${draft.region === region ? ' selected' : ''}>${escapeHtml(region)}</option>`
+    (region) => `<option value="${escapeHtml(region)}"${draft.region === region ? ' selected' : ''}>${escapeHtml(regionLabel(region))}</option>`
 ).join(''));
 
 if (draft.age) $('#ageInput').value = draft.age;
 
-function setError(id, message) {
-    const node = document.getElementById(id);
-    if (node) node.textContent = message;
+/* Cada passo tem o seu esquema de regras (validation.js). Os grupos de
+   chips são campos de verdade: data-group devolve a lista marcada. */
+const SETUP_SCHEMAS = {
+    setupForm1: {
+        platformChips: [required('Escolha pelo menos uma plataforma em que você joga.')],
+        ageInput: [numberRange(10, 120, 'Use uma idade entre 10 e 120, ou deixe em branco.')],
+    },
+    setupForm2: {
+        playstyleOptions: [required('Escolha o estilo de jogo que mais combina com você.')],
+        scheduleChips: [required('Escolha pelo menos um horário em que você costuma jogar.')],
+        roleChips: [required('Escolha pelo menos uma função que você faz no squad.')],
+    },
+    setupForm3: {
+        genreChips: [required('Escolha pelo menos um gênero favorito.')],
+        bioInput: [maxLength(140, 'A bio pode ter no máximo 140 caracteres.'), noHtml()],
+    },
+};
+
+Object.entries(SETUP_SCHEMAS).forEach(([formId, schema]) => bindLiveValidation($(`#${formId}`), schema));
+
+/** Valida um passo; com erro, leva o foco ao primeiro campo marcado. */
+function validStep(formId) {
+    const result = validateForm($(`#${formId}`), SETUP_SCHEMAS[formId]);
+    if (!result.valid) focusFirstInvalid(result);
+    return result.valid;
 }
 
 $('#setupForm1').addEventListener('submit', (event) => {
     event.preventDefault();
-    if (draft.platforms.length === 0) {
-        setError('platformsError', 'Escolha pelo menos uma plataforma.');
-        platformHost.querySelector('input')?.focus();
-        return;
-    }
+    if (!validStep('setupForm1')) return;
     draft.region = regionSelect.value;
     const age = Number($('#ageInput').value);
     draft.age = Number.isFinite(age) && age >= 10 && age <= 120 ? age : null;
@@ -209,16 +230,15 @@ playstyleHost.addEventListener('change', (event) => {
     const input = event.target.closest('input[name="playstyle"]');
     if (!input) return;
     draft.playstyle = input.value;
-    setError('playstyleError', '');
 });
 
 const scheduleHost = $('#scheduleChips');
 renderChipGroup(scheduleHost, SCHEDULES, draft.schedules, { name: 'schedule' });
-bindChipGroup(scheduleHost, draft.schedules, () => setError('schedulesError', ''));
+bindChipGroup(scheduleHost, draft.schedules);
 
 const roleHost = $('#roleChips');
 renderChipGroup(roleHost, ROLES, draft.roles, { name: 'role' });
-bindChipGroup(roleHost, draft.roles, () => setError('rolesError', ''));
+bindChipGroup(roleHost, draft.roles);
 
 $('#voiceToggle').checked = draft.voiceChat;
 $('#voiceToggle').addEventListener('change', (event) => {
@@ -227,25 +247,7 @@ $('#voiceToggle').addEventListener('change', (event) => {
 
 $('#setupForm2').addEventListener('submit', (event) => {
     event.preventDefault();
-    let valid = true;
-
-    if (!draft.playstyle) {
-        setError('playstyleError', 'Escolha o estilo de jogo que mais combina com você.');
-        valid = false;
-    }
-    if (draft.schedules.length === 0) {
-        setError('schedulesError', 'Escolha pelo menos um horário.');
-        valid = false;
-    }
-    if (draft.roles.length === 0) {
-        setError('rolesError', 'Escolha pelo menos uma função.');
-        valid = false;
-    }
-
-    if (!valid) {
-        document.querySelector('.field__error:not(:empty)')?.scrollIntoView({ block: 'center' });
-        return;
-    }
+    if (!validStep('setupForm2')) return;
     goToStage('setup-3');
 });
 
@@ -253,11 +255,11 @@ $('#setupForm2').addEventListener('submit', (event) => {
 const genreHost = $('#genreChips');
 renderChipGroup(
     genreHost,
-    GENRES.map((genre) => ({ id: genre, label: genre })),
+    GENRES.map((genre) => ({ id: genre, label: genreLabel(genre) })),
     draft.favoriteGenres,
     { name: 'genre' }
 );
-bindChipGroup(genreHost, draft.favoriteGenres, () => setError('genresError', ''));
+bindChipGroup(genreHost, draft.favoriteGenres);
 
 const gameHost = $('#currentGameChips');
 
@@ -265,7 +267,7 @@ function renderGameChips(query = '') {
     const needle = query.trim().toLowerCase();
     const matches = GAMES.filter((game) =>
         !needle || game.title.toLowerCase().includes(needle) ||
-        game.genre.some((genre) => genre.toLowerCase().includes(needle))
+        game.genre.some((genre) => genre.toLowerCase().includes(needle) || genreLabel(genre).toLowerCase().includes(needle))
     );
 
     // Selected games stay visible even when they fall out of the filter.
@@ -281,7 +283,7 @@ function renderGameChips(query = '') {
                 <span>${escapeHtml(game.title)}</span>
             </label>
         `).join('')
-        : `<p class="field__hint">Nenhum jogo corresponde a “${escapeHtml(query)}”. Você poderá adicioná-lo mais tarde pela Biblioteca.</p>`;
+        : `<p class="form-text">Nenhum jogo do catálogo com “${escapeHtml(query)}”. Depois você pode adicionar qualquer jogo pela Biblioteca.</p>`;
 }
 
 renderGameChips();
@@ -305,11 +307,7 @@ bioInput.addEventListener('input', () => {
 
 $('#setupForm3').addEventListener('submit', (event) => {
     event.preventDefault();
-    if (draft.favoriteGenres.length === 0) {
-        setError('genresError', 'Escolha pelo menos um gênero.');
-        genreHost.querySelector('input')?.focus();
-        return;
-    }
+    if (!validStep('setupForm3')) return;
     persistProfileDraft();
     goToStage('dna');
     renderQuestion(0);
@@ -337,7 +335,7 @@ document.querySelector('[data-skip-all]')?.addEventListener('click', () => {
     persistProfileDraft();
     updateUser({ onboardingComplete: true });
     logActivity('passport', 'Pulou a montagem do perfil');
-    toastInfo('Montagem pulada', 'Você pode completar seu Passaporte quando quiser pela página Passaporte.');
+    toastInfo('Montagem pulada', 'Você pode completar o seu Passaporte quando quiser, pela página Passaporte.');
     window.location.href = 'dashboard.html';
 });
 

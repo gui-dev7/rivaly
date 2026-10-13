@@ -64,21 +64,21 @@ export function validateNickname(value) {
     const nickname = String(value ?? '').trim();
     if (nickname.length < VALIDATION.nickname.min) return 'O apelido precisa de pelo menos 3 caracteres.';
     if (nickname.length > VALIDATION.nickname.max) return 'O apelido pode ter no máximo 18 caracteres.';
-    if (!VALIDATION.nickname.pattern.test(nickname)) return 'Use letras, números, espaços, hífens ou sublinhados.';
+    if (!VALIDATION.nickname.pattern.test(nickname)) return 'Use letras, números, espaços, hífen ou sublinhado. Ex.: Nova_7.';
     return '';
 }
 
 export function validateEmail(value) {
     const email = normaliseEmail(value);
-    if (!email) return 'E-mail é obrigatório.';
-    if (!VALIDATION.email.pattern.test(email)) return 'Digite um endereço de e-mail válido.';
+    if (!email) return 'Digite um e-mail.';
+    if (!VALIDATION.email.pattern.test(email)) return 'Digite um e-mail no formato nome@exemplo.com.';
     return '';
 }
 
 export function validatePassword(value) {
     const password = String(value ?? '');
     if (password.length < VALIDATION.password.min) return 'A senha deve ter pelo menos 6 caracteres.';
-    if (password.length > VALIDATION.password.max) return 'A senha é longa demais.';
+    if (password.length > VALIDATION.password.max) return 'A senha pode ter no máximo 64 caracteres.';
     return '';
 }
 
@@ -104,7 +104,7 @@ export async function register({ nickname, email, password }) {
     if (passwordError) return { ok: false, field: 'password', error: passwordError };
 
     if (findAccountByEmail(email)) {
-        return { ok: false, field: 'email', error: 'Já existe uma conta com este e-mail.' };
+        return { ok: false, field: 'email', error: 'Já existe uma conta com este e-mail neste navegador. Entre por ela ou use outro e-mail.' };
     }
 
     const account = {
@@ -128,12 +128,12 @@ export async function register({ nickname, email, password }) {
 export async function login({ email, password }) {
     const account = findAccountByEmail(email);
     if (!account) {
-        return { ok: false, field: 'email', error: 'Nenhuma conta encontrada para este e-mail.' };
+        return { ok: false, field: 'email', error: 'Não há conta com este e-mail neste navegador. Confira a grafia ou crie uma conta.' };
     }
 
     const hash = await hashPassword(password);
     if (hash !== account.passwordHash) {
-        return { ok: false, field: 'password', error: 'Senha incorreta.' };
+        return { ok: false, field: 'password', error: 'A senha não confere. Tente de novo.' };
     }
 
     const storedUser = getUser();

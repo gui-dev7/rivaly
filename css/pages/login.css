@@ -189,24 +189,16 @@
     gap: var(--space-md);
 }
 
-.auth__reveal {
-    position: absolute;
-    right: var(--space-xs);
-    top: 50%;
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
-    transform: translateY(-50%);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-faint);
-    transition: color var(--duration-fast) var(--ease-out),
-        background-color var(--duration-fast) var(--ease-out);
+.auth__field .input-group {
+    flex-wrap: nowrap;
 }
 
-.auth__reveal:hover {
-    color: var(--color-text);
-    background: var(--color-surface-tertiary);
+/* O botão de mostrar senha é o último item do input-group do Bootstrap. */
+.auth__reveal {
+    --bs-btn-padding-x: 0;
+    width: 46px;
+    min-height: 46px;
+    color: var(--color-text-faint);
 }
 
 .auth__switch {
@@ -215,10 +207,8 @@
     color: var(--color-text-muted);
 }
 
-.auth__switch .link {
-    background: none;
-    padding: 0;
-    cursor: pointer;
+.auth__switch .btn-link {
+    vertical-align: baseline;
 }
 
 /* --- Disclaimer --- */

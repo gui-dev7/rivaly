@@ -91,7 +91,7 @@
             </div>
 
             <p class="auth__aside-foot">
-                RIVALY V1. HTML5, CSS3 e JavaScript puro. Sem frameworks.
+                RIVALY V2. HTML5, CSS3, JavaScript e Bootstrap 5.3. Conta local, sem servidor.
             </p>
         </section>
 
@@ -100,107 +100,99 @@
             <div class="auth__card">
                 <div class="auth__tabs" role="tablist" aria-label="Modo de autenticação">
                     <button type="button" class="auth__tab" role="tab" id="tabSignin" aria-selected="true" aria-controls="panelSignin" data-tab="signin">Entrar</button>
-                    <button type="button" class="auth__tab" role="tab" id="tabCreate" aria-selected="false" aria-controls="panelCreate" data-tab="create" tabindex="-1">Criar passaporte</button>
+                    <button type="button" class="auth__tab" role="tab" id="tabCreate" aria-selected="false" aria-controls="panelCreate" data-tab="create" tabindex="-1">Criar conta</button>
                     <span class="auth__tab-indicator" aria-hidden="true"></span>
                 </div>
 
                 <h2 class="auth__title" id="authFormTitle">Bem-vindo de volta</h2>
                 <p class="auth__subtitle" id="authSubtitle">Volte para o seu Passaporte Gamer.</p>
 
-                <!-- ---------- SIGN IN ---------- -->
+                <!-- ---------- ENTRAR ---------- -->
                 <form class="auth__form" id="panelSignin" role="tabpanel" aria-labelledby="tabSignin" novalidate>
-                    <div class="field">
-                        <label class="field__label" for="signinEmail">E-mail</label>
+                    <div class="auth__field">
+                        <label class="form-label" for="signinEmail">E-mail</label>
                         <div class="input-group">
-                            <span class="input-group__icon" aria-hidden="true">
+                            <span class="input-group-text" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
                             </span>
-                            <input class="input" type="email" id="signinEmail" name="email" autocomplete="email"
-                                   placeholder="voce@exemplo.com" required aria-describedby="signinEmailError">
+                            <input class="form-control" id="signinEmail" type="email" name="email" autocomplete="email" placeholder="voce@exemplo.com" required aria-describedby="signinEmailFeedback">
                         </div>
-                        <p class="field__error" id="signinEmailError" role="alert"></p>
+                        <div class="invalid-feedback" id="signinEmailFeedback"></div>
                     </div>
 
-                    <div class="field">
-                        <label class="field__label" for="signinPassword">Senha</label>
+                    <div class="auth__field">
+                        <label class="form-label" for="signinPassword">Senha</label>
                         <div class="input-group">
-                            <span class="input-group__icon" aria-hidden="true">
+                            <span class="input-group-text" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>
                             </span>
-                            <input class="input" type="password" id="signinPassword" name="password"
-                                   autocomplete="current-password" placeholder="Sua senha de demonstração" required
-                                   aria-describedby="signinPasswordError">
-                            <button type="button" class="auth__reveal" data-reveal-password="signinPassword" aria-label="Mostrar senha" aria-pressed="false"></button>
+                            <input class="form-control" id="signinPassword" type="password" name="password" autocomplete="current-password" required aria-describedby="signinPasswordFeedback">
+                            <button type="button" class="btn btn-outline-light auth__reveal" data-reveal-password="signinPassword" aria-label="Mostrar senha" aria-pressed="false"></button>
                         </div>
-                        <p class="field__error" id="signinPasswordError" role="alert"></p>
+                        <div class="invalid-feedback" id="signinPasswordFeedback"></div>
                     </div>
 
-                    <button type="submit" class="btn btn--primary btn--block btn--lg" id="signinSubmit">Entrar</button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100" id="signinSubmit">Entrar no meu Passaporte</button>
                     <p class="auth__switch">
-                        Ainda sem passaporte?
-                        <button type="button" class="link" data-goto-tab="create">Criar uma</button>
+                        Ainda não tem conta?
+                        <button type="button" class="btn btn-link btn-sm" data-goto-tab="create">Criar meu Passaporte</button>
                     </p>
                 </form>
 
                 <!-- ---------- Demo entry point ---------- -->
                 <div class="auth__demo">
                     <p class="divider divider--labelled">ou</p>
-                    <button type="button" class="btn btn--outline btn--block" id="demoLoginBtn">
+                    <button type="button" class="btn btn-outline-light w-100" id="demoLoginBtn">
                         <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5.5 18.5 12 8 18.5z"/></svg>
-                        Entrar com conta de demonstração
+                        Explorar com a conta demo
                     </button>
                     <p class="auth__demo-hint">
-                        Monta um Passaporte completo (DNA, 14 jogos, squad salvo, medalhas) e leva você direto ao Início. Substitui os dados locais existentes.
+                        Monta um Passaporte completo (DNA, 14 jogos, clã, Arena, sessões, Feed e medalhas) e leva você direto ao Início. Substitui os dados locais deste navegador.
                     </p>
                 </div>
 
-                <!-- ---------- CREATE ---------- -->
+                <!-- ---------- CRIAR CONTA ---------- -->
                 <form class="auth__form" id="panelCreate" role="tabpanel" aria-labelledby="tabCreate" novalidate hidden>
-                    <div class="field">
-                        <label class="field__label" for="createNickname">Apelido</label>
+                    <div class="auth__field">
+                        <label class="form-label" for="createNickname">Apelido</label>
                         <div class="input-group">
-                            <span class="input-group__icon" aria-hidden="true">
+                            <span class="input-group-text" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.5 3.5-5.5 7-5.5s6.2 2 7 5.5"/></svg>
                             </span>
-                            <input class="input" type="text" id="createNickname" name="nickname" autocomplete="nickname"
-                                   placeholder="Como devemos te chamar?" required minlength="3" maxlength="18"
-                                   aria-describedby="createNicknameError createNicknameHint">
+                            <input class="form-control" id="createNickname" type="text" name="nickname" autocomplete="nickname" maxlength="18" required aria-describedby="createNicknameFeedback createNicknameHelp">
                         </div>
-                        <p class="field__hint" id="createNicknameHint">3 a 18 caracteres. Esse apelido será sua identidade pública.</p>
-                        <p class="field__error" id="createNicknameError" role="alert"></p>
+                        <div class="invalid-feedback" id="createNicknameFeedback"></div>
+                        <p class="form-text" id="createNicknameHelp">De 3 a 18 caracteres. É assim que a comunidade vai te ver.</p>
                     </div>
 
-                    <div class="field">
-                        <label class="field__label" for="createEmail">E-mail</label>
+                    <div class="auth__field">
+                        <label class="form-label" for="createEmail">E-mail</label>
                         <div class="input-group">
-                            <span class="input-group__icon" aria-hidden="true">
+                            <span class="input-group-text" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
                             </span>
-                            <input class="input" type="email" id="createEmail" name="email" autocomplete="email"
-                                   placeholder="voce@exemplo.com" required aria-describedby="createEmailError">
+                            <input class="form-control" id="createEmail" type="email" name="email" autocomplete="email" placeholder="voce@exemplo.com" required aria-describedby="createEmailFeedback">
                         </div>
-                        <p class="field__error" id="createEmailError" role="alert"></p>
+                        <div class="invalid-feedback" id="createEmailFeedback"></div>
                     </div>
 
-                    <div class="field">
-                        <label class="field__label" for="createPassword">Senha de demonstração</label>
+                    <div class="auth__field">
+                        <label class="form-label" for="createPassword">Senha de demonstração</label>
                         <div class="input-group">
-                            <span class="input-group__icon" aria-hidden="true">
+                            <span class="input-group-text" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>
                             </span>
-                            <input class="input" type="password" id="createPassword" name="password"
-                                   autocomplete="new-password" placeholder="Pelo menos 6 caracteres" required minlength="6"
-                                   aria-describedby="createPasswordError createPasswordHint">
-                            <button type="button" class="auth__reveal" data-reveal-password="createPassword" aria-label="Mostrar senha" aria-pressed="false"></button>
+                            <input class="form-control" id="createPassword" type="password" name="password" autocomplete="new-password" maxlength="64" required aria-describedby="createPasswordFeedback createPasswordHelp">
+                            <button type="button" class="btn btn-outline-light auth__reveal" data-reveal-password="createPassword" aria-label="Mostrar senha" aria-pressed="false"></button>
                         </div>
-                        <p class="field__hint" id="createPasswordHint">Não reutilize uma senha real — veja o aviso abaixo.</p>
-                        <p class="field__error" id="createPasswordError" role="alert"></p>
+                        <div class="invalid-feedback" id="createPasswordFeedback"></div>
+                        <p class="form-text" id="createPasswordHelp">Pelo menos 6 caracteres. Não use uma senha real: veja o aviso abaixo.</p>
                     </div>
 
-                    <button type="submit" class="btn btn--primary btn--block btn--lg" id="createSubmit">Criar meu Passaporte Gamer</button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100" id="createSubmit">Criar meu Passaporte</button>
                     <p class="auth__switch">
-                        Já tem uma?
-                        <button type="button" class="link" data-goto-tab="signin">Entrar</button>
+                        Já tem conta?
+                        <button type="button" class="btn btn-link btn-sm" data-goto-tab="signin">Entrar</button>
                     </p>
                 </form>
 
@@ -216,7 +208,7 @@
             </div>
 
             <p class="auth__back">
-                <a class="link" href="index.html">← Voltar para a página inicial</a>
+                <a class="link" href="index.html">Voltar para a página inicial</a> · <a class="link" href="sitemap.html">Mapa do site</a>
             </p>
         </section>
     </main>

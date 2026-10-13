@@ -7,16 +7,19 @@
 
 import { bootPublic, haltModule } from './app.js';
 import {
-    register, login, switchProfile, redirectIfAuthenticated,
-    validateNickname, validateEmail, validatePassword,
+    register, login, switchProfile, redirectIfAuthenticated, VALIDATION,
 } from './auth.js';
 import { awardXp, checkAchievements } from './gamification.js';
 import { logActivity } from './activity.js';
-import { toastError, toastSuccess } from './notifications.js';
+import { toastSuccess } from './notifications.js';
 import { confirmDialog } from './modal.js';
 import { icon, $ } from './ui.js';
+import {
+    validateForm, bindLiveValidation, focusFirstInvalid, showFieldError, showFeedback,
+    required, email, minLength, maxLength, pattern,
+} from './validation.js';
 
-bootPublic();
+bootPublic({ page: 'login' });
 
 // A signed-in visitor never sees this page.
 if (redirectIfAuthenticated()) await haltModule();
@@ -37,6 +40,19 @@ const COPY = {
     signin: { title: 'Bem-vindo de volta', subtitle: 'Volte para o seu Passaporte Gamer.' },
     create: { title: 'Crie seu Passaporte', subtitle: 'Três campos e a parte interessante começa.' },
 };
+
+/* ============================================================
+   RETORNO SEGURO
+   O ?redirect= só aceita uma página desta própria RIVALY
+   (ex.: arena.html#rankingTitle). Qualquer outra coisa, inclusive um
+   endereço externo, cai no Início.
+   ============================================================ */
+const SAFE_REDIRECT = /^[a-z0-9-]+\.html(?:[?#][^\s]*)?$/i;
+
+function safeRedirect(value) {
+    const target = String(value ?? '').trim();
+    return SAFE_REDIRECT.test(target) && !target.startsWith('login.html') ? target : 'dashboard.html';
+}
 
 function activateTab(mode, { focus = false } = {}) {
     const target = mode === 'create' ? 'create' : 'signin';
@@ -108,31 +124,44 @@ document.querySelectorAll('[data-reveal-password]').forEach((button) => {
 });
 
 /* ============================================================
-   VALIDATION
+   VALIDAÇÃO
+   Regras puras de validation.js; o feedback aparece embaixo de cada
+   campo (invalid-feedback), ao sair do campo e ao enviar.
    ============================================================ */
 
-function setFieldError(inputId, message) {
+const SIGNIN_SCHEMA = {
+    signinEmail: [required('Digite o e-mail da sua conta.'), email()],
+    signinPassword: [required('Digite a sua senha.')],
+};
+
+const CREATE_SCHEMA = {
+    createNickname: [
+        required('Escolha um apelido.'),
+        minLength(VALIDATION.nickname.min, 'O apelido precisa ter pelo menos 3 caracteres.'),
+        maxLength(VALIDATION.nickname.max, 'O apelido pode ter no máximo 18 caracteres.'),
+        pattern(VALIDATION.nickname.pattern, 'Use letras, números, espaços, hífen ou sublinhado. Ex.: Nova_7.'),
+    ],
+    createEmail: [required('Digite um e-mail para a conta.'), email()],
+    createPassword: [
+        required('Crie uma senha de demonstração.'),
+        minLength(VALIDATION.password.min, 'A senha precisa ter pelo menos 6 caracteres.'),
+        maxLength(VALIDATION.password.max, 'A senha pode ter no máximo 64 caracteres.'),
+    ],
+};
+
+bindLiveValidation(panels.signin, SIGNIN_SCHEMA);
+bindLiveValidation(panels.create, CREATE_SCHEMA);
+
+/** Mostra o erro que veio do auth.js no campo certo, com um tremor curto. */
+function fieldError(inputId, message) {
     const input = document.getElementById(inputId);
-    const errorNode = document.getElementById(`${inputId}Error`);
-    if (!input || !errorNode) return;
-
-    errorNode.textContent = message;
-    input.setAttribute('aria-invalid', message ? 'true' : 'false');
-
-    if (message) {
+    showFieldError(input, message);
+    if (message && input) {
         input.classList.remove('anim-shake');
-        void input.offsetWidth; // restart the animation
+        void input.offsetWidth; // reinicia a animação
         input.classList.add('anim-shake');
     }
 }
-
-function clearErrorsOnInput(inputId) {
-    const input = document.getElementById(inputId);
-    input?.addEventListener('input', () => setFieldError(inputId, ''));
-}
-
-['signinEmail', 'signinPassword', 'createNickname', 'createEmail', 'createPassword']
-    .forEach(clearErrorsOnInput);
 
 function withLoading(button, isLoading) {
     button.classList.toggle('is-loading', isLoading);
@@ -146,38 +175,33 @@ function withLoading(button, isLoading) {
 panels.signin.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const email = $('#signinEmail').value;
+    const check = validateForm(panels.signin, SIGNIN_SCHEMA);
+    if (!check.valid) {
+        focusFirstInvalid(check);
+        return;
+    }
+
+    const emailValue = $('#signinEmail').value;
     const password = $('#signinPassword').value;
     const submit = $('#signinSubmit');
 
-    const emailError = validateEmail(email);
-    if (emailError) {
-        setFieldError('signinEmail', emailError);
-        $('#signinEmail').focus();
-        return;
-    }
-    if (!password) {
-        setFieldError('signinPassword', 'A senha é obrigatória.');
-        $('#signinPassword').focus();
-        return;
-    }
-
     withLoading(submit, true);
-    const result = await login({ email, password });
+    const result = await login({ email: emailValue, password });
     withLoading(submit, false);
 
     if (!result.ok) {
-        setFieldError(result.field === 'password' ? 'signinPassword' : 'signinEmail', result.error);
-        toastError('Não foi possível entrar', result.error);
+        const fieldId = result.field === 'password' ? 'signinPassword' : 'signinEmail';
+        fieldError(fieldId, result.error);
+        document.getElementById(fieldId).focus();
         return;
     }
 
     if (result.needsProfileSwitch) {
         const confirmed = await confirmDialog({
             title: 'Substituir o Passaporte local?',
-            message: `Este navegador guarda um Passaporte de outra conta. A versão 1 mantém um Passaporte por navegador, então entrar como ${result.account.nickname} apagará a Biblioteca, as conquistas e as atividades existentes.`,
+            message: `Este navegador guarda o Passaporte de outra conta. A RIVALY mantém um Passaporte por navegador, então entrar como ${result.account.nickname} apaga a Biblioteca, as conquistas, a atividade e a comunidade que estão aqui.`,
             confirmLabel: 'Substituir e continuar',
-            cancelLabel: 'Cancelar',
+            cancelLabel: 'Manter o Passaporte atual',
             danger: true,
         });
         if (!confirmed) return;
@@ -186,9 +210,10 @@ panels.signin.addEventListener('submit', async (event) => {
         return;
     }
 
+    showFeedback(panels.signin, { type: 'success', message: `Tudo certo, ${result.account.nickname}. Abrindo o seu Passaporte…` });
     toastSuccess('Login realizado', `Bem-vindo de volta, ${result.account.nickname}.`);
     logActivity('account', 'Entrou na conta');
-    window.location.href = params.get('redirect') || 'dashboard.html';
+    window.location.href = safeRedirect(params.get('redirect'));
 });
 
 /* ============================================================
@@ -203,9 +228,9 @@ $('#demoLoginBtn').addEventListener('click', async (event) => {
 
     const confirmed = await confirmDialog({
         title: 'Carregar o Passaporte demo?',
-        message: 'Isto substitui qualquer Passaporte, biblioteca e conquistas guardados neste navegador por um perfil demo completo.',
-        confirmLabel: 'Carregar demo',
-        cancelLabel: 'Cancelar',
+        message: 'Isto substitui o Passaporte, a Biblioteca, as conquistas e a comunidade guardados neste navegador por um perfil demo completo.',
+        confirmLabel: 'Carregar a conta demo',
+        cancelLabel: 'Agora não',
     });
     if (!confirmed) return;
 
@@ -227,34 +252,30 @@ $('#demoLoginBtn').addEventListener('click', async (event) => {
 panels.create.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    const check = validateForm(panels.create, CREATE_SCHEMA);
+    if (!check.valid) {
+        showFeedback(panels.create, { type: 'error', message: 'Revise os campos marcados. Cada um diz o que ajustar.' });
+        focusFirstInvalid(check);
+        return;
+    }
+
     const nickname = $('#createNickname').value;
-    const email = $('#createEmail').value;
+    const emailValue = $('#createEmail').value;
     const password = $('#createPassword').value;
     const submit = $('#createSubmit');
 
-    const checks = [
-        ['createNickname', validateNickname(nickname)],
-        ['createEmail', validateEmail(email)],
-        ['createPassword', validatePassword(password)],
-    ];
-
-    const firstError = checks.find(([, message]) => message);
-    checks.forEach(([field, message]) => setFieldError(field, message));
-
-    if (firstError) {
-        document.getElementById(firstError[0]).focus();
-        return;
-    }
-
     withLoading(submit, true);
-    const result = await register({ nickname, email, password });
+    const result = await register({ nickname, email: emailValue, password });
 
     if (!result.ok) {
         withLoading(submit, false);
-        setFieldError(`create${result.field.charAt(0).toUpperCase()}${result.field.slice(1)}`, result.error);
-        toastError('Não foi possível criar a conta', result.error);
+        const fieldId = `create${result.field.charAt(0).toUpperCase()}${result.field.slice(1)}`;
+        fieldError(fieldId, result.error);
+        document.getElementById(fieldId)?.focus();
         return;
     }
+
+    showFeedback(panels.create, { type: 'success', message: 'Passaporte criado. Agora, alguns detalhes sobre como você joga.' });
 
     // First XP of the journey, awarded silently — the onboarding
     // welcome screen presents it as part of the experience instead.
