@@ -7,7 +7,7 @@
  */
 
 import { bootApp, afterRender, haltModule } from './app.js';
-import { render, escapeHtml, formatNumber, icon, emptyStateMarkup, formatHours, colWrap } from './ui.js';
+import { render, escapeHtml, formatNumber, icon, emptyStateMarkup, formatHours, colWrap, plural } from './ui.js';
 import { progressSnapshot, getAchievementState } from './gamification.js';
 import { archetypeOf, profileCompletion, missingProfileFields } from './profile.js';
 import { listHydrated, librarySummary } from './library-store.js';
@@ -146,7 +146,7 @@ function renderCommunity() {
                         <div class="progress-bar" style="width:${snap.clanStats.goalPercent}%"></div>
                     </div>
                 </div>
-                <p class="form-text">Nível ${snap.clanStats.level.level} · ${snap.clan.roster.length} membros · ${snap.relations.allies} aliados · ${snap.relations.rivals} rivais</p>
+                <p class="form-text">Nível ${snap.clanStats.level.level} · ${plural(snap.clan.roster.length, 'membro')} · ${plural(snap.relations.allies, 'aliado')} · ${plural(snap.relations.rivals, 'rival', 'rivais')}</p>
             </div>
             <div class="card-footer"><a class="btn btn-outline-light btn-sm w-100" href="clans.html#myClanTitle">Ver meu clã</a></div>
         </article>`
@@ -156,7 +156,7 @@ function renderCommunity() {
                 <p class="eyebrow">Clã</p>
                 <p class="card-title">Você ainda não está em um clã.</p>
                 <p class="card-text">Clãs compatíveis com o seu DNA estão na página Clãs, do mais compatível para o menos.</p>
-                <p class="form-text">${snap.relations.allies} aliados · ${snap.relations.rivals} rivais · ${snap.sessions} sessões</p>
+                <p class="form-text">${plural(snap.relations.allies, 'aliado')} · ${plural(snap.relations.rivals, 'rival', 'rivais')} · ${plural(snap.sessions, 'sessão', 'sessões')}</p>
             </div>
             <div class="card-footer"><a class="btn btn-primary btn-sm w-100" href="clans.html#exploreTitle">Ver clãs compatíveis</a></div>
         </article>`;

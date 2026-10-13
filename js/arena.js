@@ -24,7 +24,7 @@ import {
 import { scoreLabel } from './sessions.js';
 import { toast } from './notifications.js';
 import {
-    $, render, escapeHtml, icon, formatNumber, formatRelativeTime, emptyStateMarkup,
+    $, render, escapeHtml, icon, formatNumber, formatRelativeTime, emptyStateMarkup, plural, weekLabel,
 } from './ui.js';
 
 const user = bootApp({
@@ -74,9 +74,9 @@ function renderSummary() {
         <div class="col">
             <article class="card h-100">
                 <div class="card-body">
-                    <p class="card-subtitle eyebrow">Temporada ${escapeHtml(arena.season.week ?? '')}</p>
+                    <p class="card-subtitle eyebrow">Temporada · ${escapeHtml(weekLabel(arena.season.week))}</p>
                     <p class="arena-rating__value numeric">${arena.season.points} <small>pts</small></p>
-                    <p class="card-text">${arena.season.wins} vitórias · ${arena.season.losses} derrotas nesta semana.</p>
+                    <p class="card-text">${plural(arena.season.wins, 'vitória')} · ${plural(arena.season.losses, 'derrota')} nesta semana.</p>
                     <p class="card-text form-text">Reinicia na segunda-feira. O rating geral fica.</p>
                 </div>
             </article>
@@ -86,13 +86,14 @@ function renderSummary() {
                 <div class="card-body">
                     <p class="card-subtitle eyebrow">Carreira</p>
                     <p class="arena-rating__value numeric">${arena.wins}<small>V</small> ${arena.losses}<small>D</small></p>
-                    <p class="card-text">${arena.matches} partidas · ${winRate}% de vitórias · pico ${formatNumber(arena.peak ?? arena.rating)}.</p>
+                    <p class="card-text">${plural(arena.matches, 'partida')} · ${winRate}% de vitórias · pico ${formatNumber(arena.peak ?? arena.rating)}.</p>
                     <p class="card-text form-text">${arena.matches < 10 ? `K = 40 até a 10ª partida (faltam ${10 - arena.matches}).` : 'K = 32: o rating já achou o seu nível.'}</p>
                 </div>
             </article>
         </div>
     `);
-    $('#seasonLabel').textContent = `Semana ${arena.season.week ?? ''}`;
+    const label = weekLabel(arena.season.week);
+    $('#seasonLabel').textContent = label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 /* ============================================================
@@ -142,7 +143,7 @@ function renderDuels() {
     const query = state.duelQuery.trim().toLowerCase();
     const opponents = duelOpponents().filter(({ player }) => !query || player.nickname.toLowerCase().includes(query));
 
-    $('#duelCount').textContent = `${opponents.length} ${opponents.length === 1 ? 'adversário' : 'adversários'}`;
+    $('#duelCount').textContent = plural(opponents.length, 'adversário');
 
     if (opponents.length === 0) {
         render($('#duelList'), `<div class="col-12">${emptyStateMarkup({
@@ -328,7 +329,7 @@ function renderHistory() {
     const history = matchHistory();
     const pages = Math.max(1, Math.ceil(history.length / HISTORY_PAGE_SIZE));
     state.historyPage = Math.min(state.historyPage, pages);
-    $('#historyMeta').textContent = history.length ? `${history.length} ${history.length === 1 ? 'partida' : 'partidas'}` : '';
+    $('#historyMeta').textContent = history.length ? plural(history.length, 'partida') : '';
 
     if (history.length === 0) {
         render($('#historyHost'), emptyStateMarkup({

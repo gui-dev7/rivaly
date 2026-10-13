@@ -75,7 +75,7 @@ function memberActionsMarkup(entry, clan) {
     const name = getPlayerById(entry.id)?.nickname ?? '';
     return `
         <div class="dropdown">
-            <button class="btn btn-ghost btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Gerenciar ${escapeHtml(name)}">
+            <button class="btn btn-ghost btn-sm" type="button" data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" aria-label="Gerenciar ${escapeHtml(name)}">
                 Gerenciar ${icon('chevron-down', { size: 12 })}
             </button>
             <ul class="dropdown-menu dropdown-menu-end">${items.join('')}</ul>
@@ -244,7 +244,7 @@ function clanCardMarkup({ clan, compat }) {
                     <ul class="clan-card__facts">
                         <li>${icon('controller', { size: 12 })} ${escapeHtml(focusGamesText(clan))}</li>
                         <li>${icon('zap', { size: 12 })} ${escapeHtml(labelOf(PLAYSTYLES, clan.playstyle))} · ${escapeHtml(CLAN_POLICIES[clan.policy].label)}</li>
-                        <li>${icon('users', { size: 12 })} ${clan.roster.length}/${CLAN_CAPACITY} membros · rank ${escapeHtml(rankLabel(clan.minRank))}+</li>
+                        <li>${icon('users', { size: 12 })} ${clan.roster.length}/${CLAN_CAPACITY} no elenco · rank ${escapeHtml(rankLabel(clan.minRank))}+</li>
                     </ul>
                     <div class="clan-card__compat">
                         <span class="clan-card__compat-value numeric">${compat.total}%</span>

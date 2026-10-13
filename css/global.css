@@ -194,6 +194,14 @@ kbd {
     border-radius: var(--radius-xs);
 }
 
+/* Contêineres que recebem foco por script (offcanvas, modal, títulos com
+   tabindex="-1") não são controles: o anel amarelo fica para o que se
+   aciona pelo teclado. */
+[tabindex="-1"]:focus,
+[tabindex="-1"]:focus-visible {
+    outline: none;
+}
+
 /* ------------------------------------------------------------
    SELECTION
    ------------------------------------------------------------ */

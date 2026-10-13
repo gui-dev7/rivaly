@@ -548,6 +548,12 @@ textarea.form-control {
     padding: var(--space-sm) var(--space-md);
 }
 
+/* Contém filhos absolutos (ex.: .visually-hidden num th): sem isto eles
+   escapam da área rolável e criam rolagem horizontal na página. */
+.table-responsive {
+    position: relative;
+}
+
 .table caption {
     padding: var(--space-sm) 0 0;
     font-size: var(--text-xs);

@@ -57,6 +57,16 @@ export function fragmentFrom(htmlList) {
 
 export const formatNumber = (value) => Number(value ?? 0).toLocaleString('pt-BR');
 
+/** "1 vitória", "3 vitórias": concordância de número sem gambiarra no texto. */
+export const plural = (count, singular, pluralForm = `${singular}s`) =>
+    `${formatNumber(count)} ${Number(count) === 1 ? singular : pluralForm}`;
+
+/** "2026-W42" vira "semana 42 de 2026". */
+export function weekLabel(key) {
+    const match = /^(\d{4})-W(\d{2})$/.exec(String(key ?? ''));
+    return match ? `semana ${Number(match[2])} de ${match[1]}` : String(key ?? '');
+}
+
 export function formatHours(hours) {
     const value = Number(hours) || 0;
     if (value < 1 && value > 0) return `${Math.round(value * 60)}m`;

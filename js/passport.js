@@ -21,7 +21,7 @@ import { openModal } from './modal.js';
 import { toast } from './notifications.js';
 import { refreshNavigationProgress } from './navigation.js';
 import {
-    $, render, escapeHtml, icon, formatNumber, formatHours, emptyStateMarkup, tipMarkup, bannerArt, colWrap,
+    $, render, escapeHtml, icon, formatNumber, formatHours, emptyStateMarkup, tipMarkup, bannerArt, colWrap, plural,
 } from './ui.js';
 import { communitySnapshot } from './community-summary.js';
 import { emblemMarkup, tierBadgeMarkup, playerChipMarkup } from './community-ui.js';
@@ -238,7 +238,7 @@ function renderCommunity() {
                     <div>
                         <p class="eyebrow">Clã · ${escapeHtml(ROLE_LABELS[snap.role] ?? 'Membro')}</p>
                         <p class="passport-tile__title"><span class="clan-tag">[${escapeHtml(snap.clan.tag)}]</span> ${escapeHtml(snap.clan.name)}</p>
-                        <p class="card-text">Nível ${snap.clanStats.level.level} · ${snap.clan.roster.length} membros</p>
+                        <p class="card-text">Nível ${snap.clanStats.level.level} · ${plural(snap.clan.roster.length, 'membro')}</p>
                     </div>
                 </div>
            </article>`
