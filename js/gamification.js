@@ -11,6 +11,7 @@
 
 import {
     getUser, saveUser, getLibrary, getAchievements, saveAchievements, getSquads,
+    getSessions, getRelations, getClanMembership, getArena, getFeed,
 } from './storage.js';
 import { XP_RULES, ACHIEVEMENTS, RARITIES } from './data.js';
 import { logActivity } from './activity.js';
@@ -137,6 +138,21 @@ export function awardOnce(ruleKey, options = {}) {
     return awardXp(ruleKey, options);
 }
 
+/**
+ * Same guard as awardOnce, but per target: marking Aliado on two
+ * different players pays twice, marking the same player twice pays once.
+ */
+export function awardOnceFor(ruleKey, targetKey, options = {}) {
+    const user = getUser();
+    if (!user) return null;
+    const claimed = user.rewards ?? {};
+    const flag = `${ruleKey}:${targetKey}`;
+    if (claimed[flag]) return null;
+
+    saveUser({ ...user, rewards: { ...claimed, [flag]: new Date().toISOString() } });
+    return awardXp(ruleKey, options);
+}
+
 /* ============================================================
    DERIVED CONTEXT
    Everything the achievement rules are allowed to read.
@@ -147,6 +163,12 @@ export function buildContext() {
     const library = getLibrary();
     const unlocked = getAchievements();
     const squads = getSquads();
+
+    // V2: a comunidade também conta. Lido direto do storage para que este
+    // módulo não dependa dos *-store.js (que dependem dele).
+    const relations = Object.values(getRelations());
+    const arena = getArena();
+    const membership = getClanMembership();
 
     const totalHours = library.reduce((sum, entry) => sum + (Number(entry.hours) || 0), 0);
     const level = levelFromXp(user?.xp ?? 0);
@@ -163,6 +185,17 @@ export function buildContext() {
         bestMatch: user?.bestMatch ?? 0,
         searchCount: user?.squadSearches ?? 0,
         reputation: 0,
+
+        sessionCount: getSessions().length,
+        allyCount: relations.filter((relation) => relation.type === 'ally').length,
+        rivalCount: relations.filter((relation) => relation.type === 'rival').length,
+        inClan: Boolean(membership?.clanId),
+        clanMembership: membership,
+        createdClan: Boolean(user?.rewards?.createClan),
+        arenaRating: arena.rating,
+        arenaWins: arena.wins,
+        arenaMatches: arena.matches,
+        postCount: getFeed().posts.length,
     };
 
     context.reputation = calculateReputacao(context);
@@ -172,8 +205,9 @@ export function buildContext() {
 /* ============================================================
    REPUTATION
    ------------------------------------------------------------
-   A transparent, additive score. Reputacao is *earned by
-   activity*, not assigned randomly:
+   A transparent, additive score. Reputação is *earned by
+   activity*, not assigned randomly. Unchanged in V2: the Arena
+   rating is a separate metric and does not feed it.
 
      50  base
      +2  per level

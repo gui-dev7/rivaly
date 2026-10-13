@@ -1,16 +1,21 @@
 /**
- * storage.js — the single door to localStorage.
+ * storage.js — the single door to localStorage (and sessionStorage).
  *
- * No other module in the project is allowed to touch `localStorage`
- * directly. Everything goes through the accessors below, which:
+ * No other module in the project is allowed to touch `localStorage` or
+ * `sessionStorage` directly. Everything goes through the accessors below,
+ * which:
  *   - namespace every key under `rivaly:`
  *   - survive corrupted / unparseable values
  *   - survive Private Mode where writes throw QuotaExceededError
- *   - keep one schema version so future migrations are possible
+ *   - keep one schema version and migrate old data forward
+ *
+ * SCHEMA 2 (V2): adds the community keys — clans, clanMembership,
+ * clanProgress, arena, feed, invites, sessions and relations. The
+ * migration only *adds* keys; nothing written by V1 is touched.
  */
 
 const NAMESPACE = 'rivaly';
-const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const KEYS = {
     version: `${NAMESPACE}:version`,
@@ -23,6 +28,25 @@ export const KEYS = {
     squads: `${NAMESPACE}:squads`,
     settings: `${NAMESPACE}:settings`,
     externalGames: `${NAMESPACE}:externalGames`,
+
+    /* --- V2: comunidade simulada --- */
+    clans: `${NAMESPACE}:clans`,
+    clanMembership: `${NAMESPACE}:clanMembership`,
+    clanProgress: `${NAMESPACE}:clanProgress`,
+    arena: `${NAMESPACE}:arena`,
+    feed: `${NAMESPACE}:feed`,
+    invites: `${NAMESPACE}:invites`,
+    sessions: `${NAMESPACE}:sessions`,
+    relations: `${NAMESPACE}:relations`,
+};
+
+/** Caps so localStorage never grows without bound (see activity.js). */
+export const LIMITS = {
+    feedPosts: 50,
+    commentsPerPost: 20,
+    arenaHistory: 60,
+    sessions: 30,
+    invites: 60,
 };
 
 /** Cheap availability probe — Safari Private Mode throws on setItem. */
@@ -101,6 +125,41 @@ export function isPersistent() {
     return storageAvailable;
 }
 
+/** Size in bytes of the raw stored value, or null when unreadable. */
+export function rawSize(key) {
+    const raw = rawGet(key);
+    if (raw === null || raw === undefined) return 0;
+    try {
+        return new Blob([raw]).size;
+    } catch {
+        return String(raw).length;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Session storage (tab-scoped). Used by the guided tour and the
+   landing intro; kept here so no other module touches Web Storage.
+   ------------------------------------------------------------------ */
+
+export function sessionRead(name, fallback = null) {
+    try {
+        const raw = window.sessionStorage.getItem(`${NAMESPACE}:${name}`);
+        return raw === null ? fallback : JSON.parse(raw);
+    } catch {
+        return fallback;
+    }
+}
+
+export function sessionWrite(name, value) {
+    try {
+        if (value === null || value === undefined) window.sessionStorage.removeItem(`${NAMESPACE}:${name}`);
+        else window.sessionStorage.setItem(`${NAMESPACE}:${name}`, JSON.stringify(value));
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 /* ------------------------------------------------------------------
    Domain accessors
    ------------------------------------------------------------------ */
@@ -145,6 +204,71 @@ export const getSettings = () => ({ ...DEFAULT_SETTINGS, ...read(KEYS.settings, 
 export const saveSettings = (settings) => write(KEYS.settings, { ...getSettings(), ...settings });
 
 /* ------------------------------------------------------------------
+   V2 — Comunidade simulada
+   Shapes are documented here once; the *-store.js modules own the rules.
+   ------------------------------------------------------------------ */
+
+export const DEFAULT_ARENA = () => ({
+    rating: 1000,
+    matches: 0,
+    wins: 0,
+    losses: 0,
+    peak: 1000,
+    season: { week: null, points: 0, wins: 0, losses: 0 },
+    history: [],
+});
+
+export const DEFAULT_FEED = () => ({
+    posts: [],        // posts do próprio usuário
+    reactions: {},    // { [postId]: ['gg' | 'respeito' | 'rivalidade'] }
+    comments: {},     // { [postId]: [{ id, authorId, text, at }] }
+    daily: { date: null, xpEvents: 0 },
+});
+
+/* --- Clãs criados pelo usuário (os semeados vivem em data.js) --- */
+export const getClans = () => read(KEYS.clans, []);
+export const saveClans = (clans) => write(KEYS.clans, clans);
+
+/* --- Vínculo do usuário: { clanId, role, joinedAt } ou null --- */
+export const getClanMembership = () => read(KEYS.clanMembership, null);
+export const saveClanMembership = (membership) => write(KEYS.clanMembership, membership);
+
+/* --- Progresso que o usuário gerou em cada clã: { [clanId]: { xp, week, weekPoints } } --- */
+export const getClanProgress = () => read(KEYS.clanProgress, {});
+export const saveClanProgress = (progress) => write(KEYS.clanProgress, progress);
+
+/* --- Arena: rating, temporada e histórico --- */
+export const getArena = () => ({ ...DEFAULT_ARENA(), ...read(KEYS.arena, {}) });
+export const saveArena = (arena) => write(KEYS.arena, {
+    ...arena,
+    history: (arena.history ?? []).slice(0, LIMITS.arenaHistory),
+});
+
+/* --- Feed: posts, reações e comentários do usuário --- */
+export const getFeed = () => ({ ...DEFAULT_FEED(), ...read(KEYS.feed, {}) });
+export const saveFeed = (feed) => write(KEYS.feed, {
+    ...feed,
+    posts: (feed.posts ?? []).slice(0, LIMITS.feedPosts),
+});
+
+/* --- Convites: clã, candidatura e desafio --- */
+export const getInvites = () => read(KEYS.invites, []);
+export const saveInvites = (invites) => {
+    // Pendentes nunca são descartados; os resolvidos mais antigos saem primeiro.
+    const pending = invites.filter((invite) => invite.status === 'pending');
+    const resolved = invites.filter((invite) => invite.status !== 'pending');
+    return write(KEYS.invites, [...pending, ...resolved].slice(0, Math.max(LIMITS.invites, pending.length)));
+};
+
+/* --- Sessões de squad jogadas --- */
+export const getSessions = () => read(KEYS.sessions, []);
+export const saveSessions = (sessions) => write(KEYS.sessions, sessions.slice(0, LIMITS.sessions));
+
+/* --- Relações: { [playerId]: { type, praises, updatedAt } } --- */
+export const getRelations = () => read(KEYS.relations, {});
+export const saveRelations = (relations) => write(KEYS.relations, relations);
+
+/* ------------------------------------------------------------------
    Lifecycle
    ------------------------------------------------------------------ */
 
@@ -187,12 +311,45 @@ function migrateLegacyNamespace() {
     return moved > 0;
 }
 
-/** Called once on boot. Stamps the schema version for future migrations. */
+/**
+ * Schema 1 -> 2. Only initialises the community keys that do not exist
+ * yet; accounts, passport, library, achievements, activity, squads and
+ * settings written by V1 are left exactly as they were.
+ */
+function migrateToV2() {
+    const defaults = {
+        [KEYS.clans]: [],
+        [KEYS.clanMembership]: null,
+        [KEYS.clanProgress]: {},
+        [KEYS.arena]: DEFAULT_ARENA(),
+        [KEYS.feed]: DEFAULT_FEED(),
+        [KEYS.invites]: [],
+        [KEYS.sessions]: [],
+        [KEYS.relations]: {},
+    };
+    Object.entries(defaults).forEach(([key, value]) => {
+        if (rawGet(key) === null) write(key, value);
+    });
+}
+
+const MIGRATIONS = {
+    2: migrateToV2,
+};
+
+/** Called once on boot. Migrates old data forward and stamps the version. */
 export function initStorage() {
     const migrated = migrateLegacyNamespace();
-    const stored = read(KEYS.version, null);
-    if (stored === null) {
-        write(KEYS.version, SCHEMA_VERSION);
+    const stored = Number(read(KEYS.version, 0)) || 0;
+
+    // A browser with no RIVALY data at all starts directly on the current
+    // schema; one with V1 data walks every migration in order.
+    const hasData = rawGet(KEYS.user) !== null || rawGet(KEYS.accounts) !== null;
+    const from = stored || (hasData ? 1 : SCHEMA_VERSION);
+
+    for (let version = from + 1; version <= SCHEMA_VERSION; version += 1) {
+        MIGRATIONS[version]?.();
     }
-    return { version: SCHEMA_VERSION, persistent: storageAvailable, migrated };
+    if (stored !== SCHEMA_VERSION) write(KEYS.version, SCHEMA_VERSION);
+
+    return { version: SCHEMA_VERSION, from, persistent: storageAvailable, migrated };
 }

@@ -1,9 +1,14 @@
 /**
  * data.js — the entire demonstrative dataset of RIVALY.
  *
- * Nothing here is fetched from a network. Games and players are static
- * demo content; every number the product *derives* from them (DNA,
- * compatibility, XP, Pontuacao Gamer) is computed by real logic elsewhere.
+ * Nothing here is fetched from a network. Games, players and clans are
+ * static demo content; every number the product *derives* from them (DNA,
+ * compatibility, XP, Pontuação Gamer, Arena rating) is computed by real
+ * logic elsewhere.
+ *
+ * Stored values stay as stable ids (e.g. rank 'Diamond'); the UI always
+ * shows the PT-BR label through rankLabel(), regionLabel() and genreLabel(),
+ * so V1 data keeps working after the translation.
  *
  * Real game titles are used as demonstrative content only.
  */
@@ -94,6 +99,57 @@ export const LANGUAGES = [
 export const REGIONS = [
     'South America', 'North America', 'Europe', 'Asia', 'Oceania', 'Africa',
 ];
+
+/* ------------------------------------------------------------
+   PT-BR LABELS
+   Ids are what is stored; labels are what is shown.
+   ------------------------------------------------------------ */
+
+export const RANK_LABELS = {
+    Unranked: 'Sem rank',
+    Bronze: 'Bronze',
+    Silver: 'Prata',
+    Gold: 'Ouro',
+    Platinum: 'Platina',
+    Diamond: 'Diamante',
+    Master: 'Mestre',
+    Elite: 'Elite',
+};
+
+export const REGION_LABELS = {
+    'South America': 'América do Sul',
+    'North America': 'América do Norte',
+    Europe: 'Europa',
+    Asia: 'Ásia',
+    Oceania: 'Oceania',
+    Africa: 'África',
+    Global: 'Global',
+};
+
+export const GENRE_LABELS = {
+    FPS: 'FPS',
+    'Battle Royale': 'Battle Royale',
+    MOBA: 'MOBA',
+    RPG: 'RPG',
+    Action: 'Ação',
+    Adventure: 'Aventura',
+    Strategy: 'Estratégia',
+    Simulation: 'Simulação',
+    Sports: 'Esportes',
+    Racing: 'Corrida',
+    Sandbox: 'Sandbox',
+    Survival: 'Sobrevivência',
+    Horror: 'Terror',
+    Fighting: 'Luta',
+    Puzzle: 'Quebra-cabeça',
+    Roguelike: 'Roguelike',
+    MMO: 'MMO',
+    Indie: 'Indie',
+};
+
+export const rankLabel = (id) => RANK_LABELS[id] ?? id ?? '';
+export const regionLabel = (id) => REGION_LABELS[id] ?? id ?? '';
+export const genreLabel = (id) => GENRE_LABELS[id] ?? id ?? '';
 
 /* ============================================================
    GAME CATALOG
@@ -345,6 +401,192 @@ export const PLAYERS = [
         roles: ['entry', 'sniper'], voiceChat: true, languages: ['en', 'es'],
         reputation: 86, matches: 810, bio: 'Agressivo, mas coordenado. Faz a troca comigo.',
     },
+    {
+        id: 'p27', nickname: 'Luan', region: 'South America',
+        games: ['lol', 'valorant', 'fortnite'], rank: 'Gold',
+        schedules: ['evening', 'night'], playstyle: 'balanced',
+        roles: ['support', 'leader'], voiceChat: true, languages: ['pt'],
+        reputation: 87, matches: 344, bio: 'Gosto de explicar a jogada depois. E de ouvir a sua.',
+    },
+    {
+        id: 'p28', nickname: 'Kenji', region: 'Asia',
+        games: ['street-fighter-6', 'tekken8', 'overwatch2'], rank: 'Diamond',
+        schedules: ['night', 'latenight'], playstyle: 'competitive',
+        roles: ['entry'], voiceChat: false, languages: ['ja', 'en'],
+        reputation: 92, matches: 1250, bio: 'Jogo de luta é xadrez em alta velocidade.',
+    },
+    {
+        id: 'p29', nickname: 'Valentina', region: 'South America',
+        games: ['valorant', 'apex', 'overwatch2'], rank: 'Platinum',
+        schedules: ['evening'], playstyle: 'competitive',
+        roles: ['sniper', 'support'], voiceChat: true, languages: ['es', 'pt'],
+        reputation: 89, matches: 512, bio: 'Operator na mão, call curta no ouvido.',
+    },
+    {
+        id: 'p30', nickname: 'Theo', region: 'Europe',
+        games: ['age4', 'civ6', 'dota2'], rank: 'Gold',
+        schedules: ['afternoon', 'evening'], playstyle: 'balanced',
+        roles: ['leader', 'anchor'], voiceChat: true, languages: ['en', 'fr'],
+        reputation: 81, matches: 266, bio: 'Macro, economia e paciência. Nessa ordem.',
+    },
+    {
+        id: 'p31', nickname: 'Gabi', region: 'South America',
+        games: ['minecraft', 'among-us', 'fortnite'], rank: 'Silver',
+        schedules: ['afternoon', 'evening'], playstyle: 'casual',
+        roles: ['support', 'flex'], voiceChat: true, languages: ['pt'],
+        reputation: 91, matches: 158, bio: 'Organizo o servidor, você traz o lanche.',
+    },
+    {
+        id: 'p32', nickname: 'Arjun', region: 'Asia',
+        games: ['dota2', 'lol', 'cs2'], rank: 'Master',
+        schedules: ['night'], playstyle: 'hardcore',
+        roles: ['leader', 'support'], voiceChat: true, languages: ['en'],
+        reputation: 85, matches: 1840, bio: 'Draft primeiro, mecânica depois.',
+    },
+    {
+        id: 'p33', nickname: 'Marina', region: 'South America',
+        games: ['rocket-league', 'fifa', 'valorant'], rank: 'Gold',
+        schedules: ['night'], playstyle: 'competitive',
+        roles: ['anchor', 'flex'], voiceChat: true, languages: ['pt', 'en'],
+        reputation: 84, matches: 377, bio: 'Defendo o gol e o clima do time.',
+    },
+];
+
+export const getPlayerById = (id) => PLAYERS.find((player) => player.id === id) ?? null;
+
+/* ============================================================
+   CLÃS SEMEADOS
+   Formados só por jogadores de PLAYERS. Cada jogador está em no
+   máximo um clã, e onze ficam de fora de propósito: são os que a
+   comunidade simulada permite recrutar. O emblema não é imagem:
+   é gerado em SVG a partir da tag (ver clans-store.js).
+   ============================================================ */
+
+export const CLAN_CAPACITY = 8;
+
+export const CLAN_POLICIES = {
+    open: { label: 'Aberto', hint: 'Entra na hora quem cumpre os requisitos.' },
+    application: { label: 'Candidatura', hint: 'O clã lê a sua mensagem e responde.' },
+    invite: { label: 'Só convite', hint: 'Só entra quem for convidado por um membro.' },
+};
+
+export const CLANS = [
+    {
+        id: 'nox', name: 'Nox Protocol', tag: 'NOX',
+        focusGames: ['valorant', 'cs2'], playstyle: 'hardcore', region: 'South America',
+        languages: ['pt', 'es'], minRank: 'Diamond', minReputation: 85, policy: 'application',
+        leaderId: 'p22', officers: ['p20'], members: ['p03'],
+        motto: 'Informação primeiro, troca depois.',
+    },
+    {
+        id: 'aurora', name: 'Aurora Tática', tag: 'AUR',
+        focusGames: ['lol', 'dota2'], playstyle: 'competitive', region: 'Global',
+        languages: ['en', 'fr', 'de'], minRank: 'Platinum', minReputation: 80, policy: 'open',
+        leaderId: 'p11', officers: ['p24'], members: ['p15', 'p32'],
+        motto: 'Macro vence micro.',
+    },
+    {
+        id: 'gol', name: 'Linha de Gol', tag: 'GOL',
+        focusGames: ['rocket-league', 'fifa'], playstyle: 'competitive', region: 'South America',
+        languages: ['pt'], minRank: 'Gold', minReputation: 75, policy: 'open',
+        leaderId: 'p01', officers: ['p08'], members: ['p33'],
+        motto: 'Bola no chão, cabeça erguida.',
+    },
+    {
+        id: 'vertice', name: 'Vértice', tag: 'VTX',
+        focusGames: ['apex', 'overwatch2'], playstyle: 'hardcore', region: 'North America',
+        languages: ['en'], minRank: 'Diamond', minReputation: 85, policy: 'invite',
+        leaderId: 'p18', officers: ['p13'], members: ['p26', 'p02'],
+        motto: 'Ângulo certo, tempo certo.',
+    },
+    {
+        id: 'bloco', name: 'Bloco Construtor', tag: 'BLOC',
+        focusGames: ['minecraft', 'terraria'], playstyle: 'casual', region: 'Global',
+        languages: ['pt', 'en', 'fr'], minRank: 'Unranked', minReputation: 70, policy: 'open',
+        leaderId: 'p05', officers: ['p31'], members: ['p23', 'p12'],
+        motto: 'Um chunk por vez.',
+    },
+    {
+        id: 'ringue', name: 'Ringue', tag: 'RNG',
+        focusGames: ['street-fighter-6', 'tekken8'], playstyle: 'competitive', region: 'Asia',
+        languages: ['ja', 'en'], minRank: 'Platinum', minReputation: 80, policy: 'application',
+        leaderId: 'p28', officers: [], members: ['p21'],
+        motto: 'Cada round é uma conversa.',
+    },
+    {
+        id: 'estrategos', name: 'Estrategos', tag: 'STRG',
+        focusGames: ['age4', 'civ6'], playstyle: 'balanced', region: 'Europe',
+        languages: ['en', 'fr', 'de'], minRank: 'Gold', minReputation: 75, policy: 'application',
+        leaderId: 'p06', officers: ['p30'], members: [],
+        motto: 'Quem planeja a economia ganha a guerra.',
+    },
+].map((clan) => ({ ...clan, seeded: true }));
+
+/* ============================================================
+   ARENA
+   Rating no estilo Elo: começa em 1000. Os tiers usam nomes da
+   marca e não têm relação com o rank declarado no Passaporte.
+   ============================================================ */
+
+export const ARENA_TIERS = [
+    { id: 'bronze', label: 'Bronze', min: 0 },
+    { id: 'silver', label: 'Prata', min: 900 },
+    { id: 'gold', label: 'Ouro', min: 1100 },
+    { id: 'platinum', label: 'Platina', min: 1300 },
+    { id: 'diamond', label: 'Diamante', min: 1500 },
+    { id: 'legend', label: 'Lenda', min: 1700 },
+];
+
+/* ============================================================
+   COMUNIDADE: relações, elogios e reações
+   Rival + Ally: rivalidade aqui é respeito, "quero enfrentar de novo".
+   ============================================================ */
+
+export const RELATION_TYPES = {
+    ally: { label: 'Aliado', hint: 'Quero jogar junto de novo.' },
+    rival: { label: 'Rival', hint: 'Quero enfrentar de novo.' },
+    neutral: { label: 'Neutro', hint: 'Sem marcação.' },
+};
+
+export const PRAISES = [
+    { id: 'comms', label: 'Comunicação' },
+    { id: 'strategy', label: 'Estratégia' },
+    { id: 'fairplay', label: 'Fair play' },
+    { id: 'carry', label: 'Carregou o time' },
+];
+
+export const REACTIONS = [
+    { id: 'gg', label: 'GG' },
+    { id: 'respeito', label: 'Respeito' },
+    { id: 'rivalidade', label: 'Rivalidade' },
+];
+
+/**
+ * Modelos dos posts simulados. {game}, {rank}, {role}, {tag} e {mate}
+ * são preenchidos com dados reais do jogador que "posta". Cada modelo
+ * declara quando faz sentido (estilo de jogo, função, ter clã).
+ */
+export const POST_TEMPLATES = [
+    { id: 't01', kind: 'grind', styles: ['competitive', 'hardcore'], text: 'Mais uma noite de {game}. Faltam duas vitórias para segurar o {rank}.' },
+    { id: 't02', kind: 'grind', styles: ['competitive', 'hardcore'], text: 'Revisei três partidas de {game} hoje. O erro era o mesmo nas três: entrar sem informação.' },
+    { id: 't03', kind: 'lfg', styles: ['balanced', 'competitive'], text: 'Procuro duo para {game} hoje à noite. Jogo de {role} e uso voz.' },
+    { id: 't04', kind: 'lfg', styles: ['casual', 'balanced'], text: 'Alguém para um {game} sem pressão depois do jantar? Prometo não reclamar de nada.' },
+    { id: 't05', kind: 'casual', styles: ['casual'], text: 'Sessão longa de {game} hoje. Zero objetivo, muita conversa. Do jeito certo.' },
+    { id: 't06', kind: 'casual', styles: ['casual', 'balanced'], text: 'Terminei a semana com {game}. Nem lembro o placar, lembro das risadas.' },
+    { id: 't07', kind: 'role', roles: ['support'], text: 'Lembrete de quem joga de suporte: utilitário bem usado não aparece no placar, aparece na vitória.' },
+    { id: 't08', kind: 'role', roles: ['leader'], text: 'Call boa é call curta. Se precisa de três frases, o plano está complicado demais.' },
+    { id: 't09', kind: 'role', roles: ['entry'], text: 'Entrar primeiro é aceitar morrer primeiro às vezes. Faz parte. A troca é o que importa.' },
+    { id: 't10', kind: 'role', roles: ['sniper'], text: 'Um ângulo bem segurado vale mais que dez tiros apressados.' },
+    { id: 't11', kind: 'role', roles: ['anchor'], text: 'Segurar o lado sozinho por 40 segundos não rende highlight, mas rende round.' },
+    { id: 't12', kind: 'role', roles: ['flex'], text: 'Jogo do que o time precisar. Hoje foi de tudo um pouco em {game}.' },
+    { id: 't13', kind: 'clan', clan: true, text: 'Treino do [{tag}] marcado para quinta. Quem faltar paga a próxima rodada de call.' },
+    { id: 't14', kind: 'clan', clan: true, text: 'Orgulho do [{tag}] essa semana. Ninguém tiltou, todo mundo jogou junto.' },
+    { id: 't15', kind: 'arena', styles: ['competitive', 'hardcore'], text: 'Duelo duro na Arena hoje. Perdi, mas saí com vontade de pedir revanche.' },
+    { id: 't16', kind: 'arena', styles: ['competitive', 'hardcore', 'balanced'], text: 'Subi um degrau no rating da Arena. A temporada é curta, então cada partida conta.' },
+    { id: 't17', kind: 'mate', text: 'Joguei com {mate} ontem em {game}. Que call limpa. Já marquei como aliado.' },
+    { id: 't18', kind: 'mate', text: 'Enfrentei {mate} na Arena. Rival de respeito, quero a revanche.' },
+    { id: 't19', kind: 'grind', styles: ['hardcore'], text: 'Treino de mira, duas horas de ranqueada, revisão de VOD. Rotina fechada em {game}.' },
+    { id: 't20', kind: 'casual', styles: ['casual', 'balanced'], text: 'Dica para quem está começando em {game}: jogue com quem conversa. O resto vem.' },
 ];
 
 /* ============================================================
@@ -699,6 +941,56 @@ export const ACHIEVEMENTS = [
         hint: 'Desbloqueie 15 conquistas.',
         check: (ctx) => ctx.unlockedCount >= 15,
     },
+
+    /* --- V2: comunidade --- */
+    {
+        id: 'first-session', name: 'Primeira Sessão', rarity: 'common', icon: 'play', xp: 0,
+        description: 'Jogou a primeira sessão com um squad.',
+        hint: 'Em Squads, jogue uma sessão com um squad escolhido ou sorteado.',
+        check: (ctx) => ctx.sessionCount >= 1,
+    },
+    {
+        id: 'declared-ally', name: 'Aliado Declarado', rarity: 'uncommon', icon: 'heart', xp: 0,
+        description: 'Marcou um colega de squad como aliado.',
+        hint: 'Depois de uma sessão, marque alguém como Aliado.',
+        check: (ctx) => ctx.allyCount >= 1,
+    },
+    {
+        id: 'worthy-rival', name: 'Rival Digno', rarity: 'uncommon', icon: 'target', xp: 0,
+        description: 'Marcou alguém como rival: quer enfrentar de novo.',
+        hint: 'Depois de uma sessão, marque alguém como Rival.',
+        check: (ctx) => ctx.rivalCount >= 1,
+    },
+    {
+        id: 'recruit', name: 'Recruta', rarity: 'uncommon', icon: 'shield', xp: 0,
+        description: 'Entrou em um clã.',
+        hint: 'Entre em um clã aberto, seja aceito numa candidatura ou aceite um convite.',
+        check: (ctx) => ctx.inClan,
+    },
+    {
+        id: 'banner-raised', name: 'Bandeira Erguida', rarity: 'rare', icon: 'flag', xp: 0,
+        description: 'Fundou o próprio clã.',
+        hint: 'Crie um clã na página Clãs.',
+        check: (ctx) => ctx.createdClan,
+    },
+    {
+        id: 'arena-first-win', name: 'Primeira Vitória na Arena', rarity: 'uncommon', icon: 'trophy', xp: 0,
+        description: 'Venceu uma partida de Arena.',
+        hint: 'Vença um duelo, uma partida de squad ou um Clã vs Clã.',
+        check: (ctx) => ctx.arenaWins >= 1,
+    },
+    {
+        id: 'arena-legend', name: 'Lenda da Arena', rarity: 'legendary', icon: 'crown', xp: 0,
+        description: 'Chegou ao tier Lenda na Arena (1.700 de rating).',
+        hint: 'Alcance 1.700 de rating na Arena.',
+        check: (ctx) => ctx.arenaRating >= 1700,
+    },
+    {
+        id: 'community-voice', name: 'Voz da Comunidade', rarity: 'common', icon: 'globe', xp: 0,
+        description: 'Publicou o primeiro post no Feed.',
+        hint: 'Escreva um post no Feed.',
+        check: (ctx) => ctx.postCount >= 1,
+    },
 ];
 
 /* ============================================================
@@ -708,7 +1000,7 @@ export const ACHIEVEMENTS = [
 
 export const XP_RULES = {
     createPassport: { amount: 100, label: 'Passaporte Gamer criado' },
-    completeDna: { amount: 200, label: 'DNA Gamer concluido' },
+    completeDna: { amount: 200, label: 'DNA Gamer concluído' },
     addGame: { amount: 50, label: 'Jogo adicionado à Biblioteca' },
     completeGame: { amount: 75, label: 'Jogo zerado' },
     rateGame: { amount: 15, label: 'Jogo avaliado' },
@@ -720,18 +1012,32 @@ export const XP_RULES = {
     completeProfile: { amount: 200, label: 'Passaporte 100% completo' },
     updateProfile: { amount: 25, label: 'Passaporte atualizado' },
     achievement: { amount: 40, label: 'Conquista desbloqueada' },
+
+    /* --- V2: comunidade --- */
+    squadSession: { amount: 120, label: 'Sessão de squad concluída' },
+    markAlly: { amount: 30, label: 'Aliado declarado' },
+    markRival: { amount: 30, label: 'Rival declarado' },
+    joinClan: { amount: 150, label: 'Entrou em um clã' },
+    createClan: { amount: 200, label: 'Clã criado' },
+    arenaWin: { amount: 90, label: 'Vitória na Arena' },
+    arenaMatch: { amount: 35, label: 'Partida de Arena disputada' },
+    feedPost: { amount: 20, label: 'Post publicado no Feed' },
+    feedReaction: { amount: 5, label: 'Reação no Feed' },
 };
 
+/** Ações do Feed que rendem XP por dia (posts e reações somados). */
+export const FEED_DAILY_XP_LIMIT = 6;
+
 /* ============================================================
-   ROADMAP — what is honestly not in V1
-   Rendered on the landing page so nothing in the UI pretends
-   to be functional when it is not.
+   ROADMAP — o que honestamente ainda não existe
+   Arena, Feed e Clãs saíram daqui na V2: agora existem, como
+   comunidade simulada. O que resta depende de backend ou de
+   integrações reais, e aparece na landing como roteiro, nunca
+   como botão.
    ============================================================ */
 
 export const ROADMAP = [
-    { title: 'Arena', text: 'Torneios, chaveamento e acompanhamento de partidas ao vivo.', status: 'next' },
-    { title: 'Feed de destaques', text: 'Clipes, posts e os melhores momentos de quem joga com você.', status: 'next' },
+    { title: 'Multiplayer real', text: 'Backend, contas de verdade, amigos e chat em tempo real. Hoje a comunidade é simulada no seu navegador.', status: 'next' },
     { title: 'IA contextual', text: 'Recomendações que leem o seu Passaporte e sugerem o próximo jogo.', status: 'exploring' },
-    { title: 'Clãs', text: 'Times permanentes, com identidade, elenco e estatísticas próprias.', status: 'exploring' },
     { title: 'Sincronização de plataformas', text: 'Importe sua biblioteca real da Steam, PlayStation e Xbox.', status: 'exploring' },
 ];

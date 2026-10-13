@@ -8,20 +8,20 @@
  * There is no `Math.random()` in this file. Identical inputs always
  * produce an identical score — that is the point.
  *
- *   Game compatibility ....... 20%
+ *   Jogo ..................... 20%
  *   Rank ..................... 15%
- *   Schedule ................. 15%
- *   Estilo de jogo ................ 15%
- *   Role compatibility ....... 15%
- *   Communication ............ 10%
- *   Reputacao ............... 10%
+ *   Horário .................. 15%
+ *   Estilo de jogo ........... 15%
+ *   Função ................... 15%
+ *   Comunicação .............. 10%
+ *   Reputação ................ 10%
  *   ------------------------------
  *   Total ................... 100%
  */
 
 import {
     PLAYERS, RANK_LADDER, SCHEDULES, PLAYSTYLES, COMPLEMENTARY_ROLES,
-    getGameById, LANGUAGES, ROLES,
+    getGameById, LANGUAGES, ROLES, rankLabel, genreLabel,
 } from './data.js';
 
 export const WEIGHTS = {
@@ -60,10 +60,10 @@ export function calculateGameCompatibility(player, criteria) {
     const shared = target.genre.filter((genre) => playerGenres.has(genre));
 
     if (shared.length >= 2) {
-        return { score: 62, reason: `Joga gêneros parecidos (${shared.join(', ')})`, positive: false };
+        return { score: 62, reason: `Joga gêneros parecidos (${shared.map(genreLabel).join(', ')})`, positive: false };
     }
     if (shared.length === 1) {
-        return { score: 48, reason: `Alguma coincidência de gênero (${shared[0]})`, positive: false };
+        return { score: 48, reason: `Alguma coincidência de gênero (${genreLabel(shared[0])})`, positive: false };
     }
     return { score: 15, reason: `Não joga ${target.title}`, positive: false };
 }
@@ -91,11 +91,11 @@ export function calculateRankCompatibility(player, criteria) {
     const distance = Math.abs(targetIndex - playerIndex);
     const score = RANK_BY_DISTANCE[Math.min(distance, RANK_BY_DISTANCE.length - 1)];
 
-    if (distance === 0) return { score, reason: `Mesmo rank (${player.rank})`, positive: true };
-    if (distance === 1) return { score, reason: `Um tier de diferença (${player.rank})`, positive: true };
+    if (distance === 0) return { score, reason: `Mesmo rank (${rankLabel(player.rank)})`, positive: true };
+    if (distance === 1) return { score, reason: `Um degrau de diferença (${rankLabel(player.rank)})`, positive: true };
     return {
         score,
-        reason: `${distance} tiers de diferença (${player.rank} vs ${criteria.rank})`,
+        reason: `${distance} degraus de diferença (${rankLabel(player.rank)} contra ${rankLabel(criteria.rank)})`,
         positive: false,
     };
 }

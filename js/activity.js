@@ -19,6 +19,14 @@ export const ACTIVITY_ICONS = {
     level: 'arrow-up',
     squad: 'users',
     xp: 'bolt',
+
+    /* V2: comunidade */
+    session: 'play',
+    relation: 'heart',
+    clan: 'shield',
+    arena: 'target',
+    feed: 'globe',
+    invite: 'mail',
 };
 
 /**
@@ -29,7 +37,7 @@ export const ACTIVITY_ICONS = {
 export function logActivity(type, message, meta = {}) {
     const entries = getActivity();
     entries.unshift({
-        id: `act-${Date.now()}-${entries.length}`,
+        id: `act-${Date.now().toString(36)}-${entries.length}`,
         type,
         message,
         meta,
