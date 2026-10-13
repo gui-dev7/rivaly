@@ -8,7 +8,7 @@
 
 import { bootApp, afterRender, haltModule } from './app.js';
 import { getAchievementState, progressSnapshot, buildContext } from './gamification.js';
-import { RARITIES } from './data.js';
+import { RARITIES, ACHIEVEMENTS } from './data.js';
 import { badgeMarkup } from './cards.js';
 import { $, render, escapeHtml, icon, emptyStateMarkup } from './ui.js';
 import { countUp } from './animations.js';
@@ -70,7 +70,17 @@ const PROGRESS_HINTS = {
     'well-regarded': () => ({ current: context.reputation, target: 80 }),
     legend: () => ({ current: context.unlockedCount, target: 15 }),
     'perfect-match': () => ({ current: context.bestMatch, target: 90 }),
+    'first-session': () => ({ current: context.sessionCount, target: 1 }),
+    'declared-ally': () => ({ current: context.allyCount, target: 1 }),
+    'worthy-rival': () => ({ current: context.rivalCount, target: 1 }),
+    'arena-first-win': () => ({ current: context.arenaWins, target: 1 }),
+    'arena-legend': () => ({ current: context.arenaRating, target: 1700 }),
+    'community-voice': () => ({ current: context.postCount, target: 1 }),
 };
+
+// O total nunca é escrito à mão: vem da lista de conquistas.
+const NUMBER_WORDS = { 20: 'Vinte', 28: 'Vinte e oito' };
+$('#achvLede').textContent = `${NUMBER_WORDS[ACHIEVEMENTS.length] ?? ACHIEVEMENTS.length} medalhas, cinco raridades. Cada uma está ligada a algo que você fez na RIVALY. Nenhuma é dada de graça.`;
 
 const nextUp = state
     .filter((achievement) => !achievement.unlocked && PROGRESS_HINTS[achievement.id])
@@ -100,7 +110,7 @@ render($('#nextUp'), nextUp.length
     : emptyStateMarkup({
         iconName: 'crown',
         title: 'Todas as medalhas com progresso mensurável são suas.',
-        text: 'Não resta nenhuma com meta quantitativa — as demais são desbloqueadas por ações específicas.',
+        text: 'Não resta nenhuma com meta numérica. As outras saem de ações específicas, como fundar um clã.',
     })
 );
 
@@ -145,15 +155,15 @@ function renderGrid() {
     const items = visibleAchievements();
 
     render($('#badgeGrid'), items.length
-        ? `<div class="grid grid--badges stagger">${items.map(badgeMarkup).join('')}</div>`
+        ? `<div class="row row-cols-2 row-cols-sm-3 row-cols-lg-4 row-cols-xl-5 g-3 stagger">${items.map((item) => `<div class="col">${badgeMarkup(item)}</div>`).join('')}</div>`
         : emptyStateMarkup({
             iconName: 'trophy',
             title: 'Nada por aqui ainda.',
             text: activeFilter === 'unlocked'
-                ? 'Sua primeira conquista está mais perto do que parece — adicionar um jogo desbloqueia Começou o Jogo.'
+                ? 'Sua primeira conquista está mais perto do que parece: adicionar um jogo já desbloqueia Começou o Jogo.'
                 : 'Nenhuma conquista corresponde a este filtro.',
             action: activeFilter === 'unlocked'
-                ? '<a class="btn btn--primary btn--sm" href="library.html?action=add">Adicionar um jogo</a>'
+                ? '<a class="btn btn-primary btn-sm" href="library.html?action=add">Adicionar um jogo</a>'
                 : '',
         })
     );

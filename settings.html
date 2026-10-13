@@ -226,12 +226,12 @@
                 <section class="settings-block card" aria-labelledby="accountTitle">
                     <h2 class="settings-block__title" id="accountTitle">Conta</h2>
                     <p class="settings-block__text">
-                        Esta é uma simulação local. Não há servidor, recuperação de senha nem sincronização entre dispositivos.
+                        Esta é uma conta local de demonstração. Não há servidor, recuperação de senha nem sincronização entre dispositivos.
                     </p>
                     <div class="settings-account" id="accountInfo"></div>
                     <div class="settings-block__actions">
-                        <a class="btn btn--secondary btn--sm" href="passport.html?edit=1">Editar passaporte</a>
-                        <button type="button" class="btn btn--ghost btn--sm" id="signOutBtn">Sair</button>
+                        <a class="btn btn-outline-light btn-sm" href="passport.html?edit=1">Editar meu Passaporte</a>
+                        <button type="button" class="btn btn-ghost btn-sm" id="signOutBtn">Sair da conta</button>
                     </div>
                 </section>
 
@@ -280,11 +280,11 @@
                             <p class="settings-row__label">Tutorial guiado</p>
                             <p class="settings-row__hint">
                                 Refaz o passo a passo por todas as áreas da RIVALY,
-                                do Passaporte ao que ainda está por vir.
+                                do Passaporte à Arena, aos Clãs e ao Feed.
                             </p>
                         </div>
-                        <button type="button" class="btn btn--secondary btn--sm" id="replayTourBtn">
-                            Refazer tutorial
+                        <button type="button" class="btn btn-outline-light btn-sm" id="replayTourBtn">
+                            Ver o tutorial de novo
                         </button>
                     </div>
 
@@ -295,11 +295,10 @@
                                 Desativa animações, transições e as sequências de revelação. A preferência do sistema já é respeitada automaticamente; aqui você força a opção.
                             </p>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="reducedMotionToggle">
-                            <span class="toggle__track" aria-hidden="true"></span>
-                            <span class="visually-hidden">Reduzir animações</span>
-                        </label>
+                        <div class="form-check form-switch settings-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="reducedMotionToggle">
+                            <label class="form-check-label visually-hidden" for="reducedMotionToggle">Reduzir animações</label>
+                        </div>
                     </div>
 
                     <div class="settings-row">
@@ -309,11 +308,10 @@
                                 Avisos dentro do app para XP, atualizações e erros. As comemorações de conquista e de nível não são afetadas.
                             </p>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="toastsToggle">
-                            <span class="toggle__track" aria-hidden="true"></span>
-                            <span class="visually-hidden">Notificações</span>
-                        </label>
+                        <div class="form-check form-switch settings-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="toastsToggle">
+                            <label class="form-check-label visually-hidden" for="toastsToggle">Notificações</label>
+                        </div>
                     </div>
 
                     <div class="settings-row">
@@ -323,11 +321,10 @@
                                 Reduz os espaçamentos em toda a aplicação. Útil em telas menores.
                             </p>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="densityToggle">
-                            <span class="toggle__track" aria-hidden="true"></span>
-                            <span class="visually-hidden">Densidade compacta</span>
-                        </label>
+                        <div class="form-check form-switch settings-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="densityToggle">
+                            <label class="form-check-label visually-hidden" for="densityToggle">Densidade compacta</label>
+                        </div>
                     </div>
                 </section>
 
@@ -340,21 +337,22 @@
                     </p>
                     <div class="storage-table" id="storageTable"></div>
                     <div class="settings-block__actions">
-                        <button type="button" class="btn btn--secondary btn--sm" id="exportBtn">Exportar meus dados</button>
-                        <button type="button" class="btn btn--ghost btn--sm" id="clearActivityBtn">Limpar histórico de atividade</button>
+                        <button type="button" class="btn btn-outline-light btn-sm" id="exportBtn">Baixar meus dados (JSON)</button>
+                        <button type="button" class="btn btn-ghost btn-sm" id="clearActivityBtn">Limpar histórico de atividade</button>
                     </div>
                 </section>
 
                 <!-- Danger zone -->
                 <section class="settings-block card settings-block--danger" aria-labelledby="resetTitle">
-                    <h2 class="settings-block__title" id="resetTitle">Resetar dados de demonstração</h2>
+                    <h2 class="settings-block__title" id="resetTitle">Apagar dados e recomeçar</h2>
                     <p class="settings-block__text">
-                        Apaga deste navegador seu Passaporte, DNA Gamer, Biblioteca, conquistas,
-                        atividade e squad salvo. Sua conta de acesso é mantida, então você pode
-                        recomeçar com o mesmo e-mail.
+                        Apaga deste navegador o Passaporte, o DNA Gamer, a Biblioteca, as conquistas,
+                        a atividade, o squad salvo e toda a comunidade (clã, Arena, Feed, convites,
+                        sessões e relações). Sua conta de acesso é mantida, então você pode recomeçar
+                        com o mesmo e-mail.
                     </p>
                     <div class="settings-block__actions">
-                        <button type="button" class="btn btn--danger btn--sm" id="resetBtn">Resetar dados de demonstração</button>
+                        <button type="button" class="btn btn-danger btn-sm" id="resetBtn">Apagar meus dados</button>
                     </div>
                 </section>
 
@@ -363,8 +361,8 @@
                     <h2 class="settings-block__title" id="aboutTitle">Sobre esta versão</h2>
                     <dl class="about-list" id="aboutList"></dl>
                     <p class="settings-block__text">
-                        A RIVALY usa apenas HTML5, CSS3 e JavaScript puro — sem framework,
-                        sem biblioteca CSS, sem dependência de runtime e sem backend.
+                        A RIVALY usa HTML5, CSS3, JavaScript em ES Modules e Bootstrap 5.3 servido
+                        localmente. Não há backend: a comunidade é simulada no seu navegador.
                     </p>
                 </section>
             </main>

@@ -227,12 +227,13 @@
                 <section class="card discover-search" aria-labelledby="searchTitle">
                     <h2 class="visually-hidden" id="searchTitle">Buscar jogos</h2>
 
+                    <label class="form-label" for="discoverSearch">Nome do jogo</label>
                     <div class="input-group">
-                        <span class="input-group__icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                        <span class="input-group-text" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                         </span>
-                        <input type="search" id="discoverSearch" class="input"
-                               placeholder="Digite o nome de um jogo (mínimo de 2 letras)"
+                        <input type="search" id="discoverSearch" class="form-control"
+                               placeholder="Ex.: Hollow Knight"
                                autocomplete="off" aria-describedby="discoverStatus">
                     </div>
 
@@ -243,7 +244,7 @@
 
                 <section aria-labelledby="resultsTitle">
                     <h2 class="visually-hidden" id="resultsTitle">Resultados</h2>
-                    <div class="discover-grid" id="discoverResults"></div>
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 discover-grid" id="discoverResults"></div>
                 </section>
 
                 <section class="card discover-saved" aria-labelledby="savedTitle">

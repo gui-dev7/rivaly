@@ -11,17 +11,20 @@ import {
     listHydrated, addEntry, updateEntry, removeEntry, findEntry,
     statusCounts, librarySummary, hasGame, resolveGame,
 } from './library-store.js';
-import { GAMES, LIBRARY_STATUSES, PLATFORMS, getGameById } from './data.js';
+import { GAMES, LIBRARY_STATUSES, PLATFORMS, getGameById, genreLabel } from './data.js';
 import { searchGames, getGame, coverUrl, platformNames, releaseYear, genreNames } from './gamedb.js';
 import { toCatalogueGame, externalIdFor } from './external-games.js';
 import { awardXp, checkAchievements } from './gamification.js';
 import { logActivity } from './activity.js';
 import { toast, toastInfo } from './notifications.js';
 import { openModal, confirmDialog } from './modal.js';
+import {
+    validateForm, bindLiveValidation, focusFirstInvalid, showFieldError, maxLength, noHtml, numberRange,
+} from './validation.js';
 import { refreshNavigationProgress } from './navigation.js';
 import { gameCardMarkup, statMarkup } from './cards.js';
 import {
-    $, render, escapeHtml, icon, emptyStateMarkup, formatHours, coverArt,
+    $, render, escapeHtml, icon, emptyStateMarkup, formatHours, coverArt, colWrap,
 } from './ui.js';
 import { prefersReducedMotion } from './animations.js';
 
@@ -70,10 +73,10 @@ function renderSummary() {
         }),
         statMarkup({
             label: 'Nota média', value: summary.averageRating || '—', icon: 'star',
-            meta: summary.topGenres[0] ? `Gênero principal: ${summary.topGenres[0].genre}` : 'Avalie um jogo para começar',
+            meta: summary.topGenres[0] ? `Gênero principal: ${genreLabel(summary.topGenres[0].genre)}` : 'Avalie um jogo para começar',
             accent: 'var(--color-primary)',
         }),
-    ].join(''));
+    ].map((stat) => colWrap(stat)).join(''));
 }
 
 /* ============================================================
@@ -131,7 +134,7 @@ function visibleEntries() {
     if (needle) {
         entries = entries.filter((entry) =>
             entry.game.title.toLowerCase().includes(needle) ||
-            entry.game.genre.some((genre) => genre.toLowerCase().includes(needle))
+            entry.game.genre.some((genre) => genre.toLowerCase().includes(needle) || genreLabel(genre).toLowerCase().includes(needle))
         );
     }
 
@@ -156,22 +159,22 @@ function renderGrid() {
                 iconName: 'library',
                 title: 'Sua biblioteca está esperando.',
                 text: 'Adicione seu primeiro jogo e comece a montar seu Passaporte Gamer. Gêneros, plataformas e horas ajudam a definir sua identidade.',
-                action: '<button type="button" class="btn btn--primary btn--sm" data-action="add">Adicionar jogo</button>',
+                action: '<button type="button" class="btn btn-primary btn-sm" data-action="add">Adicionar meu primeiro jogo</button>',
             })
             : emptyStateMarkup({
                 iconName: 'search',
-                title: 'Nada corresponde a esta visualização.',
+                title: 'Nenhum jogo nesta visualização.',
                 text: view.query
                     ? `Nenhum jogo da sua biblioteca corresponde a “${view.query}”.`
-                    : 'Nenhum jogo tem este status ainda. Arraste um cartão até esta aba ou edite uma entrada para movê-lo.',
-                action: '<button type="button" class="btn btn--secondary btn--sm" data-action="clear-filters">Limpar filtros</button>',
+                    : 'Nenhum jogo tem este status ainda. Arraste um card até esta aba ou edite uma entrada para movê-la.',
+                action: '<button type="button" class="btn btn-outline-light btn-sm" data-action="clear-filters">Limpar filtros</button>',
             })
         );
         return;
     }
 
-    render(gridHost, `<div class="grid grid--cards stagger">${
-        entries.map((entry) => gameCardMarkup(entry, { draggable: true })).join('')
+    render(gridHost, `<div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 stagger">${
+        entries.map((entry) => colWrap(gameCardMarkup(entry, { draggable: true }))).join('')
     }</div>`);
 
     afterRender(gridHost);
@@ -237,64 +240,59 @@ function openGameDialog(entryId = null) {
                         <span class="game-dialog__cover">${coverArt(existingGame)}</span>
                         <div>
                             <p class="game-dialog__title">${escapeHtml(existingGame.title)}</p>
-                            <p class="game-dialog__meta">${escapeHtml(existingGame.genre.join(' · '))}</p>
+                            <p class="game-dialog__meta">${escapeHtml(existingGame.genre.map(genreLabel).join(' · '))}</p>
                         </div>
                    </div>`
-                : `<div class="field">
-                        <label class="field__label" for="gameSearch">Jogo</label>
+                : `<div>
+                        <label class="form-label" for="gameSearch">Jogo</label>
                         <div class="input-group">
-                            <span class="input-group__icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                            <span class="input-group-text" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                             </span>
-                            <input class="input" type="search" id="gameSearch" autocomplete="off"
-                                   placeholder="Busque qualquer jogo pelo nome" data-autofocus
+                            <input class="form-control" type="search" id="gameSearch" autocomplete="off"
+                                   placeholder="Ex.: Hades" data-autofocus
                                    aria-describedby="gameSearchHint">
                         </div>
-                        <p class="field__hint" id="gameSearchHint">
+                        <p class="form-text" id="gameSearchHint">
                             Digite duas letras ou mais. A busca cobre o catálogo da RIVALY e a base
-                            aberta do GameDB — qualquer jogo pode entrar na sua biblioteca.
+                            aberta do GameDB: qualquer jogo pode entrar na sua Biblioteca.
                         </p>
                         <div class="game-picker" id="gameResults" role="listbox" aria-label="Resultados da busca"></div>
-                        <input type="hidden" id="gameSelect" required>
+                        <input type="hidden" id="gameSelect">
                    </div>`}
 
-            <div class="grid grid--form-2">
-                <div class="field">
-                    <label class="field__label" for="statusSelect">Status</label>
-                    <div class="select-wrap">
-                        <select class="select" id="statusSelect">${statusOptions(existing?.status ?? 'playing')}</select>
-                    </div>
+            <div class="row g-3">
+                <div class="col-12 col-sm-6">
+                    <label class="form-label" for="statusSelect">Status</label>
+                    <select class="form-select" id="statusSelect">${statusOptions(existing?.status ?? 'playing')}</select>
                 </div>
 
-                <div class="field">
-                    <label class="field__label" for="platformSelect">Plataforma</label>
-                    <div class="select-wrap">
-                        <select class="select" id="platformSelect">
-                            ${existing
-                                ? platformOptions(existingGame, existing.platform)
-                                : platformOptions(available[0], null)}
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid--form-2">
-                <div class="field">
-                    <label class="field__label" for="hoursInput">Horas jogadas</label>
-                    <input class="input" type="number" id="hoursInput" min="0" max="99999" step="1"
-                           inputmode="numeric" value="${existing?.hours ?? 0}">
+                <div class="col-12 col-sm-6">
+                    <label class="form-label" for="platformSelect">Plataforma</label>
+                    <select class="form-select" id="platformSelect">
+                        ${existing
+                            ? platformOptions(existingGame, existing.platform)
+                            : platformOptions(available[0], null)}
+                    </select>
                 </div>
 
-                <div class="field">
-                    <span class="field__label">Sua nota</span>
+                <div class="col-12 col-sm-6">
+                    <label class="form-label" for="hoursInput">Horas jogadas</label>
+                    <input class="form-control" type="number" id="hoursInput" min="0" max="99999" step="1"
+                           inputmode="numeric" value="${existing?.hours ?? 0}" aria-describedby="hoursHelp">
+                    <p class="form-text" id="hoursHelp">De 0 a 99.999.</p>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <span class="form-label d-block">Sua nota</span>
                     ${ratingInput(existing?.rating ?? 0)}
                 </div>
-            </div>
 
-            <div class="field">
-                <label class="field__label" for="noteInput">Observação <span class="ob-optional">opcional</span></label>
-                <input class="input" type="text" id="noteInput" maxlength="200"
-                       placeholder="Ex.: aguardando a atualização do modo cooperativo" value="${escapeHtml(existing?.note ?? '')}">
+                <div class="col-12">
+                    <label class="form-label" for="noteInput">Observação <span class="text-muted">(opcional)</span></label>
+                    <input class="form-control" type="text" id="noteInput" maxlength="200"
+                           placeholder="Ex.: esperando a atualização do modo cooperativo" value="${escapeHtml(existing?.note ?? '')}">
+                </div>
             </div>
         </form>
     `;
@@ -304,8 +302,8 @@ function openGameDialog(entryId = null) {
         subtitle: existing ? 'Atualize o status, as horas e a avaliação.' : 'Busque qualquer jogo e escolha o status.',
         body,
         footer: `
-            <button type="button" class="btn btn--ghost" data-modal-close>Cancelar</button>
-            <button type="submit" form="gameForm" class="btn btn--primary">${existing ? 'Salvar alterações' : 'Adicionar à biblioteca'}</button>
+            <button type="button" class="btn btn-ghost" data-modal-close>Cancelar</button>
+            <button type="submit" form="gameForm" class="btn btn-primary">${existing ? 'Salvar alterações' : 'Adicionar à Biblioteca'}</button>
         `,
     });
 
@@ -355,7 +353,7 @@ function openGameDialog(entryId = null) {
                         <span class="game-picker__name">${escapeHtml(registro.title)}</span>
                         <span class="game-picker__meta">${escapeHtml([registro.year, registro.genre?.[0]].filter(Boolean).join(' · '))}</span>
                     </span>
-                    <button type="button" class="btn btn--ghost btn--sm" data-trocar>Trocar</button>
+                    <button type="button" class="btn btn-ghost btn-sm" data-trocar>Trocar jogo</button>
                 </div>
             `);
 
@@ -375,7 +373,7 @@ function openGameDialog(entryId = null) {
             // 1. Catalogo curado: instantaneo, e o que ja esta na Biblioteca fica de fora.
             const locais = available.filter((g) => g.title.toLowerCase().includes(query.toLowerCase()));
             render(results, [
-                ...locais.map((g) => linha(g.id, g.title, `${g.genre[0]} · ${g.year}`, null, false)),
+                ...locais.map((g) => linha(g.id, g.title, `${genreLabel(g.genre[0])} · ${g.year}`, null, false)),
                 `<p class="game-picker__status">Buscando no GameDB…</p>`,
             ].join(''));
 
@@ -385,7 +383,7 @@ function openGameDialog(entryId = null) {
             } catch {
                 if (meu !== token) return;
                 render(results, [
-                    ...locais.map((g) => linha(g.id, g.title, `${g.genre[0]} · ${g.year}`, null, false)),
+                    ...locais.map((g) => linha(g.id, g.title, `${genreLabel(g.genre[0])} · ${g.year}`, null, false)),
                     `<p class="game-picker__status">Não foi possível falar com o GameDB agora.</p>`,
                 ].join(''));
                 return;
@@ -410,7 +408,7 @@ function openGameDialog(entryId = null) {
             const disponiveis = externos.filter((g) => !hasGame(g.id));
 
             render(results, [
-                ...locais.map((g) => linha(g.id, g.title, `${g.genre[0]} · ${g.year}`, null, false)),
+                ...locais.map((g) => linha(g.id, g.title, `${genreLabel(g.genre[0])} · ${g.year}`, null, false)),
                 ...disponiveis.map((g) => linha(
                     g.id, g.title,
                     [g.year, g.genre[0]].filter(Boolean).join(' · ') || 'GameDB',
@@ -451,8 +449,25 @@ function openGameDialog(entryId = null) {
         root._escolhido = () => escolhido;
     }
 
+    const formSchema = {
+        hoursInput: [numberRange(0, 99999, 'Use um número de horas entre 0 e 99.999.')],
+        noteInput: [maxLength(200, 'A observação pode ter no máximo 200 caracteres.'), noHtml()],
+    };
+    bindLiveValidation(root.querySelector('#gameForm'), formSchema);
+
     root.querySelector('#gameForm').addEventListener('submit', (event) => {
         event.preventDefault();
+
+        const check = validateForm(root.querySelector('#gameForm'), formSchema);
+        if (!existing && !gameSelect.value) {
+            showFieldError(root.querySelector('#gameSearch'), 'Busque e escolha um jogo na lista antes de adicionar.');
+            root.querySelector('#gameSearch').focus();
+            return;
+        }
+        if (!check.valid) {
+            focusFirstInvalid(check);
+            return;
+        }
 
         const payload = {
             status: root.querySelector('#statusSelect').value,
@@ -465,10 +480,6 @@ function openGameDialog(entryId = null) {
         if (existing) {
             applyUpdate(existing.id, payload);
         } else {
-            if (!gameSelect.value) {
-                toast({ title: 'Escolha um jogo', message: 'Busque e selecione um título na lista.', type: 'warning' });
-                return;
-            }
             applyAdd(gameSelect.value, payload, root._escolhido?.() ?? null);
         }
         close();
@@ -534,7 +545,7 @@ function applyUpdate(entryId, payload) {
         xp += 5 * Math.min(10, Math.floor(result.hoursAdded / 10));
     }
 
-    toast({ title: 'Passaporte atualizado.', message: `${game.title} · ${result.entry.status}`, type: 'success', xp });
+    toast({ title: 'Entrada atualizada.', message: `${game.title} · ${LIBRARY_STATUSES.find((status) => status.id === result.entry.status)?.label ?? result.entry.status}`, type: 'success', xp });
     checkAchievements();
     refreshAll();
 }
@@ -545,16 +556,17 @@ async function applyRemove(entryId) {
     const game = resolveGame(entry.gameId);
 
     const confirmed = await confirmDialog({
-        title: `Remover ${game.title}?`,
-        message: 'A entrada será apagada da sua biblioteca. O XP já ganho permanecerá no seu Passaporte.',
-        confirmLabel: 'Remover',
+        title: `Remover ${game.title} da Biblioteca?`,
+        message: 'A entrada sai da sua Biblioteca. O XP que você já ganhou continua no Passaporte.',
+        confirmLabel: 'Remover da Biblioteca',
+        cancelLabel: 'Manter o jogo',
         danger: true,
     });
     if (!confirmed) return;
 
     removeEntry(entryId);
     logActivity('library', `Removeu ${game.title} da Biblioteca`);
-    toast({ title: 'Removido da biblioteca.', message: game.title, type: 'info' });
+    toast({ title: 'Removido da Biblioteca.', message: game.title, type: 'info' });
     refreshAll();
 }
 

@@ -221,7 +221,7 @@
                         </p>
                     </div>
                     <div class="page__actions">
-                        <button type="button" class="btn btn--primary" id="addGameBtn">
+                        <button type="button" class="btn btn-primary" id="addGameBtn">
                             <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
                             Adicionar jogo
                         </button>
@@ -229,23 +229,26 @@
                 </div>
 
                 <!-- Summary -->
-                <div class="grid grid--stats stagger" id="librarySummary"></div>
+                <div class="row row-cols-2 row-cols-lg-4 g-3 stagger" id="librarySummary"></div>
 
                 <!-- Toolbar: filter tabs double as drag-and-drop targets -->
                 <section class="library-toolbar" aria-label="Filtros da biblioteca">
                     <div class="segmented" id="statusTabs" role="tablist" aria-label="Filtrar por status"></div>
 
                     <div class="library-toolbar__controls">
-                        <div class="input-group library-search">
-                            <span class="input-group__icon" aria-hidden="true">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg>
-                            </span>
-                            <input class="input" type="search" id="librarySearch" placeholder="Buscar na sua biblioteca…" aria-label="Buscar na sua biblioteca">
+                        <div class="library-search">
+                            <label class="visually-hidden" for="librarySearch">Buscar na sua Biblioteca</label>
+                            <div class="input-group">
+                                <span class="input-group-text" aria-hidden="true">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg>
+                                </span>
+                                <input class="form-control" type="search" id="librarySearch" placeholder="Título ou gênero. Ex.: RPG">
+                            </div>
                         </div>
 
-                        <div class="select-wrap library-sort">
-                            <label class="visually-hidden" for="librarySort">Ordenar biblioteca</label>
-                            <select class="select" id="librarySort">
+                        <div class="library-sort">
+                            <label class="visually-hidden" for="librarySort">Ordenar a Biblioteca</label>
+                            <select class="form-select" id="librarySort">
                                 <option value="recent">Atualizados recentemente</option>
                                 <option value="title">Título A–Z</option>
                                 <option value="hours">Mais horas</option>
@@ -257,7 +260,7 @@
                 </section>
 
                 <p class="library-hint" id="libraryHint">
-                    Dica: arraste um card para uma aba de status para movê-lo ou use o botão de editar — os dois funcionam.
+                    Dica: arraste um card até uma aba de status para mudar o status, ou use o botão de editar. Os dois funcionam.
                 </p>
 
                 <!-- Grid -->

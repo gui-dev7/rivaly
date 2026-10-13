@@ -7,7 +7,7 @@
 
 import { bootApp, applySettings, haltModule } from './app.js';
 import {
-    KEYS, getSettings, saveSettings, resetAll, read, isPersistent,
+    KEYS, SCHEMA_VERSION, getSettings, saveSettings, resetAll, read, isPersistent, rawSize,
 } from './storage.js';
 import { clearActivity } from './activity.js';
 import { currentAccount, logout } from './auth.js';
@@ -44,9 +44,10 @@ render($('#accountInfo'), `
 
 $('#signOutBtn').addEventListener('click', async () => {
     const confirmed = await confirmDialog({
-        title: 'Sair?',
-        message: 'Seus dados ficam neste navegador. Você pode entrar novamente com o mesmo e-mail quando quiser.',
-        confirmLabel: 'Sair',
+        title: 'Sair da conta?',
+        message: 'Seus dados ficam neste navegador. Você pode entrar de novo com o mesmo e-mail quando quiser.',
+        confirmLabel: 'Sair da conta',
+        cancelLabel: 'Continuar aqui',
     });
     if (!confirmed) return;
     logout();
@@ -96,7 +97,7 @@ themePicker.addEventListener('click', (event) => {
     saveSettings({ theme: chosen });
     applySettings();
     markTheme(chosen);
-    toast({ title: 'Tema aplicado', message: THEME_NAMES[chosen], type: 'success' });
+    toast({ title: 'Tema aplicado.', message: THEME_NAMES[chosen], type: 'success' });
 });
 
 const toggles = [
@@ -115,10 +116,10 @@ toggles.forEach(({ id, key, label }) => {
 
         // The toasts switch has to confirm itself before it takes effect.
         if (key === 'toastsEnabled' && !input.checked) {
-            toast({ title: 'Notificações desativadas', message: 'Você pode reativá-las aqui quando quiser.', type: 'info' });
+            toast({ title: 'Notificações desativadas.', message: 'Você pode reativar aqui quando quiser.', type: 'info' });
         } else {
             toast({
-                title: `${label}: ${input.checked ? 'ativo' : 'inativo'}`,
+                title: `${label}: ${input.checked ? 'ligado' : 'desligado'}`,
                 type: 'info',
             });
         }
@@ -140,6 +141,14 @@ const STORAGE_LABELS = {
     activity: 'Registro de atividade',
     squads: 'Squad salvo',
     settings: 'Preferências de interface',
+    clans: 'Clãs que você criou',
+    clanMembership: 'Seu vínculo com um clã',
+    clanProgress: 'Sua contribuição para o clã',
+    arena: 'Rating, temporada e histórico da Arena',
+    feed: 'Seus posts, reações e comentários',
+    invites: 'Convites, candidaturas e desafios',
+    sessions: 'Sessões de squad jogadas',
+    relations: 'Aliados e rivais',
 };
 
 function describe(value) {
@@ -149,40 +158,37 @@ function describe(value) {
     return String(value);
 }
 
+/** Tamanho legível. A leitura passa pelo storage.js, a única porta. */
 function sizeOf(key) {
-    // Accessing localStorage can throw outright in restricted contexts.
-    let raw = null;
-    try {
-        raw = window.localStorage.getItem(key);
-    } catch {
-        return '—';
-    }
-    if (!raw) return '0 B';
-    const bytes = new Blob([raw]).size;
-    return bytes >= 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${bytes} B`;
+    const bytes = rawSize(key);
+    if (!bytes) return '0 B';
+    return bytes >= 1024 ? `${(bytes / 1024).toFixed(1).replace('.', ',')} KB` : `${bytes} B`;
 }
 
 function renderStorage() {
     const rows = Object.entries(KEYS).map(([name, key]) => {
         const value = read(key, null);
         return `
-            <div class="storage-row">
-                <code class="storage-row__key">${escapeHtml(key)}</code>
-                <span class="storage-row__label">${escapeHtml(STORAGE_LABELS[name] ?? name)}</span>
-                <span class="storage-row__value">${escapeHtml(describe(value))}</span>
-                <span class="storage-row__size numeric">${escapeHtml(sizeOf(key))}</span>
-            </div>
+            <tr>
+                <td><code>${escapeHtml(key)}</code></td>
+                <td>${escapeHtml(STORAGE_LABELS[name] ?? name)}</td>
+                <td>${escapeHtml(describe(value))}</td>
+                <td class="numeric text-end">${escapeHtml(sizeOf(key))}</td>
+            </tr>
         `;
     }).join('');
 
     render($('#storageTable'), `
-        <div class="storage-row storage-row--head">
-            <span>Chave</span><span>Conteúdo</span><span>Valor</span><span>Tamanho</span>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle storage-table__table">
+                <caption>Schema ${SCHEMA_VERSION}. Chaves da V1 continuam iguais; as da comunidade entraram na V2.</caption>
+                <thead><tr><th scope="col">Chave</th><th scope="col">Conteúdo</th><th scope="col">Valor</th><th scope="col" class="text-end">Tamanho</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
         </div>
-        ${rows}
         ${isPersistent()
             ? ''
-            : '<p class="storage-warning">O armazenamento local não está disponível neste navegador. O app roda em memória e nada persiste após o recarregamento.</p>'}
+            : '<p class="storage-warning">O armazenamento local não está disponível neste navegador. O app roda em memória e nada fica salvo depois de recarregar.</p>'}
     `);
 }
 
@@ -199,7 +205,7 @@ $('#exportBtn').addEventListener('click', () => {
             .map(([name, key]) => [name, read(key, null)])
     );
 
-    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), ...payload }, null, 2)], {
+    const blob = new Blob([JSON.stringify({ app: 'RIVALY V2', schema: SCHEMA_VERSION, exportedAt: new Date().toISOString(), ...payload }, null, 2)], {
         type: 'application/json',
     });
     const url = URL.createObjectURL(blob);
@@ -214,7 +220,7 @@ $('#exportBtn').addEventListener('click', () => {
 
     toast({
         title: 'Dados exportados.',
-        message: 'Seu Passaporte, sua Biblioteca, suas conquistas e atividades foram exportados — as credenciais da conta não foram incluídas.',
+        message: 'Passaporte, Biblioteca, conquistas, atividade e comunidade (clã, Arena, Feed, convites, sessões e relações) foram exportados. As credenciais da conta ficaram de fora.',
         type: 'success',
     });
 });
@@ -226,8 +232,9 @@ $('#exportBtn').addEventListener('click', () => {
 $('#clearActivityBtn').addEventListener('click', async () => {
     const confirmed = await confirmDialog({
         title: 'Limpar o histórico de atividades?',
-        message: 'Apenas o registro de atividades será removido. Seu Passaporte, sua Biblioteca, seu XP e suas conquistas permanecerão intactos.',
+        message: 'Só o registro de atividades sai. Passaporte, Biblioteca, XP, conquistas e comunidade continuam intactos.',
         confirmLabel: 'Limpar histórico',
+        cancelLabel: 'Manter o histórico',
         danger: true,
     });
     if (!confirmed) return;
@@ -243,9 +250,9 @@ $('#clearActivityBtn').addEventListener('click', async () => {
 
 $('#resetBtn').addEventListener('click', async () => {
     const confirmed = await confirmDialog({
-        title: 'Resetar todos os dados demo?',
-        message: 'Seu Passaporte, DNA Gamer, Biblioteca, conquistas, atividades e squad salvo serão apagados definitivamente deste navegador. Sua conta de acesso será mantida.',
-        confirmLabel: 'Resetar tudo',
+        title: 'Apagar todos os dados deste navegador?',
+        message: 'Passaporte, DNA Gamer, Biblioteca, conquistas, atividade, squad salvo, clã, Arena, Feed, convites, sessões e relações serão apagados para sempre deste navegador. Sua conta de acesso fica, para você recomeçar com o mesmo e-mail.',
+        confirmLabel: 'Apagar tudo e recomeçar',
         cancelLabel: 'Manter meus dados',
         danger: true,
     });
@@ -260,13 +267,13 @@ $('#resetBtn').addEventListener('click', async () => {
    ============================================================ */
 
 const ABOUT = [
-    ['Versão', 'V1 — Vanilla'],
-    ['Tecnologias', 'HTML5 · CSS3 · JavaScript (módulos ES)'],
-    ['Dependências em tempo de execução', 'Nenhuma'],
-    ['Recursos de imagem', 'Nenhum — avatares e capas são gerados'],
-    ['Persistência', 'localStorage (com namespace)'],
+    ['Versão', 'V2 · Arena, Feed e Clãs'],
+    ['Tecnologias', 'HTML5 · CSS3 · JavaScript (ES Modules) · Bootstrap 5.3.8'],
+    ['Bootstrap', 'Servido localmente de vendor/bootstrap, sem CDN'],
+    ['Imagens', 'Capas da Steam e do IGDB, avatares do DiceBear; emblemas e fallbacks gerados no navegador'],
+    ['Persistência', `localStorage com o namespace rivaly: (schema ${SCHEMA_VERSION})`],
+    ['Comunidade', 'Simulada e determinística: os outros jogadores são perfis semeados'],
     ['Backend', 'Nenhum'],
-    ['Próxima versão', 'React + Tailwind CSS'],
 ];
 
 render($('#aboutList'), ABOUT.map(([term, value]) => `

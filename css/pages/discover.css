@@ -13,10 +13,11 @@
 }
 
 .discover-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: var(--space-md);
     margin-bottom: var(--space-xl);
+}
+
+.discover-card {
+    height: 100%;
 }
 
 .discover-card {
@@ -157,10 +158,7 @@
 }
 
 @media (max-width: 520px) {
-    .discover-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: var(--space-sm);
-    }
+
 }
 
 /* Acoes compactas: com btn--sm os tres rotulos empilhavam e deixavam os

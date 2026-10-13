@@ -95,13 +95,15 @@ function saveInteraction(gamedbId, statusId) {
 
 function skeletonCards(count = 8) {
     return Array.from({ length: count }, () => `
-        <article class="discover-card discover-card--skeleton" aria-hidden="true">
-            <div class="discover-card__cover skeleton"></div>
-            <div class="discover-card__body">
-                <span class="skeleton skeleton--line"></span>
-                <span class="skeleton skeleton--line skeleton--short"></span>
-            </div>
-        </article>
+        <div class="col">
+            <article class="card discover-card discover-card--skeleton" aria-hidden="true">
+                <div class="discover-card__cover skeleton"></div>
+                <div class="card-body discover-card__body">
+                    <span class="skeleton skeleton--line"></span>
+                    <span class="skeleton skeleton--line skeleton--short"></span>
+                </div>
+            </article>
+        </div>
     `).join('');
 }
 
@@ -113,32 +115,34 @@ function cardMarkup(game) {
     // Sem capa na base, o bloco com as iniciais fica no lugar — nunca um
     // <img> quebrado.
     const art = cover
-        ? `<img class="discover-card__img" src="${cover}" alt=""
+        ? `<img class="discover-card__img" src="${escapeHtml(cover)}" alt=""
                 loading="lazy" decoding="async" data-fallback>`
         : '';
 
     return `
-        <article class="discover-card" data-game-id="${escapeHtml(String(game.id))}">
+        <div class="col">
+        <article class="card discover-card" data-game-id="${escapeHtml(String(game.id))}">
             <div class="discover-card__cover">
                 <span class="discover-card__initials" aria-hidden="true">${escapeHtml(initials)}</span>
                 ${art}
                 <span class="discover-card__owned" data-owned hidden>Na Biblioteca</span>
             </div>
-            <div class="discover-card__body">
-                <h3 class="discover-card__name">${escapeHtml(game.name ?? 'Sem nome')}</h3>
-                <p class="discover-card__meta">
+            <div class="card-body discover-card__body">
+                <h3 class="card-title discover-card__name">${escapeHtml(game.name ?? 'Sem nome')}</h3>
+                <p class="card-text discover-card__meta">
                     ${year ? `<span class="numeric">${year}</span>` : ''}
                     <span class="discover-card__platforms" data-platforms>—</span>
                 </p>
                 <p class="discover-card__genres">${escapeHtml(genreNames(game).slice(0, 2).join(' · '))}</p>
                 <div class="discover-card__actions">
                     ${Object.entries(STATUSES).map(([id, label]) => `
-                        <button type="button" class="btn btn--ghost btn--sm"
+                        <button type="button" class="btn btn-outline-light btn-sm"
                                 data-save="${id}">${label}</button>
                     `).join('')}
                 </div>
             </div>
         </article>
+        </div>
     `;
 }
 
@@ -171,7 +175,7 @@ function renderSaved() {
         <div class="discover-saved__row" data-saved-id="${escapeHtml(entry.id)}">
             <span class="discover-saved__name">${escapeHtml(entry.game.title)}</span>
             <span class="badge">${escapeHtml(STATUSES[entry.status] ?? entry.status)}</span>
-            <a class="btn btn--ghost btn--sm" href="library.html">Ver na Biblioteca</a>
+            <a class="btn btn-ghost btn-sm" href="library.html">Ver na Biblioteca</a>
         </div>
     `).join(''));
 }
@@ -191,7 +195,7 @@ async function runSearch(term) {
         return;
     }
 
-    status.textContent = `Buscando "${term}"...`;
+    status.textContent = `Buscando “${term.trim()}”…`;
     render(results, skeletonCards());
 
     let hits = [];
