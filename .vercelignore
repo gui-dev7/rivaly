@@ -5,7 +5,9 @@ node_modules/
 dist/
 RivalBRAND/
 tools/
+docs/
 *.md
+*.pdf
 *.log
 .env
 .env.*

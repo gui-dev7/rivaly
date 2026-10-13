@@ -1,14 +1,16 @@
 {
   "name": "rivaly",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Rivaly V1 — a gamified gamer identity platform built with HTML5, CSS3 and vanilla JavaScript.",
+  "description": "RIVALY V2 — plataforma de identidade gamer com Passaporte, DNA, Squads, Arena, Clãs e Feed. HTML5, CSS3, JavaScript puro e Bootstrap 5.3 local.",
   "scripts": {
     "dev": "vite",
     "host": "vite --host",
     "build": "vite build",
-    "preview": "vite preview --host"
+    "preview": "vite preview --host",
+    "sync:chrome": "node tools/sync-chrome.mjs",
+    "docs:sitemap": "node tools/sitemap-doc.mjs"
   },
   "devDependencies": {
     "vite": "^7.1.9"

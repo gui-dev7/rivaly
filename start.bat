@@ -1,10 +1,22 @@
 @echo off
-title Happy Game - local server
+title RIVALY - servidor local
 echo.
-echo   HAPPY GAME - starting local server
-echo   ---------------------------------
-echo   Open:  http://localhost:5500
-echo   Stop:  press Ctrl+C in this window
+echo   RIVALY - servidor local
+echo   -----------------------
+echo   Para parar: Ctrl+C nesta janela
 echo.
-start "" http://localhost:5500
-python -m http.server 5500
+
+where npm >nul 2>nul
+if %errorlevel%==0 (
+    if not exist node_modules call npm install
+    echo   Abra: http://localhost:5173
+    echo.
+    start "" http://localhost:5173
+    npm run dev
+) else (
+    echo   Node nao encontrado. Usando o Python, sem os arquivos de public/.
+    echo   Abra: http://localhost:5500
+    echo.
+    start "" http://localhost:5500
+    python -m http.server 5500
+)
