@@ -3,17 +3,19 @@
  *
  * Builds a fully populated Passport so the product can be evaluated
  * without walking the onboarding every time: profile filled in, DNA
- * resolved, a stocked library, a saved squad and the achievements
- * those actions genuinely unlock.
+ * resolved, a stocked library, a saved squad and — in V2 — a clan, played
+ * squad sessions with rated teammates, an Arena history, Feed posts and
+ * an invite response waiting in the invite center.
  *
- * Nothing here is faked. The library entries go through the real
- * `addEntry()`, and the badges come from `checkAchievements()` running
- * against that state — exactly as they would if you clicked through it
- * yourself. Only the starting data is pre-written.
+ * Nothing here is faked. Library entries go through `addEntry()`, the
+ * clan through `createClan()`, sessions through `playSession()`, matches
+ * through `playDuel()`/`playClanMatch()` and posts through `publishPost()`.
+ * Results come from the same deterministic engine a click would use. Only
+ * the starting data (profile, roster of the demo clan) is pre-written.
  */
 
 import {
-    saveUser, saveAccounts, saveSession, saveSquads, getAccounts, resetAll,
+    saveUser, saveAccounts, saveSession, saveSquads, getAccounts, resetAll, getClans, saveClans,
 } from './storage.js';
 import { createUser } from './profile.js';
 import { addEntry } from './library-store.js';
@@ -21,6 +23,11 @@ import { logActivity } from './activity.js';
 import { checkAchievements, awardXp } from './gamification.js';
 import { buildDnaProfile } from './gamer-dna.js';
 import { DNA_QUESTIONS } from './data.js';
+import { createClan, inviteToClan } from './clans-store.js';
+import { playSession, ratePlayer } from './sessions.js';
+import { playDuel, playClanMatch } from './arena-store.js';
+import { publishPost } from './feed-store.js';
+import { resolveDueInvites } from './invites.js';
 
 export const DEMO_EMAIL = 'demo@happygame.local';
 export const DEMO_PASSWORD = 'demo1234';
@@ -57,6 +64,34 @@ const DEMO_ACTIVITY = [
     ['achievement', 'Desbloqueou Match Perfeito'],
     ['library', 'Zerou Elden Ring'],
     ['passport', 'Atualizou o Passaporte Gamer'],
+];
+
+/** O clã da conta demo: o usuário é o líder; o elenco já foi recrutado. */
+const DEMO_CLAN = {
+    name: 'Vanguarda Rivaly',
+    tag: 'RVLY',
+    focusGame: 'valorant',
+    playstyle: 'competitive',
+    policy: 'application',
+    motto: 'Call curta, troca rápida, respeito sempre.',
+    minRank: 'Gold',
+};
+const DEMO_CLAN_OFFICERS = ['p29'];
+const DEMO_CLAN_MEMBERS = ['p27', 'p07'];
+
+/** Sessões jogadas, com a avaliação de cada colega. */
+const DEMO_SESSIONS = [
+    { gameId: 'valorant', teammates: ['p29', 'p27', 'p07'], ratings: { p29: ['ally', ['comms', 'strategy']], p27: ['ally', ['fairplay']], p07: ['ally', ['comms']] } },
+    { gameId: 'valorant', teammates: ['p11', 'p13', 'p17'], ratings: { p11: ['ally', ['strategy']], p13: ['rival', ['carry']], p17: ['neutral', []] } },
+    { gameId: 'cs2', teammates: ['p04', 'p10'], ratings: { p04: ['rival', ['carry']], p10: ['neutral', ['fairplay']] } },
+];
+
+/** Partidas de Arena: rivais e adversários de vários tiers. */
+const DEMO_DUELS = ['p14', 'p13', 'p16', 'p04', 'p17', 'p13'];
+
+const DEMO_POSTS = [
+    'Fechamos a semana com o [RVLY] batendo a meta. Valentina segurando o lado B foi outro nível.',
+    'Procuro duo para Valorant hoje à noite. Jogo de suporte e uso voz. Quem topa?',
 ];
 
 /**
@@ -130,5 +165,39 @@ export function seedDemoAccount() {
 
     checkAchievements();
 
+    seedCommunity();
+
     return { nickname: account.nickname };
+}
+
+/**
+ * V2: a comunidade da conta demo, montada com as funções reais.
+ * Ordem importa: o clã nasce primeiro, para que sessões e vitórias
+ * contem para a meta semanal dele.
+ */
+function seedCommunity() {
+    const created = createClan(DEMO_CLAN);
+    if (created.ok) {
+        saveClans(getClans().map((clan) => (clan.id === created.clan.id
+            ? { ...clan, officers: [...DEMO_CLAN_OFFICERS], members: [...DEMO_CLAN_MEMBERS] }
+            : clan)));
+    }
+
+    DEMO_SESSIONS.forEach(({ gameId, teammates, ratings }) => {
+        const outcome = playSession({ gameId, teammateIds: teammates, mode: 'chosen' });
+        if (!outcome.ok) return;
+        Object.entries(ratings).forEach(([playerId, [relation, praises]]) => {
+            ratePlayer(outcome.session.id, playerId, { relation, praises, silent: true });
+        });
+    });
+
+    DEMO_DUELS.forEach((playerId) => playDuel(playerId));
+    playClanMatch('gol');
+
+    DEMO_POSTS.forEach((text) => publishPost(text));
+
+    // Uma resposta esperando no centro de convites: o convite para a Nova
+    // é decidido agora pelo motor, com o motivo, e fica como "não visto".
+    const invite = inviteToClan('p09');
+    if (invite.ok) resolveDueInvites(Date.now() + 60 * 60 * 1000);
 }

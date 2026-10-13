@@ -7,7 +7,7 @@
  */
 
 import { bootApp, afterRender, haltModule } from './app.js';
-import { render, escapeHtml, formatNumber, icon, emptyStateMarkup, formatHours } from './ui.js';
+import { render, escapeHtml, formatNumber, icon, emptyStateMarkup, formatHours, colWrap } from './ui.js';
 import { progressSnapshot, getAchievementState } from './gamification.js';
 import { archetypeOf, profileCompletion, missingProfileFields } from './profile.js';
 import { listHydrated, librarySummary } from './library-store.js';
@@ -16,6 +16,9 @@ import { findMatches } from './compatibility.js';
 import { statMarkup, gameRowMarkup, squadRowMarkup, badgeMarkup, activityItemMarkup, dnaListMarkup } from './cards.js';
 import { countUp } from './animations.js';
 import { getGameById } from './data.js';
+import { communitySnapshot, nextStep } from './community-summary.js';
+import { emblemMarkup, tierBadgeMarkup } from './community-ui.js';
+import { ROLE_LABELS } from './clans-store.js';
 
 const user = bootApp({
     page: 'dashboard',
@@ -59,7 +62,7 @@ if (completion < 100) {
             <div class="nudge__body">
                 <p class="nudge__title">${needsDna ? 'Seu DNA Gamer ainda não foi mapeado.' : 'Seu Passaporte está ' + completion + '% completo.'}</p>
                 <p class="nudge__text">${needsDna
-                    ? 'Dez perguntas definem seus seis atributos e seu arquétipo — o restante da plataforma usa esses dados.'
+                    ? 'Dez perguntas definem seus seis atributos e seu arquétipo. O restante da plataforma usa esses dados.'
                     : 'Concluir o Passaporte melhora a qualidade das combinações e desbloqueia a medalha Cadastro Completo.'}</p>
                 <div class="nudge__meter">
                     <span class="progress progress--thin">
@@ -68,12 +71,113 @@ if (completion < 100) {
                     <span class="numeric">${completion}%</span>
                 </div>
             </div>
-            <a class="btn btn--primary btn--sm" href="${needsDna ? 'onboarding.html?stage=dna' : 'passport.html?edit=1'}">
-                ${needsDna ? 'Começar o DNA' : 'Completar'}
+            <a class="btn btn-primary btn-sm" href="${needsDna ? 'onboarding.html?stage=dna' : 'passport.html?edit=1'}">
+                ${needsDna ? 'Começar o DNA' : 'Completar meu Passaporte'}
             </a>
         </aside>
     `);
 }
+
+/* ============================================================
+   OVERVIEW
+   ============================================================ */
+
+/* ============================================================
+   PRÓXIMO PASSO
+   Uma ação só: a que mais faz o Passaporte avançar agora.
+   ============================================================ */
+
+function renderNextStep() {
+    const step = nextStep();
+    const cta = step.cta.href
+        ? `<a class="btn btn-primary" href="${escapeHtml(step.cta.href)}">${escapeHtml(step.cta.label)}</a>`
+        : `<button type="button" class="btn btn-primary" data-dashboard-action="${escapeHtml(step.cta.action)}">${escapeHtml(step.cta.label)}</button>`;
+    render(document.getElementById('nextStep'), `
+        <article class="card next-step">
+            <div class="card-body next-step__body">
+                <span class="next-step__icon">${icon(step.icon, { size: 22 })}</span>
+                <div class="next-step__copy">
+                    <h3 class="card-title next-step__title">${escapeHtml(step.title)}</h3>
+                    <p class="card-text">${escapeHtml(step.text)}</p>
+                    <p class="next-step__why">${icon('info', { size: 12 })} ${escapeHtml(step.why)}</p>
+                </div>
+                <div class="next-step__cta">${cta}</div>
+            </div>
+        </article>
+    `);
+}
+
+/* ============================================================
+   ARENA E CLÃ
+   ============================================================ */
+
+function renderCommunity() {
+    const snap = communitySnapshot();
+    const arenaCard = `
+        <article class="card h-100 community-card">
+            <div class="card-body">
+                <p class="eyebrow">Arena</p>
+                <p class="community-card__value numeric">${formatNumber(snap.arena.rating)}</p>
+                <p class="card-text">${tierBadgeMarkup(snap.arena.rating)} ${snap.arena.matches
+                    ? `${snap.arena.wins}V ${snap.arena.losses}D · ${snap.arena.season.points} pts na temporada`
+                    : 'Nenhuma partida ainda'}</p>
+                <div class="progress mt-2" role="progressbar" aria-label="Progresso até o próximo tier" aria-valuenow="${Math.round(snap.tierProgress.percent)}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar" style="width:${snap.tierProgress.percent}%"></div>
+                </div>
+                <p class="form-text">${snap.tierProgress.next ? `Faltam ${snap.tierProgress.remaining} para ${escapeHtml(snap.tierProgress.next.label)}.` : 'Tier máximo.'}</p>
+            </div>
+            <div class="card-footer"><a class="btn btn-outline-light btn-sm w-100" href="arena.html#playTitle">${snap.arena.matches ? 'Jogar outra partida' : 'Estrear na Arena'}</a></div>
+        </article>`;
+
+    const clanCard = snap.clan
+        ? `
+        <article class="card h-100 community-card">
+            <div class="card-body">
+                <div class="community-card__clan">
+                    ${emblemMarkup(snap.clan, 44)}
+                    <div>
+                        <p class="eyebrow">${escapeHtml(ROLE_LABELS[snap.role] ?? 'Membro')}</p>
+                        <p class="community-card__clan-name"><span class="clan-tag">[${escapeHtml(snap.clan.tag)}]</span> ${escapeHtml(snap.clan.name)}</p>
+                    </div>
+                </div>
+                <div class="clan-goal mt-2">
+                    <div class="clan-goal__head"><span>Meta semanal</span><span class="numeric">${snap.clanStats.weekPoints}/${snap.clanStats.goal}</span></div>
+                    <div class="progress" role="progressbar" aria-label="Meta semanal do clã" aria-valuenow="${snap.clanStats.goalPercent}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width:${snap.clanStats.goalPercent}%"></div>
+                    </div>
+                </div>
+                <p class="form-text">Nível ${snap.clanStats.level.level} · ${snap.clan.roster.length} membros · ${snap.relations.allies} aliados · ${snap.relations.rivals} rivais</p>
+            </div>
+            <div class="card-footer"><a class="btn btn-outline-light btn-sm w-100" href="clans.html#myClanTitle">Ver meu clã</a></div>
+        </article>`
+        : `
+        <article class="card h-100 community-card community-card--empty">
+            <div class="card-body">
+                <p class="eyebrow">Clã</p>
+                <p class="card-title">Você ainda não está em um clã.</p>
+                <p class="card-text">Clãs compatíveis com o seu DNA estão na página Clãs, do mais compatível para o menos.</p>
+                <p class="form-text">${snap.relations.allies} aliados · ${snap.relations.rivals} rivais · ${snap.sessions} sessões</p>
+            </div>
+            <div class="card-footer"><a class="btn btn-primary btn-sm w-100" href="clans.html#exploreTitle">Ver clãs compatíveis</a></div>
+        </article>`;
+
+    render(document.getElementById('communitySummary'), colWrap(arenaCard) + colWrap(clanCard));
+}
+
+renderNextStep();
+renderCommunity();
+
+document.getElementById('main-content').addEventListener('click', (event) => {
+    if (!event.target.closest('[data-dashboard-action="open-invites"]')) return;
+    const toggle = document.querySelector('.invites__toggle');
+    if (toggle) window.bootstrap?.Dropdown.getOrCreateInstance(toggle).show();
+});
+
+document.addEventListener('rivaly:community-changed', () => {
+    renderNextStep();
+    renderCommunity();
+});
+document.addEventListener('rivaly:invites-changed', renderNextStep);
 
 /* ============================================================
    OVERVIEW
@@ -131,7 +235,7 @@ render(document.getElementById('overviewStats'), [
         icon: 'trophy',
         accent: 'var(--color-primary)',
     }),
-].join(''));
+].map((stat) => colWrap(stat)).join(''));
 
 /* ============================================================
    CURRENTLY PLAYING
@@ -148,7 +252,7 @@ render(document.getElementById('currentlyPlaying'), playing.length
         iconName: 'controller',
         title: 'Nenhum jogo em andamento.',
         text: 'Adicione um jogo e marque como Jogando — o Passaporte começa a descrever o que você joga de verdade.',
-        action: '<a class="btn btn--primary btn--sm" href="library.html?action=add">Adicionar um jogo</a>',
+        action: '<a class="btn btn-primary btn-sm" href="library.html?action=add">Adicionar um jogo</a>',
     })
 );
 
@@ -171,8 +275,8 @@ if (!preferredGame) {
     render(squadHost, emptyStateMarkup({
         iconName: 'users',
         title: 'Nenhum squad ainda.',
-        text: "Vamos encontrar seu time. Adicione um jogo que você está jogando e o motor começa a buscar combinações.",
-        action: '<a class="btn btn--primary btn--sm" href="squads.html">Abrir Buscar Squad</a>',
+        text: 'Adicione um jogo que você está jogando e o motor começa a buscar quem combina com você.',
+        action: '<a class="btn btn-primary btn-sm" href="squads.html">Encontrar meu squad</a>',
     }));
 } else {
     const criteria = {
@@ -193,8 +297,8 @@ if (!preferredGame) {
                 Com base no seu Passaporte · <strong>${escapeHtml(game.title)}</strong>
             </p>
             <ul class="squad-row-list">${matches.map(({ player, result }) => squadRowMarkup(player, result)).join('')}</ul>
-            <a class="btn btn--secondary btn--sm btn--block" href="squads.html?game=${encodeURIComponent(preferredGame)}">
-                Fazer uma busca completa
+            <a class="btn btn-outline-light btn-sm w-100" href="squads.html?game=${encodeURIComponent(preferredGame)}">
+                Ver todos os compatíveis
             </a>
         </div>
     `);
@@ -211,7 +315,8 @@ render(document.getElementById('recentActivity'), activity.length
     : emptyStateMarkup({
         iconName: 'clock',
         title: 'Nenhuma atividade ainda.',
-        text: 'Tudo o que você faz na RIVALY é registrado aqui, localmente, neste navegador.',
+        text: 'Tudo o que você faz na RIVALY aparece aqui e no Feed, salvo só neste navegador.',
+        action: '<a class="btn btn-outline-light btn-sm" href="squads.html">Jogar uma sessão</a>',
     })
 );
 
@@ -237,7 +342,7 @@ render(document.getElementById('dnaSummary'), user.dna
         iconName: 'dna',
         title: 'Seu DNA ainda não foi mapeado.',
         text: 'Bastam dez perguntas. O resultado define seu arquétipo, as funções sugeridas e suas combinações.',
-        action: '<a class="btn btn--primary btn--sm" href="onboarding.html?stage=dna">Fazer a análise</a>',
+        action: '<a class="btn btn-primary btn-sm" href="onboarding.html?stage=dna">Descobrir meu arquétipo</a>',
     })
 );
 
@@ -255,8 +360,8 @@ render(document.getElementById('latestBadges'), unlockedBadges.length
     : emptyStateMarkup({
         iconName: 'trophy',
         title: 'Sua primeira conquista está mais perto do que parece.',
-        text: 'Adicione um jogo, complete seu DNA ou faça uma busca de squad — qualquer uma dessas ações desbloqueia algo.',
-        action: '<a class="btn btn--secondary btn--sm" href="achievements.html">Ver o que existe</a>',
+        text: 'Adicione um jogo, complete seu DNA ou jogue uma sessão de squad. Qualquer uma dessas ações desbloqueia algo.',
+        action: '<a class="btn btn-outline-light btn-sm" href="achievements.html">Ver todas as conquistas</a>',
     })
 );
 

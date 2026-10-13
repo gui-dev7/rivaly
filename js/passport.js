@@ -14,18 +14,25 @@ import { progressSnapshot, getAchievementState, awardXp, awardOnce, checkAchieve
 import { librarySummary } from './library-store.js';
 import {
     PLATFORMS, GENRES, SCHEDULES, PLAYSTYLES, ROLES, LANGUAGES, REGIONS,
-    DNA_ATTRIBUTES, RANK_LADDER, getGameById,
+    DNA_ATTRIBUTES, RANK_LADDER, getGameById, rankLabel, regionLabel, genreLabel,
 } from './data.js';
 import { dnaListMarkup, statMarkup, badgeMarkup, gameMarkMarkup } from './cards.js';
 import { openModal } from './modal.js';
 import { toast } from './notifications.js';
 import { refreshNavigationProgress } from './navigation.js';
 import {
-    $, render, escapeHtml, icon, formatNumber, formatHours, emptyStateMarkup, tipMarkup, bannerArt,
+    $, render, escapeHtml, icon, formatNumber, formatHours, emptyStateMarkup, tipMarkup, bannerArt, colWrap,
 } from './ui.js';
+import { communitySnapshot } from './community-summary.js';
+import { emblemMarkup, tierBadgeMarkup, playerChipMarkup } from './community-ui.js';
+import { relationList } from './sessions.js';
+import { ROLE_LABELS } from './clans-store.js';
 import { userAvatarMarkup, resolveAvatar } from './avatar-service.js';
 import { openAvatarPicker } from './avatar-picker.js';
 import { attachPointerLight, countUp } from './animations.js';
+import {
+    validateForm, bindLiveValidation, focusFirstInvalid, required, minLength, maxLength, noHtml, numberRange,
+} from './validation.js';
 
 let user = bootApp({
     page: 'passport',
@@ -52,6 +59,7 @@ function renderCard() {
     // card simply renders without it.
     const bannerGame = games.find((game) => game.steamAppId);
 
+    const community = communitySnapshot();
     render($('#passportCardHost'), `
         <article class="passport-card is-complete ${bannerGame ? 'has-banner' : ''}" id="passportCard">
             ${bannerGame ? `<span class="passport-card__banner" aria-hidden="true">${bannerArt(bannerGame)}</span>` : ''}
@@ -116,8 +124,12 @@ function renderCard() {
                     <span class="numeric">${formatNumber(snapshot.gamerScore)}</span>
                 </span>
                 <span class="passport-card__foot-item">
-                    <span class="passport-card__foot-label">Medalhas</span>
-                    <span class="numeric">${snapshot.achievementsUnlocked}</span>
+                    <span class="passport-card__foot-label">Arena</span>
+                    <span class="numeric">${formatNumber(community.arena.rating)}</span>
+                </span>
+                <span class="passport-card__foot-item">
+                    <span class="passport-card__foot-label">Clã</span>
+                    <span class="numeric">${community.clan ? `[${escapeHtml(community.clan.tag)}]` : '—'}</span>
                 </span>
             </footer>
         </article>
@@ -154,16 +166,16 @@ function renderIdentity() {
                     <dt>Membro desde</dt>
                     <dd>${escapeHtml(joined)}</dd>
                 </div>
-                ${user.region ? `<div><dt>Região</dt><dd>${escapeHtml(user.region)}</dd></div>` : ''}
+                ${user.region ? `<div><dt>Região</dt><dd>${escapeHtml(regionLabel(user.region))}</dd></div>` : ''}
                 ${user.age ? `<div><dt>Idade</dt><dd>${escapeHtml(String(user.age))}</dd></div>` : ''}
-                ${user.rank && user.rank !== 'Unranked' ? `<div><dt>Ranking</dt><dd>${escapeHtml(user.rank)}</dd></div>` : ''}
+                ${user.rank && user.rank !== 'Unranked' ? `<div><dt>Rank</dt><dd>${escapeHtml(rankLabel(user.rank))}</dd></div>` : ''}
             </dl>
 
             <div class="identity__actions">
-                <button type="button" class="btn btn--secondary btn--sm" id="chooseAvatar">
-                    ${icon('user', { size: 14 })} Alterar avatar
+                <button type="button" class="btn btn-outline-light btn-sm" id="chooseAvatar">
+                    ${icon('user', { size: 14 })} Trocar avatar
                 </button>
-                <button type="button" class="btn btn--ghost btn--sm" id="editFromIdentity">Editar dados</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="editFromIdentity">Editar dados</button>
             </div>
         </div>
     `);
@@ -203,10 +215,73 @@ function renderCompletion() {
                 <ul class="completion__missing">
                     ${missing.map((field) => `<li class="tag">${escapeHtml(LABELS[field] ?? field)}</li>`).join('')}
                 </ul>
-                <button type="button" class="btn btn--primary btn--sm" data-open-edit>Completar meu passaporte</button>
+                <button type="button" class="btn btn-primary btn-sm" data-open-edit>Completar meu Passaporte</button>
             ` : ''}
         </div>
     `);
+}
+
+/* ============================================================
+   COMUNIDADE
+   Tudo o que a Arena, os clãs e as sessões devolvem ao Passaporte.
+   ============================================================ */
+
+function renderCommunity() {
+    const snap = communitySnapshot();
+    const allies = relationList('ally').slice(0, 4);
+    const rivals = relationList('rival').slice(0, 4);
+
+    const clanTile = snap.clan
+        ? `<article class="card h-100 passport-tile">
+                <div class="card-body passport-tile__clan">
+                    ${emblemMarkup(snap.clan, 56)}
+                    <div>
+                        <p class="eyebrow">Clã · ${escapeHtml(ROLE_LABELS[snap.role] ?? 'Membro')}</p>
+                        <p class="passport-tile__title"><span class="clan-tag">[${escapeHtml(snap.clan.tag)}]</span> ${escapeHtml(snap.clan.name)}</p>
+                        <p class="card-text">Nível ${snap.clanStats.level.level} · ${snap.clan.roster.length} membros</p>
+                    </div>
+                </div>
+           </article>`
+        : `<article class="card h-100 passport-tile passport-tile--empty">
+                <div class="card-body">
+                    <p class="eyebrow">Clã</p>
+                    <p class="passport-tile__title">Sem clã por enquanto</p>
+                    <a class="btn btn-outline-light btn-sm mt-2" href="clans.html#exploreTitle">Ver clãs compatíveis</a>
+                </div>
+           </article>`;
+
+    const arenaTile = `
+        <article class="card h-100 passport-tile">
+            <div class="card-body">
+                <p class="eyebrow">Arena</p>
+                <p class="passport-tile__value numeric">${formatNumber(snap.arena.rating)}</p>
+                <p class="card-text">${tierBadgeMarkup(snap.arena.rating)} ${snap.arena.wins}V ${snap.arena.losses}D · pico ${formatNumber(snap.arena.peak ?? snap.arena.rating)}</p>
+            </div>
+        </article>`;
+
+    const people = (list, empty) => (list.length
+        ? `<div class="squad-chips">${list.map((entry) => playerChipMarkup(entry.player.id)).join('')}</div>`
+        : `<p class="card-text">${escapeHtml(empty)}</p>`);
+
+    const alliesTile = `
+        <article class="card h-100 passport-tile">
+            <div class="card-body">
+                <p class="eyebrow">Aliados</p>
+                <p class="passport-tile__value numeric" data-ally-count>${snap.relations.allies}</p>
+                ${people(allies, 'Marque aliados no pós-partida de uma sessão.')}
+            </div>
+        </article>`;
+
+    const rivalsTile = `
+        <article class="card h-100 passport-tile">
+            <div class="card-body">
+                <p class="eyebrow">Rivais</p>
+                <p class="passport-tile__value numeric" data-rival-count>${snap.relations.rivals}</p>
+                ${people(rivals, 'Rival é quem você quer enfrentar de novo.')}
+            </div>
+        </article>`;
+
+    render($('#passportCommunity'), [clanTile, arenaTile, alliesTile, rivalsTile].map((tile) => colWrap(tile)).join(''));
 }
 
 /* ============================================================
@@ -249,7 +324,7 @@ function renderStats() {
             meta: snapshot.squadCount ? 'Parceiros salvos' : 'Nenhum parceiro ainda',
             accent: 'var(--color-text-muted)', count: snapshot.squadCount,
         }),
-    ].join(''));
+    ].map((stat) => colWrap(stat)).join(''));
 }
 
 /* ============================================================
@@ -262,7 +337,7 @@ function renderDna() {
             iconName: 'dna',
             title: 'Seu DNA ainda não foi mapeado.',
             text: 'Dez perguntas definem seis atributos e um arquétipo. As funções sugeridas e a qualidade das combinações dependem desse resultado.',
-            action: '<a class="btn btn--primary btn--sm" href="onboarding.html?stage=dna">Fazer a análise</a>',
+            action: '<a class="btn btn-primary btn-sm" href="onboarding.html?stage=dna">Descobrir meu arquétipo</a>',
         }));
         $('#redoDna').hidden = true;
         return;
@@ -327,7 +402,7 @@ function renderPreferences() {
                 </div>
                 <div class="preferences__row">
                     <dt>Gêneros favoritos</dt>
-                    <dd>${tagList(user.favoriteGenres, 'Nenhum selecionado')}</dd>
+                    <dd>${tagList((user.favoriteGenres ?? []).map(genreLabel), 'Nenhum selecionado')}</dd>
                 </div>
                 <div class="preferences__row">
                     <dt>Estilo de jogo</dt>
@@ -371,7 +446,7 @@ function renderLibrarySnapshot() {
             iconName: 'library',
             title: 'Sua biblioteca está esperando.',
             text: 'Adicione seu primeiro jogo e o Passaporte começará a descrever o que você realmente joga.',
-            action: '<a class="btn btn--primary btn--sm" href="library.html?action=add">Adicionar um jogo</a>',
+            action: '<a class="btn btn-primary btn-sm" href="library.html?action=add">Adicionar um jogo</a>',
         }));
         return;
     }
@@ -391,7 +466,7 @@ function renderLibrarySnapshot() {
             <div class="dna-list">
                 ${summary.topGenres.map((genre) => `
                     <div class="dna-bar" style="--dna-color:var(--color-primary)">
-                        <span class="dna-bar__label">${escapeHtml(genre.genre)}</span>
+                        <span class="dna-bar__label">${escapeHtml(genreLabel(genre.genre))}</span>
                         <span class="dna-bar__track">
                             <span class="dna-bar__fill" data-progress="${(genre.count / maxCount) * 100}"></span>
                         </span>
@@ -423,8 +498,8 @@ function renderBadges() {
         : emptyStateMarkup({
             iconName: 'trophy',
             title: 'Sua estante de medalhas está vazia.',
-            text: 'Sua primeira conquista está mais perto do que parece — adicionar um único jogo desbloqueia uma.',
-            action: '<a class="btn btn--secondary btn--sm" href="achievements.html">Ver a lista</a>',
+            text: 'Sua primeira conquista está mais perto do que parece: adicionar um único jogo já desbloqueia uma.',
+            action: '<a class="btn btn-outline-light btn-sm" href="achievements.html">Ver todas as conquistas</a>',
         })
     );
 }
@@ -488,13 +563,13 @@ function openEditDialog(draft = null) {
                 ${userAvatarMarkup(shownUser, { size: 'xl', alt: `Avatar de ${user.nickname}` })}
             </span>
             <div class="edit-avatar__body">
-                <p class="field__label">Seu avatar</p>
+                <p class="form-label">Seu avatar</p>
                 <p class="settings-row__hint">
-                    Gerado pelo DiceBear a partir de uma semente — a mesma semente
-                    devolve sempre o mesmo desenho. Você também pode enviar sua própria imagem.
+                    Gerado pelo DiceBear a partir de uma semente: a mesma semente
+                    devolve sempre o mesmo desenho. Você também pode enviar a sua própria imagem.
                 </p>
-                <button type="button" class="btn btn--secondary btn--sm" id="editChooseAvatar">
-                    Escolher avatar
+                <button type="button" class="btn btn-outline-light btn-sm" id="editChooseAvatar">
+                    Escolher outro avatar
                 </button>
             </div>
         </div>
@@ -502,16 +577,16 @@ function openEditDialog(draft = null) {
         <form class="stack stack-lg" id="passportForm" novalidate>
             <div class="grid grid--form-2">
                 <div class="field">
-                    <label class="field__label" for="editNickname">Apelido</label>
-                    <input class="input" type="text" id="editNickname" value="${escapeHtml(user.nickname)}"
-                           minlength="3" maxlength="18" required data-autofocus>
-                    <p class="field__error" id="editNicknameError" role="alert"></p>
+                    <label class="form-label" for="editNickname">Apelido</label>
+                    <input class="form-control" type="text" id="editNickname" value="${escapeHtml(user.nickname)}"
+                           maxlength="18" required data-autofocus aria-describedby="editNicknameHelp">
+                    <p class="form-text" id="editNicknameHelp">De 3 a 18 caracteres.</p>
                 </div>
                 <div class="field">
-                    <label class="field__label" for="editRank">Seu rank</label>
-                    <div class="select-wrap">
-                        <select class="select" id="editRank">
-                            ${RANK_LADDER.map((rank) => `<option value="${rank}"${(user.rank ?? 'Unranked') === rank ? ' selected' : ''}>${rank}</option>`).join('')}
+                    <label class="form-label" for="editRank">Seu rank</label>
+                    <div>
+                        <select class="form-select" id="editRank">
+                            ${RANK_LADDER.map((rank) => `<option value="${rank}"${(user.rank ?? 'Unranked') === rank ? ' selected' : ''}>${escapeHtml(rankLabel(rank))}</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -519,56 +594,57 @@ function openEditDialog(draft = null) {
 
             <div class="grid grid--form-2">
                 <div class="field">
-                    <label class="field__label" for="editRegion">Região</label>
-                    <div class="select-wrap">
-                        <select class="select" id="editRegion">
+                    <label class="form-label" for="editRegion">Região</label>
+                    <div>
+                        <select class="form-select" id="editRegion">
                             <option value="">Prefiro não dizer</option>
-                            ${REGIONS.map((region) => `<option value="${escapeHtml(region)}"${user.region === region ? ' selected' : ''}>${escapeHtml(region)}</option>`).join('')}
+                            ${REGIONS.map((region) => `<option value="${escapeHtml(region)}"${user.region === region ? ' selected' : ''}>${escapeHtml(regionLabel(region))}</option>`).join('')}
                         </select>
                     </div>
                 </div>
                 <div class="field">
-                    <label class="field__label" for="editAge">Idade</label>
-                    <input class="input" type="number" id="editAge" min="10" max="120" value="${user.age ?? ''}" placeholder="—">
+                    <label class="form-label" for="editAge">Idade</label>
+                    <input class="form-control" type="number" id="editAge" min="10" max="120" value="${user.age ?? ''}" inputmode="numeric" aria-describedby="editAgeHelp">
+                    <p class="form-text" id="editAgeHelp">Opcional, de 10 a 120.</p>
                 </div>
             </div>
 
             <div class="field">
-                <label class="field__label" for="editBio">Bio curta</label>
-                <textarea class="textarea" id="editBio" maxlength="140" rows="2">${escapeHtml(user.bio ?? '')}</textarea>
+                <label class="form-label" for="editBio">Bio curta</label>
+                <textarea class="form-control" id="editBio" maxlength="140" rows="2">${escapeHtml(user.bio ?? '')}</textarea>
             </div>
 
             <fieldset class="field">
-                <legend class="field__label">Plataformas</legend>
+                <legend class="form-label">Plataformas</legend>
                 ${chipGroup('platforms', PLATFORMS, user.platforms ?? [])}
             </fieldset>
 
             <fieldset class="field">
-                <legend class="field__label">Gêneros favoritos</legend>
-                ${chipGroup('genres', GENRES.map((genre) => ({ id: genre, label: genre })), user.favoriteGenres ?? [])}
+                <legend class="form-label">Gêneros favoritos</legend>
+                ${chipGroup('genres', GENRES.map((genre) => ({ id: genre, label: genreLabel(genre) })), user.favoriteGenres ?? [])}
             </fieldset>
 
             <div class="field">
-                <label class="field__label" for="editPlaystyle">Estilo de jogo</label>
-                <div class="select-wrap">
-                    <select class="select" id="editPlaystyle">
+                <label class="form-label" for="editPlaystyle">Estilo de jogo</label>
+                <div>
+                    <select class="form-select" id="editPlaystyle">
                         ${PLAYSTYLES.map((style) => `<option value="${style.id}"${user.playstyle === style.id ? ' selected' : ''}>${escapeHtml(style.label)} — ${escapeHtml(style.hint)}</option>`).join('')}
                     </select>
                 </div>
             </div>
 
             <fieldset class="field">
-                <legend class="field__label">Disponibilidade</legend>
+                <legend class="form-label">Disponibilidade</legend>
                 ${chipGroup('schedules', SCHEDULES, user.schedules ?? [])}
             </fieldset>
 
             <fieldset class="field">
-                <legend class="field__label">Funções no squad</legend>
+                <legend class="form-label">Funções no squad</legend>
                 ${chipGroup('roles', ROLES, user.roles ?? [])}
             </fieldset>
 
             <fieldset class="field">
-                <legend class="field__label">Idiomas</legend>
+                <legend class="form-label">Idiomas</legend>
                 ${chipGroup('languages', LANGUAGES, user.languages ?? [])}
             </fieldset>
 
@@ -588,8 +664,8 @@ function openEditDialog(draft = null) {
         wide: true,
         body,
         footer: `
-            <button type="button" class="btn btn--ghost" data-modal-close>Cancelar</button>
-            <button type="submit" form="passportForm" class="btn btn--primary">Salvar passaporte</button>
+            <button type="button" class="btn btn-ghost" data-modal-close>Cancelar</button>
+            <button type="submit" form="passportForm" class="btn btn-primary">Salvar meu Passaporte</button>
         `,
     });
 
@@ -604,15 +680,27 @@ function openEditDialog(draft = null) {
 
     restoreEditForm(root, draft);
 
+    const editSchema = {
+        editNickname: [
+            required('Escreva um apelido.'),
+            minLength(3, 'O apelido precisa ter pelo menos 3 caracteres.'),
+            maxLength(18, 'O apelido pode ter no máximo 18 caracteres.'),
+            noHtml(),
+        ],
+        editAge: [numberRange(10, 120, 'Use uma idade entre 10 e 120, ou deixe em branco.')],
+        editBio: [maxLength(140, 'A bio pode ter no máximo 140 caracteres.'), noHtml()],
+    };
+    bindLiveValidation(root.querySelector('#passportForm'), editSchema);
+
     root.querySelector('#passportForm').addEventListener('submit', (event) => {
         event.preventDefault();
 
-        const nickname = root.querySelector('#editNickname').value.trim();
-        if (nickname.length < 3 || nickname.length > 18) {
-            root.querySelector('#editNicknameError').textContent = 'O apelido precisa ter de 3 a 18 caracteres.';
-            root.querySelector('#editNickname').focus();
+        const result = validateForm(root.querySelector('#passportForm'), editSchema);
+        if (!result.valid) {
+            focusFirstInvalid(result);
             return;
         }
+        const nickname = result.values.editNickname.trim();
 
         const checkedValues = (name) =>
             Array.from(root.querySelectorAll(`input[name="${name}"]:checked`)).map((input) => input.value);
@@ -661,6 +749,7 @@ function renderAll() {
     renderCard();
     renderIdentity();
     renderCompletion();
+    renderCommunity();
     renderStats();
     renderDna();
     renderPreferences();
