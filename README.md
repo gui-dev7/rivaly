@@ -1,940 +1,243 @@
-# RIVALY — V1 (Vanilla)
+# RIVALY
 
-> **Rival + Ally.** Your game. Your identity. Your squad.
-> A gamified web platform built around a single idea: a product that understands
-> *who the player is*, and uses that identity to personalise everything else.
+> **Find allies. Meet rivals.** Plataforma de identidade gamer (Rival + Ally) construída em torno do **Passaporte Gamer**.
 
----
+Produção: <https://rivaly-social.vercel.app>
 
-## Overview
-
-RIVALY is a digital ecosystem for gamers. Its centre is the **Gamer Passport** —
-a living record that holds a player's nickname, avatar, platforms, games, behavioural
-profile, level, reputation and badges. Every other feature in the product either
-*reads* the Passport or *enriches* it.
-
-This repository is **V1**, an academic build deliberately restricted to
-**HTML5, CSS3 and vanilla JavaScript**. No framework, no CSS library, no runtime
-dependency and no backend.
-
-## Objective
-
-Demonstrate command of the web platform's fundamentals — the DOM, native Web APIs,
-CSS Grid/Flexbox, custom properties, animations and `localStorage` — by building a
-product that *feels* like a real application rather than a website about games.
-
-A future **V2** will remodel the same product using **React + Tailwind CSS**. The
-architecture here was chosen to make that migration a translation, not a rewrite.
-
----
-
-## Technologies
+A RIVALY reúne num só registro quem a pessoa é como jogadora: plataformas, jogos, horários, funções no time, um perfil comportamental (o **DNA Gamer**), nível, reputação e conquistas. Todo o resto do produto lê ou escreve nesse registro:
 
 ```text
-HTML5              semantic markup, native form validation, Drag & Drop API
-CSS3               custom properties, Grid, Flexbox, animations, clip-path, backdrop-filter
-Vanilla JavaScript ES2022 modules, classes-free functional composition, Web APIs
-LocalStorage       namespaced persistence layer
+Biblioteca → preferências → DNA Gamer → compatibilidade → Squads → Arena e Clãs → Feed → XP e conquistas → Passaporte
 ```
 
-**Zero runtime dependencies and zero external requests.** No CDN, no analytics, no
-font host, no image host. Everything the app needs is a local file.
-
-- **Icons** — hand-authored inline SVG (`js/ui.js`), including the platform glyphs.
-- **Avatars** — generated procedurally from a deterministic hash. No source imagery.
-- **Typefaces** — Anton + Chakra Petch, self-hosted as 45 KB of latin-subset
-  `.woff2`. A Google Fonts `<link>` would have added an external dependency and
-  broken offline rendering.
-- **Game artwork** — 32 covers and 25 banners, fetched once by
-  `tools/fetch-assets.mjs` and stored as WebP (~1.2 MB total). See
-  [Game artwork](#game-artwork) below.
+Projeto individual do desafio Happy Game (FIAP, Fase 2). Autor: Guilherme Oliveira Santos, RM576218, 2026.
 
 ---
 
-## Running locally
+## O que há de novo na V2
 
-The project uses **native ES Modules**, which browsers refuse to load over `file://`
-for security reasons. Serve the folder over HTTP with any static server:
+| Área | O que mudou |
+|---|---|
+| **Arena** | Duelo, Squad e Clã vs Clã com rating no estilo Elo. Antes de cada partida aparece a chance de vitória e quanto o rating sobe ou cai; depois, a conta do resultado. Temporada semanal, ranking em tabela (jogadores e clãs) e histórico paginado. |
+| **Clãs** | Explorar clãs pela compatibilidade com o seu DNA, entrar, candidatar-se, criar um clã (emblema gerado a partir da tag), gerenciar o elenco e acompanhar nível e meta semanal. |
+| **Feed** | Posts de até 280 caracteres, reações (GG, Respeito, Rivalidade), comentários e abas para clã, aliados, rivais e Arena. Junta a atividade do usuário com os posts da comunidade. |
+| **Squads** | Depois da busca, o usuário joga uma **sessão** com 2 a 4 jogadores (escolhidos ou sorteados). No pós-partida marca cada colega como Aliado, Rival ou Neutro. |
+| **Centro de convites** | Sino no topo, com contador: convites de clã, respostas de candidatura e desafios da Arena. |
+| **Bootstrap 5.3** | Infraestrutura visível (grid, navbar, offcanvas, modal, dropdown, formulários, tabela, accordion, paginação) vestida com a identidade preto e amarelo. |
+| **Arquitetura de informação** | Navegação agrupada (Você, Comunidade, Explorar, Conta) a partir de uma fonte única, página **Mapa do site** com busca, `sitemap.xml` e página 404. |
+| **Validação e UX Writing** | `validation.js` com regras reutilizáveis e erro inline; todo o site em PT-BR, com botões que dizem o resultado. |
+| **Segurança** | CSP e cabeçalhos de segurança no `vercel.json`, sem script inline, `?redirect=` restrito ao próprio site, texto do usuário sempre escapado. |
+
+---
+
+## Comunidade simulada
+
+A RIVALY **não tem servidor nem outros usuários reais**. Os outros jogadores são 33 perfis semeados (`js/data.js`) e 7 clãs formados por eles. A interface diz isso em toda tela da comunidade (selo "Comunidade simulada", com explicação no tooltip).
+
+Tudo o que esses jogadores "fazem" (aceitar ou recusar uma candidatura, convidar você para um clã, desafiar você na Arena, postar no Feed, ganhar uma partida) sai de um **motor determinístico e explicável** (`js/community.js`):
+
+- **Sem `Math.random()` no domínio.** Os sorteios vêm de `js/rng.js` (mulberry32), semeados com o id do usuário, o id da entidade e a **semana ISO**. O mesmo cenário sempre dá o mesmo resultado, e a comunidade muda de uma semana para a outra.
+- **Toda decisão devolve `{ decision, reasons[], score, threshold }`.** A tela mostra os motivos, inclusive o número sorteado, em "Por quê?" e "Ver a conta".
+- **Respostas não são instantâneas.** Candidaturas e convites enviados ganham um intervalo simulado (12 s), persistido; a resposta chega no centro de convites na próxima visita ou quando o temporizador passa por ela.
+
+Exemplo de decisão (candidatura a um clã):
+
+```text
++ Seu rank (Diamante) cumpre o mínimo (Diamante).
++ Sua reputação (88) cumpre o mínimo de 85.
++ Há 5 vagas no clã.
++ Compatibilidade média com o elenco: 92%.        +92
++ Você joga Valorant, um dos jogos foco do clã.   +10
++ Estilo de jogo próximo do clã (Hardcore).        +5
+- Avaliação do líder nesta semana: −3.             −3
++ Nota final 104; o clã aceita a partir de 65.
+```
+
+---
+
+## Fórmulas
+
+### Compatibilidade (7 fatores)
+
+Cada fator vale de 0 a 100 e é multiplicado pelo peso. A soma é a nota.
+
+| Fator | Peso | Como pontua |
+|---|---|---|
+| Jogo | 20% | joga o jogo = 100; gêneros parecidos = 62 ou 48; nada em comum = 15 |
+| Rank | 15% | pela distância na escada (mesmo degrau = 100, um degrau = 85...) |
+| Horário | 15% | pela distância entre faixas de horário |
+| Estilo de jogo | 15% | pela distância entre Casual, Equilibrado, Competitivo e Hardcore |
+| Função | 15% | função complementar = 100; mesma função = 52 |
+| Comunicação | 10% | preferência de voz, multiplicada por 0,6 sem idioma em comum |
+| Reputação | 10% | a reputação do jogador, direto |
+
+A compatibilidade de um **clã** é a média dessa nota entre o usuário e cada membro.
+
+### Arena (estilo Elo)
+
+```text
+expectativa   E  = 1 / (1 + 10^((Rb − Ra) / 400))
+novo rating   R' = R + K × (S − E)        S = 1 vitória, 0 derrota
+K = 40 nas 10 primeiras partidas, 32 depois. Rating inicial: 1000.
+```
+
+O resultado sai de um sorteio determinístico comparado com E (sorteio < E = vitória). Squad usa a média dos ratings do time; Clã vs Clã usa a média dos 3 melhores de cada lado. Tiers: Bronze, Prata (900), Ouro (1100), Platina (1300), Diamante (1500) e Lenda (1700). Temporada = semana ISO; pontos da temporada: vitória 3, derrota 1.
+
+Rating dos jogadores semeados (sempre o mesmo): `700 + 95 × degrau do rank + 5 × (reputação − 60) + 40 × log10(partidas + 1)`.
+
+### Sessão de squad
+
+```text
+poder do jogador = degrau do rank × 10 + reputação × 0,5
+força do squad   = média dos poderes + (compatibilidade média − 60) × 0,3
+adversário       = força do squad + desvio sorteado entre −12 e +12
+chance           = 1 / (1 + e^(−(nós − eles) / 6))
+```
+
+### XP
+
+| Ação | XP |
+|---|---|
+| Passaporte criado / DNA concluído / Passaporte 100% | 100 / 200 / 200 |
+| Jogo adicionado / zerado / avaliado | 50 / 75 / 15 |
+| Busca de squad / parceiro salvo / match acima de 90% | 150 / 60 / 120 |
+| **Sessão de squad** | 120 |
+| **Aliado ou Rival declarado** (uma vez por jogador) | 30 |
+| **Entrar em um clã** (uma vez por clã) / **criar clã** (uma vez) | 150 / 200 |
+| **Vitória na Arena** / **derrota na Arena** | 90 / 35 |
+| **Post** / **reação** no Feed (até 6 por dia, somados) | 20 / 5 |
+| Conquista desbloqueada | 40 |
+
+Nível: avançar do nível L para L+1 custa `1000 + (L − 1) × 500` XP. Clã: chegar ao nível N exige `120 × (N − 1)²` XP; a meta semanal é 60 pontos por integrante.
+
+**Reputação** e **Pontuação Gamer** não mudaram na V2 (ver `js/gamification.js`). O rating de Arena é uma métrica separada.
+
+### Conquistas
+
+28 conquistas em cinco raridades (Comum, Incomum, Rara, Épica, Lendária). As 8 novas: Primeira Sessão, Aliado Declarado, Rival Digno, Recruta, Bandeira Erguida, Primeira Vitória na Arena, Lenda da Arena e Voz da Comunidade.
+
+---
+
+## Stack
+
+```text
+HTML5 · CSS3 · JavaScript (ES Modules) · Bootstrap 5.3.8
+```
+
+- **Bootstrap 5.3.8**, baixado e servido localmente em `vendor/bootstrap/` (`bootstrap.min.css` e `bootstrap.bundle.min.js`), sem CDN. `css/bootstrap-theme.css` liga as variáveis `--bs-*` aos tokens da marca.
+- **Sem React, Tailwind, jQuery ou backend.** Persistência só no navegador, via `js/storage.js` (namespace `rivaly:`, schema 2).
+- **Fontes locais**: Chakra Petch e Jersey 10 (`css/fonts.css`).
+- **Imagens externas** permitidas na CSP: capas da Steam CDN e do IGDB (via GameDB), avatares do DiceBear. Emblemas de clã, avatares dos jogadores semeados e fallbacks de capa são gerados no navegador.
+- **Vite** é só ferramenta de desenvolvimento e build (`devDependency`).
+
+---
+
+## Como rodar localmente
+
+Os ES Modules não carregam por `file://`, então é preciso um servidor.
 
 ```bash
-# Windows: just double-click
-start.bat
-
-# macOS / Linux
-./start.sh
-
-# or by hand
-python -m http.server 5500     # Python, zero setup
-npx serve .                    # Node
-
-# VS Code
-Right-click index.html → "Open with Live Server"
+npm install
+npm run dev        # http://localhost:5173 (ou: start.bat / ./start.sh)
+npm run build      # gera dist/ com as 15 páginas
+npm run preview    # serve dist/ com os mesmos cabeçalhos de segurança do vercel.json
 ```
 
-Then open <http://localhost:5500>.
+Sem Node, `python -m http.server 5500` na raiz também abre o site, mas as imagens de `public/` (marca e capas locais) só aparecem pelo Vite ou pela Vercel.
 
-### Vite (optional, for LAN access)
+Scripts de manutenção:
 
 ```bash
-npm install     # once
-npm run host    # serves on 0.0.0.0:5173
+npm run sync:chrome    # regrava navbar, offcanvas, barra inferior e rodapé de cada página a partir do SITE_MAP
+npm run docs:sitemap   # regera docs/mapa-do-site.md a partir do SITE_MAP
 ```
-
-Vite prints a `Network:` URL you can open from a phone or another machine on the
-same Wi-Fi.
-
-**Vite is a dev tool only.** It is a `devDependency`; the application imports nothing
-from it, needs no build step, and `python -m http.server` serves the identical files.
-The zero-runtime-dependency guarantee is unaffected.
-
-On Windows the firewall blocks inbound 5173 by default. To allow it (once, from an
-**elevated** PowerShell):
-
-```powershell
-New-NetFirewallRule -DisplayName "Vite dev 5173" -Direction Inbound `
-  -Protocol TCP -LocalPort 5173 -Action Allow -Profile Any
-```
-
-`-Profile Any` matters: on a corporate/domain Wi-Fi the active profile is `Domain`,
-not `Private`, so a Private-only rule silently does nothing. Check yours with
-`Get-NetConnectionProfile`.
-
-On a managed corporate network the access point may also enforce client isolation,
-which blocks device-to-device traffic regardless of the firewall. If the phone still
-cannot reach the URL after opening the port, that is the cause — a phone hotspot
-shared with the laptop is the quickest way around it.
-
-### Signing in
-
-There is no server, so any account you create is stored locally and works immediately.
-
-**Fastest path — the demo account.** On the login screen, click
-**"Enter with a demo account"**. It builds a finished Passport (DNA resolved, 14 games,
-a saved squad, the badges those actions unlock) and drops you on the dashboard. Use it
-to evaluate the product without walking the onboarding each time.
-
-**Your own account.** Click *Create passport*, fill in any nickname, any email and a
-password of 6+ characters, then answer the ten DNA questions. Nothing is validated
-against a server, and nothing leaves the browser.
-
-```text
-Demo credentials, if you prefer the normal form:
-  email     demo@happygame.local
-  password  demo1234
-```
-
-Signed-in state lives in `localStorage`. To start over, use
-**Settings → Reset demo data**, or the demo button again.
-
-Opening `index.html` directly still works in the sense that it will not fail
-silently — a banner explains the problem and shows the command above.
 
 ---
 
-## Features
+## Conta demo
 
-| Area | What it does |
-| --- | --- |
-| **Landing page** | Animated Gamer Passport that assembles itself, feature tour, the real engine weights, honest roadmap |
-| **Auth (simulated)** | Local sign-up / sign-in, live validation, password visibility toggle, one-click demo account, explicit academic-demo disclaimer |
-| **Onboarding** | Six-stage guided journey: welcome → profile (3 steps) → Gamer DNA → analysis → archetype reveal → Passport created |
-| **Gamer DNA** | 10 questions → 6 weighted attributes → 1 of 11 archetypes, fully deterministic |
-| **Gamer Passport** | Shareable card with pointer lighting, identity block, completion meter, full DNA analysis, preferences, library signature, badge case |
-| **Game Library** | Full CRUD, 5 statuses, real cover artwork, native drag & drop between statuses, search, sort, ratings, hours, per-platform tracking |
-| **Squad Finder** | Six-filter search, staged scanning sequence, ranked results, transparent per-factor breakdown, saved squad |
-| **Compatibility Engine** | 7 weighted factors, 0–100 score, explains both earned and lost points |
-| **Gamification** | XP for real actions, scaling level curve, level-up celebration, 20 achievements across 5 rarities, Gamer Score, reputation |
-| **Notifications** | Custom toast system (5 types) plus achievement and level-up overlays. `alert()` is never used |
-| **Settings** | Reduced motion, toast toggle, compact density, storage transparency table, JSON export, demo reset |
+Na tela de login, **"Explorar com a conta demo"** monta em um clique um Passaporte completo: DNA, 14 jogos, squad salvo, o clã [RVLY] liderado pelo usuário, sessões avaliadas (aliados e rivais), histórico de Arena, posts no Feed e uma resposta esperando no centro de convites. Tudo passa pelas funções reais do domínio.
+
+```text
+e-mail  demo@happygame.local
+senha   demo1234
+```
+
+A conta é local: não há servidor, recuperação de senha nem sincronização entre dispositivos. A senha fica guardada só como hash (SHA-256 com sal fixo), e o aviso aparece na tela de login.
 
 ---
 
-## Folder structure
+## Mapa do site
+
+Fonte única: `js/site-map.js`. A mesma árvore alimenta a navegação, a página `sitemap.html` e o `docs/mapa-do-site.md`.
 
 ```text
-rivaly/
-│
-├── index.html              Landing page
-├── login.html              Sign in / create account
-├── onboarding.html         Welcome → profile → DNA → reveal → passport
-├── dashboard.html          Post-login home
-├── passport.html           The Gamer Passport
-├── library.html            Game Library
-├── squads.html             Squad Finder + Compatibility Engine
-├── achievements.html       Badge collection
-├── settings.html           Preferences and local data
-│
-├── start.bat / start.sh    One-click local server
-│
-├── tools/
-│   └── fetch-assets.mjs    DEV ONLY — downloads + optimises the game artwork
-│
-├── public/assets/
-│   ├── covers/             32 game covers, WebP 360x540 (~700 KB)
-│   └── banners/            25 wide key-art banners, WebP 480x224 (~550 KB)
-│
-├── assets/
-│   ├── fonts/              Anton + Chakra Petch (latin subset, 45 KB)
-│   └── ATTRIBUTION.md      Where every asset came from, and its licence
-│
+RIVALY
+├── Você ........... Início · Passaporte · Biblioteca · Conquistas
+├── Comunidade ..... Squads · Arena · Clãs · Feed
+├── Explorar ....... Descobrir
+├── Conta .......... Configurações · Mapa do site
+└── Públicas ....... Início público · Entrar ou criar conta · Onboarding
+```
+
+No celular, a barra inferior tem Início, Passaporte, Squads, Arena e **Mais** (abre o menu completo em offcanvas). A página `404.html` explica o erro e oferece o Início e o Mapa do site.
+
+---
+
+## Estrutura de pastas
+
+```text
+├── *.html                    15 páginas (inclui arena, clans, feed, sitemap e 404)
+├── vendor/bootstrap/         Bootstrap 5.3.8 local
 ├── css/
-│   ├── fonts.css           @font-face declarations
-│   ├── loading.css         Intro loader (layered over the landing)
-│   ├── reset.css           Minimal reset + reduced-motion handling
-│   ├── variables.css       ALL design tokens (the only file with raw colours)
-│   ├── global.css          Base typography, ambient field, focus, scrollbar
-│   ├── layout.css          App shell, sidebar, topbar, bottom nav, grids, breakpoints
-│   ├── components.css      Every reusable component
-│   ├── animations.css      Keyframes, stagger, reveal, skeletons
-│   │
-│   └── pages/
-│       ├── landing.css
-│       ├── login.css
-│       ├── onboarding.css
-│       ├── dashboard.css
-│       ├── passport.css
-│       ├── library.css
-│       ├── squads.css
-│       ├── achievements.css
-│       └── settings.css
-│
-└── js/
-    ├── app.js              Shared bootstrap (bootPublic / bootApp / afterRender)
-    ├── storage.js          The ONLY module that touches localStorage
-    ├── auth.js             Simulated authentication + route guards
-    ├── data.js             Entire dataset: games, players, questions, archetypes, badges, XP rules
-    ├── profile.js          Passport shape, Gamer ID, completion
-    ├── gamer-dna.js        DNA scoring + archetype resolution
-    ├── gamification.js     XP, levels, achievements, reputation, Gamer Score
-    ├── compatibility.js    The Compatibility Engine
-    ├── library-store.js    Library CRUD (pure data layer)
-    ├── activity.js         Local activity ledger
-    ├── navigation.js       Sidebar / topbar / bottom nav + mobile drawer
-    ├── notifications.js    Toasts + celebration overlays
-    ├── modal.js            One accessible dialog implementation
-    ├── animations.js       countUp, sequences, IntersectionObserver, pointer light
-    ├── ui.js               DOM helpers, formatters, icons, procedural avatars & covers
-    ├── cards.js            Shared markup blocks (future React components)
-    ├── demo.js             One-click demo profile (uses the real CRUD + achievement engine)
-    ├── loading.js          Intro sequence: the wordmark fills, then V+Y become ><
-    │
-    └── landing.js · login.js · onboarding.js · dashboard.js · library.js
-        squads.js · passport.js · achievements.js · settings.js      ← page controllers
-```
-
-Two modules go beyond the original brief, for good reason:
-
-- **`library-store.js`** separates library *data operations* from the library *page*,
-  so onboarding can seed the library without importing DOM code.
-- **`cards.js`** holds the markup blocks shared by four pages, which is exactly the
-  set that becomes React components in V2.
-
----
-
-## Game assets
-
-Artwork is never stored in the catalogue. A game carries at most a Steam app id:
-
-```javascript
-{
-  id: "cyberpunk",
-  title: "Cyberpunk 2077",
-  steamId: 1091500
-}
-```
-
-`js/game-assets.js` derives all four formats from that single number:
-
-| Asset | Steam file | Used by |
-| --- | --- | --- |
-| `cover` | `library_600x900.jpg` | library cards, dashboard rows, passport tiles |
-| `hero` | `library_hero.jpg` | passport card banner, large features |
-| `header` | `header.jpg` | horizontal cards |
-| `capsule` | `capsule_616x353.jpg` | intermediate cards, horizontal fallback |
-
-Images are requested straight from the CDN by `<img src>`. There is no
-`fetch()`, no Blob conversion, no proxy, no backend and no download step.
-
-### Resolution order
-
-Per asset type, not per game — a title can take its cover from Steam and its
-hero from a local override:
-
-```text
-1. game.customAssets[type]    explicit override always wins
-2. Steam CDN                  derived from steamId
-3. Rivaly fallback            rendered in CSS, never a broken image
-```
-
-### Nothing breaks
-
-Steam does not ship every file for every app — `library_hero.jpg` in particular
-is often missing. Each image carries its remaining attempts in
-`data-fallbacks`, and one capture-phase listener in `js/app.js` walks them:
-
-```text
-library_hero.jpg -> header.jpg -> capsule_616x353.jpg -> custom -> CSS fallback
-```
-
-When the chain runs out the `<img>` is removed and the gradient + monogram
-underneath becomes the artwork. Blocking `*steamstatic.com*` entirely leaves the
-app fully usable with zero broken images — there is a test for exactly that.
-
-Images fade in on load (`.game-image.is-loaded`) over a skeleton, so a slow CDN
-never shows an empty box.
-
-### Adding a game
-
-```javascript
-{ id: "hades2", title: "Hades II", steamId: 1145350 }
-```
-
-No image URL required. For a title that is not on Steam:
-
-```javascript
-{
-  id: "valorant",
-  title: "Valorant",
-  steamId: null,
-  customAssets: { cover: "/assets/covers/valorant.webp" }
-}
-```
-
-**Migration status:** 25 of 32 games use the Steam CDN; the remaining 7 keep
-local art. Provenance: [`assets/ATTRIBUTION.md`](assets/ATTRIBUTION.md).
-
----
-
-## Avatars
-
-Avatars come from the [DiceBear](https://dicebear.com) HTTP API — no package, no
-SDK, called by `<img src>`.
-
-```javascript
-getDiceBearAvatar("pixel-art", "rival-007")
-// https://api.dicebear.com/10.x/pixel-art/svg?seed=rival-007
-```
-
-That function in `js/avatar-service.js` is the only place a DiceBear URL is
-built. `js/avatar-data.js` holds 120 seeds across four styles, interleaved so
-the ALL tab shows every family on the first page.
-
-| Category | Style |
-| --- | --- |
-| Pixel | `pixel-art` |
-| Characters | `adventurer` |
-| Bots | `bottts` |
-| Minimal | `lorelei` |
-
-### One model for the whole app
-
-`resolveAvatar(user)` returns the same shape whatever the source, so the
-sidebar, passport, squads and settings share one code path:
-
-```javascript
-{ type: "dicebear", style, seed, src }   // src is rebuilt, never stored
-{ type: "upload",   src }                // a downscaled data URL
-```
-
-### Storage stays small
-
-Only `{ type, style, seed }` is persisted — never the SVG. A full passport with
-a DiceBear avatar is about **1 KB**. Uploads are centre-cropped and re-encoded to
-a 256×256 WebP in the browser before storage, because dropping a 4 MB phone photo
-into `localStorage` verbatim would take the whole passport down with a
-`QuotaExceededError`.
-
-### Defaults and fallbacks
-
-A new passport gets a stable avatar seeded from the nickname, so `gui-dev7`
-always produces the same face without the user choosing anything. If the API is
-unreachable the initials plate underneath becomes the avatar — never a broken
-image icon.
-
----
-
-## Design system
-
-### Identity: black + yellow
-
-One accent colour on true black. The palette is deliberately narrow because a dark
-interface with three or four decorative hues is exactly what reads as a stock template.
-
-```css
---rgb-primary: 255, 212, 0;   /* #FFD400 — rivaly yellow */
---rgb-ink:       5,   5, 5;   /* #050505 — the black everything sits on */
---rgb-bone:    245, 245, 242; /* #F5F5F2 — the light neutral */
-```
-
-Every brand colour in the project resolves from those three lines. Transparency is
-written as `rgba(var(--rgb-primary), 0.14)` rather than a literal, so rebranding the
-entire product means editing three declarations in `variables.css` and nothing else.
-
-Colour is rationed by rule:
-
-| Colour | Reserved for |
-| --- | --- |
-| Yellow | Brand, primary actions, XP, level, ratings, archetype, legendary rarity |
-| Bone / white | Text and high-emphasis neutrals |
-| Green | Affirmative only — a passed check, "Playing", an excellent match |
-| Orange / red | Warning and danger only |
-| Six DNA hues | Categorical data encoding, so six bars stay tellable apart without a legend |
-
-Contrast against the background: body text 19.4:1, secondary 11.8:1, muted 6.1:1,
-yellow on black 13.3:1. All comfortably past WCAG AA.
-
-### Typography
-
-**Anton** for display (h1, h2, stat values, level numbers, match percentages) and
-**Chakra Petch** 400–700 for everything readable. The pairing is the display face of the RIVALY brand — chosen because a system-font stack is one of the
-strongest tells of a generic build, and this pair reads esports rather than SaaS.
-
-### Form language
-
-- Radius tightened from 14–20px to **2–8px**. Soft corners were the single biggest
-  reason the first pass looked like a template.
-- Gradients removed from buttons, cards, tiles and bars. Flat blocks, hard edges,
-  and a border doing the separating.
-- Drop-glows removed. On black, an edge reads; a glow smudges.
-- Motion shortened (260ms → 200ms normal) so the interface reads as a tool.
-- The ambient background is one restrained yellow wash plus a technical grid, not the
-  three-colour radial haze that ships with every dark theme.
-
----
-
-## Game artwork
-
-The 32 catalogue titles ship with real cover art, plus wide key-art banners for
-the 25 available on Steam. `tools/fetch-assets.mjs` collects them once:
-
-```bash
-node tools/fetch-assets.mjs           # skips what already exists
-node tools/fetch-assets.mjs --force   # re-fetch everything
-```
-
-| Source | Titles | What it gives |
-| --- | --- | --- |
-| Steam CDN | 25 | `library_600x900.jpg` covers + `header.jpg` banners |
-| Wikipedia | 3 | Box art for the console/PC exclusives (Zelda TOTK, GT7, WoW) |
-| Composited | 4 | Valorant, LoL, Fortnite, Minecraft have no box art anywhere, so their official wordmark is composited onto the game's own generated gradient |
-
-Everything is resized and re-encoded to WebP with Pillow — 360×540 covers,
-480×224 banners, ~1.2 MB in total. The script is a **dev tool**: the application
-imports nothing from it and never fetches at runtime.
-
-### The fallback still works
-
-The procedural gradient was not thrown away — it moved underneath. Each cover
-renders as an `<img>` layered over the gradient and monogram, and every generated
-image carries `data-fallback`. A capture-phase `error` listener in `js/app.js`
-removes any image that fails, revealing the gradient.
-
-Delete `public/assets/covers/` entirely and the product still renders correctly: no
-broken-image icons, no layout shift, no console errors. This is covered by a
-test that hides a file and asserts the gradient takes over.
-
-Provenance and licensing for every file: [`assets/ATTRIBUTION.md`](assets/ATTRIBUTION.md).
-
----
-
-### Intro sequence
-
-The landing opens with the wordmark acting as its own progress indicator.
-Three SVG layers: a yellow outline, the same geometry filled and clipped, and
-the pieces that morph. The level is **one `<rect>` translated vertically**
-inside a `clipPath`, so the top edge is always a straight horizontal line and
-the yellow stays exactly inside the letters.
-
-At 100% the letters transform rather than swap:
-
-- the `V` rotates −90°, so its two limbs meet pointing right — a `>`
-- the `Y` rotates +90°, its arms become a `<` and its stem retracts
-- `R I A L` fade and drift out
-- the two chevrons converge into the `><` brand mark
-
-The letters are hand-drawn paths, not font glyphs — a glyph cannot be split
-into limbs. `CHEVRON` in `js/loading.js` documents the per-axis scale that
-makes two differently proportioned letters land on the same chevron.
-
-Plays once per session (`sessionStorage`); repeat navigations get a short
-version. The loader ships with `hidden` in the markup and only JavaScript
-turns it on, so a script failure leaves the landing perfectly usable.
-
----
-
-## Gamer DNA
-
-### How it works
-
-The questionnaire asks **10 questions**, each with 4 options. Every option carries a
-weight vector across the six attributes:
-
-```javascript
-{ id: 'a', label: 'Winning', weights: { competitive: 5, achiever: 2 } }
-```
-
-Scoring is a three-step pure function (`js/gamer-dna.js`):
-
-1. **Sum** — add the weight vectors of every chosen option.
-2. **Normalise** — divide each attribute by the maximum it could possibly have
-   reached given the questionnaire. That ceiling is computed *from the data itself*,
-   so adding a question never requires touching the algorithm.
-3. **Map** — project the 0–1 ratio onto a **18–98** display range.
-
-```text
-score = round(18 + 80 × (raw / maxPossible))
-```
-
-The floor exists because a profile is never "0% social" — it is simply lower than the
-others. The result is six values:
-
-```text
-COMPETITIVE   59
-SOCIAL        31
-EXPLORER      22
-STRATEGIST    90
-ACHIEVER      55
-COLLECTOR     29
-```
-
-### Archetypes
-
-Eleven archetypes, resolved **deterministically** — never randomly.
-
-The attributes are ranked strongest → weakest, with a fixed tie-break order
-(`strategist → competitive → social → explorer → achiever → collector`) so equal
-scores can never produce a different answer on a different run.
-
-Combination archetypes (primary **and** secondary) are tested first, because
-"a strategist who also competes" describes someone better than "a strategist":
-
-| Archetype | Rule |
-| --- | --- |
-| The Tactician | strategist + competitive |
-| The Captain | social + strategist |
-| The Gladiator | competitive + social |
-| The Archivist | collector + explorer |
-| The Pioneer | explorer + achiever |
-| The Strategist | strategist |
-| The Champion | competitive |
-| The Explorer | explorer |
-| The Collector | collector |
-| The Socializer | social |
-| The Completionist | achiever |
-
-**Verified:** all 11 archetypes are reachable, and 4,000 sampled answer combinations
-all resolve without a single failure. Identical answers always produce identical
-scores and an identical archetype.
-
----
-
-## Compatibility Engine
-
-A real algorithm in `js/compatibility.js`. Seven independent scoring functions, each
-returning `0–100` plus a human-readable reason, combined by weight:
-
-```text
-calculateGameCompatibility()            20%
-calculateRankCompatibility()            15%
-calculateScheduleCompatibility()        15%
-calculatePlaystyleCompatibility()       15%
-calculateRoleCompatibility()            15%
-calculateCommunicationCompatibility()   10%
-calculateReputationScore()              10%
-────────────────────────────────────────────
-calculateTotalCompatibility()          100%
-```
-
-### The formula
-
-```text
-total = Σ ( factorScore / 100 × factorWeight )
-```
-
-### How each factor scores
-
-**Game (20%)** — plays the same title `100`; two shared genres `62`;
-one shared genre `48`; nothing in common `15`.
-
-**Rank (15%)** — distance on a universal 8-tier ladder
-(Unranked → Bronze → Silver → Gold → Platinum → Diamond → Master → Elite):
-
-```text
-distance   0    1    2    3    4    5+
-score    100   85   62   38   20     8
-```
-
-**Schedule (15%)** — `SCHEDULES` is ordered (morning → late night), so index distance
-is a genuine measure of overlap. A player with several slots is scored on their best:
-
-```text
-distance   0    1    2    3    4+
-score    100   72   42   20    10
-```
-
-**Playstyle (15%)** — `PLAYSTYLES` runs casual → balanced → competitive → hardcore:
-
-```text
-distance   0    1    2    3
-score    100   74   44   18
-```
-
-**Role (15%)** — squads want *gaps filled*, not roles duplicated:
-
-```text
-complementary role   100   (e.g. a Leader for your Support)
-different role        74
-same role as you      52
-```
-
-**Communication (10%)** — voice preference is the base, language overlap multiplies it:
-
-```text
-both want voice          100
-both prefer text          88
-you want voice, they don't 25
-no shared language        × 0.6
-```
-
-**Reputation (10%)** — the player's authored reputation, used directly.
-
-### Tiers
-
-```text
-90–100   EXCELLENT MATCH
-75–89    GREAT MATCH
-60–74    GOOD MATCH
-<60      LOW COMPATIBILITY
-```
-
-### Transparency
-
-Every result shows what it earned **and what it lost**. The breakdown dialog prints
-the arithmetic for each factor:
-
-```text
-Rank      15%
-Same rank (Diamond)
-100 / 100 × 15 = 15 pts
-```
-
-### Validation
-
-Manually verified against the simulated pool. For the search
-*Rocket League · Diamond · Night · Competitive · Voice required*, with a Support-role
-Passport:
-
-| Player | Score | Why |
-| --- | --- | --- |
-| **Matheus** | **99%** | Same game, same rank, same schedule, same playstyle, complementary role, voice, reputation 94 |
-| **Hugo** | **50%** | Genre overlap only, 4 tiers below, morning player, no voice |
-| **Lulu** | **38%** | Different games, unranked, morning, casual, no voice, no shared language |
-
-Across all 832 player × game combinations the engine produces finite, in-range scores
-spanning **38%–99%**, and repeating any search returns a byte-identical ranking.
-
----
-
-## XP and Levels
-
-### XP rules
-
-| Action | XP |
-| --- | --- |
-| Create Passport | +100 |
-| Complete Gamer DNA | +200 |
-| Complete profile (once) | +200 |
-| Squad search | +150 |
-| High compatibility match (90%+) | +120 |
-| Complete a game | +75 |
-| Save a teammate | +60 |
-| Add a game | +50 |
-| Unlock an achievement | +40 |
-| Update Passport | +25 |
-| Rate a game | +15 |
-| Update a library entry | +10 |
-| Log playtime (per 10h) | +5 |
-
-Milestone rewards use `awardOnce()`, which stamps a flag on the Passport so a
-re-reached milestone can never pay out twice.
-
-### Level curve
-
-XP required to advance **from** level *L* **to** *L+1*:
-
-```text
-step(L) = 1000 + (L − 1) × 500
-
-L1 → L2 = 1,000 XP
-L2 → L3 = 1,500 XP
-L3 → L4 = 2,000 XP
-```
-
-Cumulative XP required to **reach** level *L*:
-
-```text
-total(L) = (L − 1) × (250L + 500)
-```
-
-The inverse is solved **analytically** rather than by looping, so any XP value
-resolves in constant time:
-
-```text
-L = floor( ( −250 + √(62500 + 1000 × (500 + xp)) ) / 500 )
-```
-
-Verified exact for levels 1–60, including the boundary XP value of every level.
-
-### Reputation
-
-Earned through activity — never assigned randomly:
-
-```text
-reputation = clamp(
-    50
-  + level              × 2
-  + achievements       × 1.5
-  + completedGames     × 0.8
-  + savedTeammates     × 1
-  + profileCompletion  × 0.12
-, 0, 100)
-```
-
-### Gamer Score
-
-One headline number summarising the whole Passport:
-
-```text
-gamerScore = level            × 500
-           + xp               × 0.25
-           + rarityPoints     × 250
-           + libraryCount     × 80
-           + completedGames   × 120
-           + hoursPlayed      × 2
-           + reputation       × 10
-           + savedTeammates   × 100
-```
-
-`rarityPoints` weights each unlocked badge by tier
-(common 1 · uncommon 2 · rare 4 · epic 7 · legendary 12), so a rare badge is worth
-more than four common ones.
-
-### Achievements
-
-20 badges across 5 rarities. Each rule lives in `data.js` **next to its copy**, so a
-badge can never drift out of sync with what unlocks it:
-
-```javascript
-{
-    id: 'perfect-match', name: 'Perfect Match', rarity: 'epic',
-    description: 'Found a teammate above 90% compatibility.',
-    hint: 'Reach a 90%+ compatibility result.',
-    check: (ctx) => ctx.bestMatch >= 90,
-}
-```
-
-Unlocking a badge grants XP, which can trigger a level-up, which can satisfy a
-*different* badge. A bounded 4-pass loop with a re-entrancy guard resolves that
-cascade without infinite recursion.
-
----
-
-## LocalStorage structure
-
-All persistence goes through `js/storage.js`. **No other module touches
-`localStorage` directly.** Every key is namespaced:
-
-```text
-rivaly:version         schema version (for future migrations)
-rivaly:accounts        simulated accounts  [{ id, nickname, email, passwordHash, createdAt }]
-rivaly:session         { accountId, startedAt }
-rivaly:user            the Gamer Passport
-rivaly:library         [{ id, gameId, status, platform, hours, rating, note, addedAt, updatedAt }]
-rivaly:achievements    [{ id, unlockedAt, context }]
-rivaly:activity        [{ id, type, message, meta, at }]  (capped at 60 entries)
-rivaly:squads          [{ playerId, compatibility, tier, gameId, savedAt }]
-rivaly:settings        { reducedMotion, toastsEnabled, compactDensity }
-```
-
-The layer is defensive by design:
-
-- Corrupted or unparseable values are dropped instead of throwing.
-- Private Mode (where `setItem` throws) degrades to an in-memory store — the app keeps
-  working, and Settings tells the user persistence is unavailable.
-- Existing data is never overwritten on refresh; demo content is only seeded when the
-  user explicitly asks for it.
-- **Reset Demo Data** requires confirmation and preserves the sign-in account.
-
-Settings includes a **storage transparency table** showing every key, its contents and
-its byte size — useful for defending the architecture in a review.
-
----
-
-## Architecture
-
-### Principles
-
-- **One responsibility per module.** `storage.js` owns persistence; `gamification.js`
-  owns progression; pages own only their own DOM.
-- **Data operations are DOM-free.** `library-store.js`, `compatibility.js` and
-  `gamer-dna.js` are pure and were unit-tested outside the browser.
-- **No mini-React.** Rendering is template literals + `innerHTML` with escaped user
-  input, plus event delegation. No virtual DOM, no reactive state, no component class.
-- **Event delegation everywhere.** Grids re-render freely without leaking listeners.
-- **Tokens, not values.** `variables.css` is the only file containing raw colours.
-
-### Component mapping for V2
-
-Each block below is already isolated and becomes a React component almost verbatim:
-
-| V1 (`js/cards.js`, `components.css`) | V2 |
-| --- | --- |
-| `gameCardMarkup()` / `.game-card` | `<GameCard />` |
-| `squadCardMarkup()` / `.squad-card` | `<SquadCard />` |
-| `badgeMarkup()` / `.badge` | `<AchievementCard />` |
-| `statMarkup()` / `.stat` | `<StatTile />` |
-| `dnaListMarkup()` / `.dna-bar` | `<DnaBar />` |
-| `activityItemMarkup()` / `.activity-item` | `<ActivityItem />` |
-| `progressMarkup()` / `.progress` | `<XPBar />` |
-| `notifications.js` / `.toast` | `<Toast />` + provider |
-| `modal.js` / `.modal` | `<Modal />` |
-| `navigation.js` / `.sidebar` | `<Sidebar />` / `<Navbar />` |
-| `.passport-card` | `<PassportCard />` |
-
----
-
-## Animations
-
-Only `transform`, `opacity`, `filter` and `clip-path` are animated. Progress bars use
-`transform: scaleX()` rather than `width`, so nothing triggers layout.
-
-Implemented, in rough order of importance:
-
-1. **Gamer DNA reveal** — attributes grow weakest-first, numbers count up with
-   `requestAnimationFrame`, then the archetype bursts in
-2. **XP progression** — bars grow, counters tick
-3. **Level up** — full-screen overlay, `27 → 28`, glow and scale
-4. **Achievement unlock** — rarity-tinted overlay with a pulsing ring
-5. **Squad scanning** — staged log where each line names a factor the engine
-   actually evaluates, in evaluation order
-6. **Compatibility reveal** — cards enter in sequence, percentages count up
-7. **Page transitions** — a discreet fade-up on every main region
-8. **Dashboard stagger** — grid children enter in sequence via CSS delays
-9. **Card interactions** — `translateY(-4px)`, border highlight, cover zoom,
-   pointer-tracked lighting on the Passport card (max 3.5° tilt — deliberately subtle)
-10. **Skeletons and contextual loaders** — never a bare "Loading…"
-
-Supporting: hero Passport assembly, scroll reveal via `IntersectionObserver`, shimmer,
-scan sweep, typewriter, shake on invalid input, ambient drift.
-
----
-
-## Accessibility
-
-- **Semantic HTML** — `<main>`, `<aside>`, `<nav>`, `<header>`, `<section>`,
-  `<fieldset>`/`<legend>`, one `<h1>` per page
-- **Skip link** on every page
-- **`:focus-visible`** ring applied globally — keyboard users see it, pointer users don't
-- **Keyboard navigation** — arrow keys on tab lists (WAI-ARIA pattern), number keys
-  1–4 answer DNA questions, `Esc` closes modals and the mobile drawer
-- **Focus management** — modals trap focus, restore it on close, and lock body scroll
-- **ARIA** — `aria-current="page"`, `aria-selected`, `aria-invalid`, `aria-live`
-  regions for toasts and result areas, `aria-label` on every icon-only control
-- **Labels** — every form control is labelled; verified programmatically
-- **Reduced motion** — both `@media (prefers-reduced-motion: reduce)` *and* a manual
-  Settings override. Animation is neutralised, but content is never left hidden
-- **Contrast** — body text and muted text meet WCAG AA on the dark surface
-- **Touch** — nothing important is hover-only; card actions stay visible on touch
-  devices, and drag & drop always has a button-based equivalent
-- **Honest affordances** — unavailable features render as disabled "Soon" items,
-  never as dead buttons
-
----
-
-## Quality verification
-
-The build was verified with three automated suites plus a visual pass.
-
-**1. Engine tests** (`node`, outside the browser) — 30 checks:
-level curve exactness and inverse for levels 1–60, DNA determinism, all 11 archetypes
-reachable across 4,000 sampled answer sets, weights summing to exactly 100,
-compatibility ordering, 832 player × game combinations in range, achievement rules
-firing correctly on empty and maxed profiles, dataset integrity.
-
-**2. Reference audit** — every `href`/`src` resolves, every ES import resolves, every
-named import matches a real export, every element id looked up by a controller exists
-in its page, zero framework usage, zero external network requests, no
-`alert`/`confirm`/`prompt`, no leftover `console` statements.
-
-**3. End-to-end journey** (headless Chrome via DevTools Protocol) — **103 checks**:
-the complete flow from landing → account → onboarding → DNA → reveal → Passport →
-library CRUD → squad search → breakdown → save → achievements → persistence across
-reload → settings → sign-out, plus accessibility spot checks and horizontal-overflow
-checks on 8 pages at 390×844.
-
-```text
-Checks: 103   Passed: 103   Failed: 0
-Console: clean — no errors, no warnings, no failed requests.
+│   ├── bootstrap-theme.css   ponte entre os tokens da RIVALY e o Bootstrap
+│   ├── variables.css         todos os tokens (cores, tipografia, espaços)
+│   ├── reset.css · global.css · animations.css · components.css · layout.css
+│   ├── community.css         componentes da comunidade (selo, emblema, cartão do jogador)
+│   └── pages/                um arquivo por página
+├── js/
+│   ├── storage.js            a única porta para o localStorage (schema 2 + migração)
+│   ├── site-map.js           arquitetura de informação (fonte única)
+│   ├── data.js               jogos, 33 jogadores, 7 clãs, conquistas, regras de XP
+│   ├── rng.js                PRNG determinístico + semana ISO
+│   ├── community.js          motor da comunidade simulada
+│   ├── clans-store.js · arena-store.js · feed-store.js · sessions.js · invites.js · partners.js
+│   ├── validation.js         regras de formulário e feedback inline
+│   ├── compatibility.js · gamification.js · gamer-dna.js · profile.js · auth.js
+│   ├── modal.js              diálogo sobre bootstrap.Modal (mesma API da V1)
+│   ├── navigation.js         estado da navegação, XP e centro de convites
+│   ├── community-ui.js · arena-ui.js · clan-ui.js · player-card.js
+│   └── <página>.js           controllers (DOM e eventos)
+├── public/                   marca, capturas, capas locais, sitemap.xml, robots.txt
+├── tools/                    sync-chrome.mjs, sitemap-doc.mjs, fetch-assets.mjs
+├── docs/                     decisões, mapa do site, evidências de JS, voz e tom, roteiro
+└── vercel.json               cabeçalhos de segurança (CSP)
 ```
 
 ---
 
-## Limitations of this version
+## Documentação
 
-Stated plainly, because a first version that pretends to be finished is worse than one
-that is honest:
-
-1. **Authentication is simulated.** There is no server, no session token, no transport
-   security and no account recovery. Passwords are SHA-256 hashed (via Web Crypto)
-   purely so plaintext isn't sitting in storage — that is hygiene, **not** a security
-   control. A real implementation needs a backend, a proper KDF (bcrypt/argon2), rate
-   limiting and HTTPS.
-2. **One Passport per browser.** Signing in with a different account asks for
-   confirmation and replaces the local Passport. Multi-profile storage is a V2 concern.
-3. **Players are simulated.** The 26-player pool is authored demo content. Matching is
-   real; the people are not.
-4. **Games are a local catalogue.** 32 titles in `data.js`, used as demonstrative
-   content. No external API.
-5. **Data is device-local.** Clearing site data erases everything. Settings offers a
-   JSON export (credentials excluded).
-6. **Drag & drop is pointer-only.** The HTML Drag and Drop API has no keyboard
-   equivalent, so every status change is also available through the edit dialog. On
-   touch devices the hint text changes to point at the button path.
-7. **Light theme is prepared, not exposed.** The token layer is theme-aware and a
-   complete `[data-theme="light"]` block exists, but V1 ships dark-only by product
-   decision — so there is no half-working toggle in the UI.
-8. **Arena, Social Feed, Clans, Contextual AI and platform sync are not implemented.**
-   They appear only in the landing-page roadmap and as disabled "Soon" sidebar items.
-9. **A local server is required** (ES Modules + CORS).
+| Arquivo | Conteúdo |
+|---|---|
+| `docs/decisoes-v2.md` | Design rationale: decisão, problema na V1, justificativa e implementação |
+| `docs/mapa-do-site.md` | A árvore do site em texto |
+| `docs/evidencias-js.md` | Onde estão DOM, eventos, validação, funções, arrays e cada componente do Bootstrap |
+| `docs/voz-e-tom.md` | Quadro de voz e tom |
+| `docs/ux-writing-antes-depois.md` | Textos reais da V1 e da V2, com o motivo de cada mudança |
+| `docs/roadmap.md` | O que a V2 entregou e o que continua no futuro |
+| `CHANGELOG.md` | Mudanças da v1.0 para a v2.0 |
 
 ---
 
-## Future migration — V2 (React + Tailwind CSS)
+## Fora do escopo
 
-The V1 architecture was chosen to make this a translation:
-
-| V1 | V2 |
-| --- | --- |
-| `css/variables.css` tokens | `tailwind.config.js` theme (names already match Tailwind's scale) |
-| `cards.js` markup functions | React components (mapping table above) |
-| `storage.js` | Same module, or a persistence hook / TanStack Query adapter |
-| `compatibility.js`, `gamer-dna.js`, `gamification.js` | **Unchanged.** Pure, DOM-free, already unit-tested |
-| `navigation.js` | React Router + `<Sidebar />` |
-| Page controllers | Route components |
-| `modal.js`, `notifications.js` | Context providers |
-| Template literals + `innerHTML` | JSX |
-| CSS Grid/Flex utilities | Tailwind utilities |
-
-The three modules that carry the actual product logic — the Compatibility Engine, the
-Gamer DNA engine and the gamification system — have **no DOM dependency at all** and
-move to V2 untouched.
+Backend, contas e jogadores reais, chat em tempo real, multiplayer real, sincronização entre dispositivos, notificações push, pagamentos, integrações reais com Steam, PSN ou Xbox e IA de recomendação. O que depende disso está em `docs/roadmap.md` e aparece na landing como roteiro, nunca como botão.
 
 ---
 
-## Credits
+## Créditos
 
-Built as an academic exercise. Game titles and player profiles are demonstrative
-content only.
+RIVALY · Guilherme Oliveira Santos · RM576218 · FIAP 2026.
 
-**V1 — Vanilla.** No React. No Tailwind. No backend.
-Only HTML, CSS and JavaScript.
+Títulos de jogos usados como conteúdo demonstrativo; as artes pertencem aos seus detentores. Avatares por [DiceBear](https://dicebear.com). Base de jogos aberta [LizardByte GameDB](https://github.com/LizardByte/GameDB). Bootstrap sob licença MIT (`vendor/bootstrap/LICENSE`).
