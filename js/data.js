@@ -459,7 +459,8 @@ export const getPlayerById = (id) => PLAYERS.find((player) => player.id === id) 
    Formados só por jogadores de PLAYERS. Cada jogador está em no
    máximo um clã, e onze ficam de fora de propósito: são os que a
    comunidade simulada permite recrutar. O emblema não é imagem:
-   é gerado em SVG a partir da tag (ver clans-store.js).
+   é um SVG montado a partir da tag e da escolha de formato, padrão e
+   cores (ver clans-store.js).
    ============================================================ */
 
 export const CLAN_CAPACITY = 8;
@@ -473,6 +474,7 @@ export const CLAN_POLICIES = {
 export const CLANS = [
     {
         id: 'nox', name: 'Nox Protocol', tag: 'NOX',
+        emblem: { shape: 'heater', pattern: 'diagonal', palette: 'classic' },
         focusGames: ['valorant', 'cs2'], playstyle: 'hardcore', region: 'South America',
         languages: ['pt', 'es'], minRank: 'Diamond', minReputation: 85, policy: 'application',
         leaderId: 'p22', officers: ['p20'], members: ['p03'],
@@ -480,6 +482,7 @@ export const CLANS = [
     },
     {
         id: 'aurora', name: 'Aurora Tática', tag: 'AUR',
+        emblem: { shape: 'octagon', pattern: 'half', palette: 'bone' },
         focusGames: ['lol', 'dota2'], playstyle: 'competitive', region: 'Global',
         languages: ['en', 'fr', 'de'], minRank: 'Platinum', minReputation: 80, policy: 'open',
         leaderId: 'p11', officers: ['p24'], members: ['p15', 'p32'],
@@ -487,6 +490,7 @@ export const CLANS = [
     },
     {
         id: 'gol', name: 'Linha de Gol', tag: 'GOL',
+        emblem: { shape: 'classic', pattern: 'bars', palette: 'classic' },
         focusGames: ['rocket-league', 'fifa'], playstyle: 'competitive', region: 'South America',
         languages: ['pt'], minRank: 'Gold', minReputation: 75, policy: 'open',
         leaderId: 'p01', officers: ['p08'], members: ['p33'],
@@ -494,6 +498,7 @@ export const CLANS = [
     },
     {
         id: 'vertice', name: 'Vértice', tag: 'VTX',
+        emblem: { shape: 'kite', pattern: 'chevron', palette: 'inverse' },
         focusGames: ['apex', 'overwatch2'], playstyle: 'hardcore', region: 'North America',
         languages: ['en'], minRank: 'Diamond', minReputation: 85, policy: 'invite',
         leaderId: 'p18', officers: ['p13'], members: ['p26', 'p02'],
@@ -501,6 +506,7 @@ export const CLANS = [
     },
     {
         id: 'bloco', name: 'Bloco Construtor', tag: 'BLOC',
+        emblem: { shape: 'square', pattern: 'quarters', palette: 'steel' },
         focusGames: ['minecraft', 'terraria'], playstyle: 'casual', region: 'Global',
         languages: ['pt', 'en', 'fr'], minRank: 'Unranked', minReputation: 70, policy: 'open',
         leaderId: 'p05', officers: ['p31'], members: ['p23', 'p12'],
@@ -508,6 +514,7 @@ export const CLANS = [
     },
     {
         id: 'ringue', name: 'Ringue', tag: 'RNG',
+        emblem: { shape: 'crest', pattern: 'cross', palette: 'classic' },
         focusGames: ['street-fighter-6', 'tekken8'], playstyle: 'competitive', region: 'Asia',
         languages: ['ja', 'en'], minRank: 'Platinum', minReputation: 80, policy: 'application',
         leaderId: 'p28', officers: [], members: ['p21'],
@@ -515,6 +522,7 @@ export const CLANS = [
     },
     {
         id: 'estrategos', name: 'Estrategos', tag: 'STRG',
+        emblem: { shape: 'banner', pattern: 'base', palette: 'bone' },
         focusGames: ['age4', 'civ6'], playstyle: 'balanced', region: 'Europe',
         languages: ['en', 'fr', 'de'], minRank: 'Gold', minReputation: 75, policy: 'application',
         leaderId: 'p06', officers: ['p30'], members: [],

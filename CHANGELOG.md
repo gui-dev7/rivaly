@@ -28,6 +28,7 @@ A V2 transforma Arena, Feed e Clãs (antes "em breve") em áreas reais, ligadas 
 - Documentação em `docs/`.
 - Testes de unidade do domínio em `tests/` (`npm test`, com o executor nativo do Node).
 - Navbar simples no login e no onboarding.
+- Emblema de clã personalizável: 10 formatos de escudo, 8 padrões e 4 combinações de cor da marca, com prévia ao vivo ao fundar o clã e edição pelo líder ("Personalizar emblema").
 
 ### Alterado
 

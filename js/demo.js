@@ -75,6 +75,7 @@ const DEMO_CLAN = {
     policy: 'application',
     motto: 'Call curta, troca rápida, respeito sempre.',
     minRank: 'Gold',
+    emblem: { shape: 'crest', pattern: 'diagonal', palette: 'classic' },
 };
 const DEMO_CLAN_OFFICERS = ['p29'];
 const DEMO_CLAN_MEMBERS = ['p27', 'p07'];

@@ -175,6 +175,21 @@ button.player-chip:focus-visible {
     stroke-width: 2.5;
 }
 
+/* Paletas do emblema: só preto, amarelo e neutros da marca. */
+.emblem--inverse .emblem__base { fill: var(--color-primary); }
+.emblem--inverse .emblem__accent { fill: rgb(var(--rgb-ink)); }
+.emblem--inverse .emblem__accent--soft { fill: rgba(var(--rgb-ink), 0.35); }
+.emblem--inverse .emblem__edge { stroke: rgb(var(--rgb-ink)); }
+
+.emblem--bone .emblem__accent { fill: rgb(var(--rgb-bone)); }
+.emblem--bone .emblem__accent--soft { fill: var(--color-surface-tertiary); }
+.emblem--bone .emblem__edge { stroke: rgb(var(--rgb-bone)); }
+
+.emblem--steel .emblem__base { fill: var(--color-surface-tertiary); }
+.emblem--steel .emblem__accent { fill: rgb(var(--rgb-ink)); }
+.emblem--steel .emblem__accent--soft { fill: rgba(var(--rgb-ink), 0.55); }
+.emblem--steel .emblem__edge { stroke: var(--color-primary); }
+
 .emblem__tag {
     font-family: var(--font-display);
     letter-spacing: 0.04em;

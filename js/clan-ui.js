@@ -14,6 +14,7 @@ import { toast } from './notifications.js';
 import { CLAN_POLICIES, CLAN_CAPACITY, PLAYSTYLES, rankLabel, regionLabel } from './data.js';
 import {
     getClan, myClan, clanCompatibility, clanStats, clanRequirements, joinClan, applyToClan, applicationRules,
+    emblemSvg, resolveEmblem, setClanEmblem, EMBLEM_SHAPES, EMBLEM_PATTERNS, EMBLEM_PALETTES,
 } from './clans-store.js';
 import { buildFeed } from './feed-store.js';
 import { getActivity } from './storage.js';
@@ -31,6 +32,93 @@ const changed = () => {
     document.dispatchEvent(new CustomEvent('rivaly:community-changed'));
     document.dispatchEvent(new CustomEvent('rivaly:invites-changed'));
 };
+
+/* ============================================================
+   SELETOR DE EMBLEMA
+   Três grupos de opções (formato, padrão, cores). Cada opção é um
+   rádio de verdade (btn-check) com a miniatura do escudo, então dá
+   para escolher com teclado e leitor de tela.
+   ============================================================ */
+
+function emblemGroupMarkup({ id, name, legend, options, current, preview }) {
+    return `
+        <fieldset class="emblem-picker__group">
+            <legend class="form-label">${escapeHtml(legend)}</legend>
+            <div class="emblem-options" id="${id}" data-group="radio">
+                ${Object.entries(options).map(([value, option]) => `
+                    <input class="btn-check" type="radio" name="${name}" id="${id}-${value}" value="${value}"${value === current ? ' checked' : ''}>
+                    <label class="emblem-option" for="${id}-${value}">
+                        ${emblemSvg('', { size: 40, showTag: false, emblem: preview(value) })}
+                        <span class="emblem-option__label">${escapeHtml(option.label)}</span>
+                    </label>`).join('')}
+            </div>
+        </fieldset>`;
+}
+
+/**
+ * @param {string} prefix  prefixo dos ids (ex.: "clan", "edit")
+ * @param {{shape:string, pattern:string, palette:string}} emblem  escolha atual
+ */
+export function emblemPickerMarkup(prefix, emblem) {
+    return `<div class="emblem-picker">
+        ${emblemGroupMarkup({ id: `${prefix}EmblemShape`, name: `${prefix}-shape`, legend: 'Formato do escudo', options: EMBLEM_SHAPES, current: emblem.shape, preview: (shape) => ({ shape, pattern: 'plain', palette: emblem.palette }) })}
+        ${emblemGroupMarkup({ id: `${prefix}EmblemPattern`, name: `${prefix}-pattern`, legend: 'Padrão', options: EMBLEM_PATTERNS, current: emblem.pattern, preview: (pattern) => ({ shape: 'heater', pattern, palette: emblem.palette }) })}
+        ${emblemGroupMarkup({ id: `${prefix}EmblemPalette`, name: `${prefix}-palette`, legend: 'Cores', options: EMBLEM_PALETTES, current: emblem.palette, preview: (palette) => ({ shape: 'heater', pattern: 'base', palette }) })}
+    </div>`;
+}
+
+/** Lê a escolha marcada no seletor. */
+export function readEmblemPicker(root, prefix) {
+    const value = (group) => root.querySelector(`#${prefix}Emblem${group} input:checked`)?.value ?? '';
+    return { shape: value('Shape'), pattern: value('Pattern'), palette: value('Palette') };
+}
+
+/** O líder escolhe um novo emblema para o clã que criou. */
+export function openEmblemEditor() {
+    const clan = myClan();
+    if (!clan) return;
+    const current = resolveEmblem(clan.tag, clan.emblem);
+
+    const { root, close } = openModal({
+        title: `Emblema do [${clan.tag}]`,
+        subtitle: 'Formato, padrão e cores. A tag fica no centro do escudo.',
+        wide: true,
+        body: `
+            <form id="emblemForm" novalidate>
+                <div class="row g-4">
+                    <div class="col-12 col-md-4">
+                        <div class="emblem-preview">
+                            <p class="eyebrow">Prévia</p>
+                            <div class="emblem-preview__art" id="editEmblemPreview">${emblemSvg(clan.tag, { size: 140, emblem: current, title: 'Prévia do emblema' })}</div>
+                            <p class="emblem-preview__name">[${escapeHtml(clan.tag)}] ${escapeHtml(clan.name)}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-8">${emblemPickerMarkup('edit', current)}</div>
+                </div>
+            </form>
+        `,
+        footer: `
+            <button type="button" class="btn btn-ghost" data-modal-close>Manter o emblema atual</button>
+            <button type="submit" form="emblemForm" class="btn btn-primary">Salvar emblema</button>
+        `,
+    });
+
+    const form = root.querySelector('#emblemForm');
+    form.addEventListener('change', () => {
+        root.querySelector('#editEmblemPreview').innerHTML = emblemSvg(clan.tag, { size: 140, emblem: readEmblemPicker(root, 'edit'), title: 'Prévia do emblema' });
+    });
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const result = setClanEmblem(readEmblemPicker(root, 'edit'));
+        if (!result.ok) {
+            showFeedback(form, { type: 'error', message: result.reason });
+            return;
+        }
+        close();
+        toast({ title: 'Emblema atualizado.', message: `O novo escudo do [${clan.tag}] já aparece em todo o site.`, type: 'success' });
+        changed();
+    });
+}
 
 /* ============================================================
    AÇÃO PRINCIPAL DE UM CLÃ (entrar / candidatar / só convite)

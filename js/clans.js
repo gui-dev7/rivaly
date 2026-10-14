@@ -13,12 +13,14 @@ import {
 import {
     allClans, myClan, myRole, canManage, isLeader, clanCompatibility, clanStats, clanSchema, createClan,
     emblemSvg, inviteToClan, promoteMember, demoteMember, removeMember, transferLeadership, setClanPolicy,
-    leaveClan, ROLE_LABELS,
+    leaveClan, ROLE_LABELS, defaultEmblem,
 } from './clans-store.js';
 import { awaitingResponse } from './invites.js';
 import { relationList } from './sessions.js';
 import { getSquads } from './storage.js';
-import { openClanDetail, runClanAction, clanActionMarkup } from './clan-ui.js';
+import {
+    openClanDetail, runClanAction, clanActionMarkup, emblemPickerMarkup, readEmblemPicker, openEmblemEditor,
+} from './clan-ui.js';
 import {
     simulatedBadgeMarkup, emblemMarkup, playerChipMarkup, focusGamesText,
 } from './community-ui.js';
@@ -145,7 +147,10 @@ function renderMyClan() {
         <article class="card my-clan">
             <div class="card-body">
                 <div class="my-clan__head">
-                    ${emblemMarkup(clan, 84)}
+                    <div class="my-clan__emblem">
+                        ${emblemMarkup(clan, 84)}
+                        ${own && isLeader() ? '<button type="button" class="btn btn-outline-light btn-sm" data-edit-emblem>Personalizar emblema</button>' : ''}
+                    </div>
                     <div class="my-clan__id">
                         <p class="eyebrow">${escapeHtml(ROLE_LABELS[role] ?? 'Membro')} · ${escapeHtml(CLAN_POLICIES[clan.policy].label)}</p>
                         <h3 class="my-clan__name"><span class="clan-tag">[${escapeHtml(clan.tag)}]</span> ${escapeHtml(clan.name)}</h3>
@@ -297,6 +302,9 @@ const CREATE_FIELDS = {
     clanPolicy: 'policy',
     clanMotto: 'motto',
     clanRank: 'minRank',
+    clanEmblemShape: 'emblemShape',
+    clanEmblemPattern: 'emblemPattern',
+    clanEmblemPalette: 'emblemPalette',
 };
 
 /** O mesmo esquema do domínio, com os ids do formulário. */
@@ -372,14 +380,19 @@ function renderCreate() {
                                     ${RANK_LADDER.map((rank) => `<option value="${rank}"${rank === 'Unranked' ? ' selected' : ''}>${escapeHtml(rankLabel(rank))}</option>`).join('')}
                                 </select>
                             </div>
+                            <div class="col-12">
+                                <h3 class="clan-detail__title">Emblema</h3>
+                                <p class="form-text">Escolha o formato do escudo, o padrão e as cores. A tag vai no centro.</p>
+                                ${emblemPickerMarkup('clan', defaultEmblem('RV'))}
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-4">
                         <div class="emblem-preview" aria-live="polite">
                             <p class="eyebrow">Prévia do emblema</p>
-                            <div class="emblem-preview__art" id="emblemPreview">${emblemSvg('RV', { size: 140, title: 'Prévia do emblema' })}</div>
+                            <div class="emblem-preview__art" id="emblemPreview">${emblemSvg('RV', { size: 140, emblem: defaultEmblem('RV'), title: 'Prévia do emblema' })}</div>
                             <p class="emblem-preview__name" id="emblemName">Seu clã</p>
-                            <p class="form-text">O emblema é gerado a partir da tag: forma e padrão mudam conforme você digita.</p>
+                            <p class="form-text">A prévia muda na hora: digite a tag e escolha formato, padrão e cores.</p>
                         </div>
                     </div>
                 </div>
@@ -398,14 +411,18 @@ function renderCreate() {
     const nameInput = $('#clanName');
     const mottoInput = $('#clanMotto');
 
-    // Prévia ao vivo: a tag em maiúsculas vira o emblema a cada tecla.
+    // Prévia ao vivo: tag, formato, padrão e cores viram o emblema na hora.
+    const paintPreview = () => {
+        $('#emblemPreview').innerHTML = emblemSvg(tagInput.value || 'RV', { size: 140, emblem: readEmblemPicker(form, 'clan'), title: 'Prévia do emblema' });
+        $('#emblemName').textContent = `[${tagInput.value || '??'}] ${nameInput.value.trim() || 'Seu clã'}`;
+    };
     tagInput.addEventListener('input', () => {
         const caret = tagInput.selectionStart;
         tagInput.value = tagInput.value.toUpperCase();
         tagInput.setSelectionRange(caret, caret);
-        $('#emblemPreview').innerHTML = emblemSvg(tagInput.value || 'RV', { size: 140, title: 'Prévia do emblema' });
-        $('#emblemName').textContent = `[${tagInput.value || '??'}] ${nameInput.value.trim() || 'Seu clã'}`;
+        paintPreview();
     });
+    form.querySelector('.emblem-picker').addEventListener('change', paintPreview);
     nameInput.addEventListener('input', () => {
         $('#emblemName').textContent = `[${tagInput.value || '??'}] ${nameInput.value.trim() || 'Seu clã'}`;
     });
@@ -423,6 +440,7 @@ function renderCreate() {
         }
 
         const data = Object.fromEntries(Object.entries(CREATE_FIELDS).map(([fieldId, key]) => [key, result.values[fieldId]]));
+        data.emblem = { shape: data.emblemShape, pattern: data.emblemPattern, palette: data.emblemPalette };
         const outcome = createClan(data);
         if (!outcome.ok) {
             showFeedback(form, { type: 'error', message: outcome.reason ?? Object.values(outcome.errors ?? {})[0]?.[0] ?? 'Revise os campos.' });
@@ -470,6 +488,11 @@ document.getElementById('main-content').addEventListener('click', async (event) 
     const clanButton = event.target.closest('[data-clan-action]');
     if (clanButton) {
         runClanAction(clanButton.dataset.clanAction, clanButton.dataset.clan);
+        return;
+    }
+
+    if (event.target.closest('[data-edit-emblem]')) {
+        openEmblemEditor();
         return;
     }
 

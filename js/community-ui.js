@@ -55,7 +55,7 @@ export function relationBadgeMarkup(type) {
 
 export function emblemMarkup(clan, size = 48) {
     if (!clan) return '';
-    return `<span class="emblem-wrap" style="--emblem-size:${size}px">${emblemSvg(clan.tag, { size, title: `Emblema do clã ${clan.name}` })}</span>`;
+    return `<span class="emblem-wrap" style="--emblem-size:${size}px">${emblemSvg(clan.tag, { size, emblem: clan.emblem, title: `Emblema do clã ${clan.name}` })}</span>`;
 }
 
 export const clanTagMarkup = (clan) => (clan ? `<span class="clan-tag">[${escapeHtml(clan.tag)}]</span>` : '');

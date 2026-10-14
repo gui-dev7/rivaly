@@ -201,47 +201,89 @@ export function clanRequirements(clan) {
 }
 
 /* ============================================================
-   EMBLEMA PROCEDURAL
-   Gerado a partir da tag: forma, padrão e divisão saem de um hash.
-   Só preto, amarelo e neutros, via classes (acompanha o tema).
+   EMBLEMA
+   Personalizável: formato do escudo, padrão e cores. As cores são só
+   as da marca (preto, amarelo e neutros), aplicadas por classe, então o
+   emblema acompanha o tema. Quem não escolhe recebe um emblema derivado
+   da tag (hash), sempre o mesmo para a mesma tag.
    ============================================================ */
 
-const EMBLEM_SHAPES = {
-    shield: 'M32 4 58 13v18c0 15-11 25-26 29C17 56 6 46 6 31V13z',
-    hex: 'M32 4 57 18v28L32 60 7 46V18z',
-    diamond: 'M32 3 61 32 32 61 3 32z',
-    square: 'M6 6h52v52H6z',
-    chevron: 'M6 6h52v34L32 60 6 40z',
+export const EMBLEM_SHAPES = {
+    classic: { label: 'Clássico', path: 'M32 4 58 13v18c0 15-11 25-26 29C17 56 6 46 6 31V13z' },
+    heater: { label: 'Reto', path: 'M6 4h52v30L32 60 6 34z' },
+    kite: { label: 'Pipa', path: 'M32 2 58 18 32 62 6 18z' },
+    crest: { label: 'Torre', path: 'M6 6h9v7h7V6h7v7h6V6h7v7h7V6h9v28L32 60 6 34z' },
+    banner: { label: 'Estandarte', path: 'M8 4h48v56L32 46 8 60z' },
+    pennant: { label: 'Flâmula', path: 'M6 6h52v34L32 60 6 40z' },
+    hex: { label: 'Hexágono', path: 'M32 4 57 18v28L32 60 7 46V18z' },
+    octagon: { label: 'Medalhão', path: 'M20 4h24l16 16v24L44 60H20L4 44V20z' },
+    diamond: { label: 'Losango', path: 'M32 3 61 32 32 61 3 32z' },
+    square: { label: 'Quadrado', path: 'M6 6h52v52H6z' },
 };
+
+export const EMBLEM_PATTERNS = {
+    plain: { label: 'Liso', svg: '' },
+    base: { label: 'Faixa inferior', svg: '<rect x="0" y="40" width="64" height="24" class="emblem__accent"/>' },
+    diagonal: { label: 'Diagonal', svg: '<path d="M0 64 64 0v16L16 64z" class="emblem__accent"/>' },
+    half: { label: 'Metade', svg: '<rect x="0" y="0" width="32" height="64" class="emblem__accent emblem__accent--soft"/>' },
+    bars: { label: 'Duas faixas', svg: '<rect x="0" y="0" width="64" height="10" class="emblem__accent"/><rect x="0" y="54" width="64" height="10" class="emblem__accent"/>' },
+    cross: { label: 'Cruz', svg: '<rect x="27" y="0" width="10" height="64" class="emblem__accent"/><rect x="0" y="27" width="64" height="10" class="emblem__accent"/>' },
+    chevron: { label: 'Chevron', svg: '<path d="M0 30 32 54 64 30v14L32 68 0 44z" class="emblem__accent"/>' },
+    quarters: { label: 'Quartos', svg: '<rect x="0" y="0" width="32" height="32" class="emblem__accent emblem__accent--soft"/><rect x="32" y="32" width="32" height="32" class="emblem__accent emblem__accent--soft"/>' },
+};
+
+export const EMBLEM_PALETTES = {
+    classic: { label: 'Amarelo no preto' },
+    inverse: { label: 'Preto no amarelo' },
+    bone: { label: 'Osso no preto' },
+    steel: { label: 'Grafite e amarelo' },
+};
+
+/** Emblema padrão de uma tag: o hash escolhe as peças, sempre igual. */
+export function defaultEmblem(tag) {
+    const clean = String(tag ?? '').toUpperCase().slice(0, 4) || '??';
+    const hash = hashString(`emblem:${clean}`);
+    const shapes = Object.keys(EMBLEM_SHAPES);
+    const patterns = Object.keys(EMBLEM_PATTERNS).filter((id) => id !== 'plain');
+    return { shape: shapes[hash % shapes.length], pattern: patterns[(hash >> 3) % patterns.length], palette: 'classic' };
+}
+
+/** Completa uma escolha parcial ou inválida com o padrão da tag. */
+export function resolveEmblem(tag, emblem = null) {
+    const base = defaultEmblem(tag);
+    return {
+        shape: EMBLEM_SHAPES[emblem?.shape] ? emblem.shape : base.shape,
+        pattern: EMBLEM_PATTERNS[emblem?.pattern] ? emblem.pattern : base.pattern,
+        palette: EMBLEM_PALETTES[emblem?.palette] ? emblem.palette : base.palette,
+    };
+}
 
 // O mesmo emblema pode aparecer várias vezes na página (card, ranking,
 // Passaporte); cada cópia ganha o próprio id de recorte, sem id repetido.
 let emblemSeq = 0;
 
-export function emblemSvg(tag, { size = 56, title = '' } = {}) {
+/**
+ * @param {string} tag
+ * @param {{size?:number, title?:string, emblem?:object, showTag?:boolean}} [options]
+ */
+export function emblemSvg(tag, { size = 56, title = '', emblem = null, showTag = true } = {}) {
     const clean = String(tag ?? '').toUpperCase().slice(0, 4) || '??';
-    const hash = hashString(`emblem:${clean}`);
-    const shapes = Object.keys(EMBLEM_SHAPES);
-    const shape = EMBLEM_SHAPES[shapes[hash % shapes.length]];
-    const pattern = (hash >> 3) % 4;
-    const id = `em-${hash.toString(36)}-${(emblemSeq += 1).toString(36)}`;
-
-    const patterns = [
-        `<rect x="0" y="40" width="64" height="24" class="emblem__accent"/>`,
-        `<path d="M0 64 64 0v16L16 64z" class="emblem__accent"/>`,
-        `<rect x="0" y="0" width="32" height="64" class="emblem__accent emblem__accent--soft"/>`,
-        `<rect x="0" y="0" width="64" height="10" class="emblem__accent"/><rect x="0" y="54" width="64" height="10" class="emblem__accent"/>`,
-    ];
+    const { shape, pattern, palette } = resolveEmblem(clean, emblem);
+    const path = EMBLEM_SHAPES[shape].path;
+    const id = `em-${hashString(clean).toString(36)}-${(emblemSeq += 1).toString(36)}`;
 
     const fontSize = clean.length >= 4 ? 17 : clean.length === 3 ? 21 : 25;
     const a11y = title ? `role="img" aria-label="${escapeHtml(title)}"` : 'aria-hidden="true" focusable="false"';
+    const label = showTag
+        ? `<text x="32" y="${32 + fontSize * 0.36}" text-anchor="middle" class="emblem__tag" font-size="${fontSize}">${escapeHtml(clean)}</text>`
+        : '';
 
-    return `<svg class="emblem" ${a11y} viewBox="0 0 64 64" width="${size}" height="${size}">
-        <defs><clipPath id="${id}"><path d="${shape}"/></clipPath></defs>
-        <path d="${shape}" class="emblem__base"/>
-        <g clip-path="url(#${id})">${patterns[pattern]}</g>
-        <path d="${shape}" class="emblem__edge"/>
-        <text x="32" y="${32 + fontSize * 0.36}" text-anchor="middle" class="emblem__tag" font-size="${fontSize}">${escapeHtml(clean)}</text>
+    return `<svg class="emblem emblem--${palette}" ${a11y} viewBox="0 0 64 64" width="${size}" height="${size}">
+        <defs><clipPath id="${id}"><path d="${path}"/></clipPath></defs>
+        <path d="${path}" class="emblem__base"/>
+        <g clip-path="url(#${id})">${EMBLEM_PATTERNS[pattern].svg}</g>
+        <path d="${path}" class="emblem__edge"/>
+        ${label}
     </svg>`;
 }
 
@@ -279,6 +321,9 @@ export function clanSchema() {
         policy: [required('Escolha como as pessoas entram.'), oneOf(Object.keys(CLAN_POLICIES))],
         motto: [maxLength(80, 'O lema pode ter no máximo 80 caracteres.'), noHtml()],
         minRank: [required('Escolha o rank mínimo.'), oneOf(RANK_LADDER)],
+        emblemShape: [required('Escolha o formato do escudo.'), oneOf(Object.keys(EMBLEM_SHAPES), 'Escolha um formato da lista.')],
+        emblemPattern: [required('Escolha o padrão do escudo.'), oneOf(Object.keys(EMBLEM_PATTERNS), 'Escolha um padrão da lista.')],
+        emblemPalette: [required('Escolha as cores do escudo.'), oneOf(Object.keys(EMBLEM_PALETTES), 'Escolha uma combinação de cores da lista.')],
     };
 }
 
@@ -339,6 +384,12 @@ export const applicationRules = () => [
     noHtml(),
 ];
 
+/** Escolha de emblema em campos planos, para validar com o esquema. Sem escolha, vale o da tag. */
+function emblemFields(tag, emblem) {
+    const chosen = emblem ?? defaultEmblem(String(tag ?? '').trim().toUpperCase());
+    return { emblemShape: chosen.shape, emblemPattern: chosen.pattern, emblemPalette: chosen.palette };
+}
+
 /** Cria um clã e coloca o usuário como líder. */
 export function createClan(data) {
     if (myClan()) return { ok: false, reason: 'Você já está em um clã. Saia do atual para criar outro.' };
@@ -351,6 +402,7 @@ export function createClan(data) {
         policy: data.policy,
         motto: sanitizeText(data.motto, 80),
         minRank: data.minRank,
+        ...emblemFields(data.tag, data.emblem),
     };
     const { valid, errors } = validateData(payload, clanSchema());
     if (!valid) return { ok: false, errors };
@@ -371,6 +423,7 @@ export function createClan(data) {
         officers: [],
         members: [],
         motto: payload.motto,
+        emblem: { shape: payload.emblemShape, pattern: payload.emblemPattern, palette: payload.emblemPalette },
         createdAt: new Date().toISOString(),
         seeded: false,
     };
@@ -480,6 +533,21 @@ export function setClanPolicy(policy) {
     if (!CLAN_POLICIES[policy]) return { ok: false, reason: 'Escolha uma política válida.' };
     return editOwnClan((draft) => {
         draft.policy = policy;
+        return { ok: true };
+    });
+}
+
+/** O líder troca o emblema do clã que criou. */
+export function setClanEmblem(emblem) {
+    if (!isLeader()) return { ok: false, reason: 'Só o líder muda o emblema do clã.' };
+    const fields = emblemFields('', emblem ?? {});
+    const schema = clanSchema();
+    const { valid, errors } = validateData(fields, {
+        emblemShape: schema.emblemShape, emblemPattern: schema.emblemPattern, emblemPalette: schema.emblemPalette,
+    });
+    if (!valid) return { ok: false, reason: Object.values(errors)[0][0], errors };
+    return editOwnClan((draft) => {
+        draft.emblem = { shape: fields.emblemShape, pattern: fields.emblemPattern, palette: fields.emblemPalette };
         return { ok: true };
     });
 }

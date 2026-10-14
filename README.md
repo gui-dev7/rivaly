@@ -19,7 +19,7 @@ Projeto individual do desafio Happy Game (FIAP, Fase 2). Autor: Guilherme Olivei
 | Área | O que mudou |
 |---|---|
 | **Arena** | Duelo, Squad e Clã vs Clã com rating no estilo Elo. Antes de cada partida aparece a chance de vitória e quanto o rating sobe ou cai; depois, a conta do resultado. Temporada semanal, ranking em tabela (jogadores e clãs) e histórico paginado. |
-| **Clãs** | Explorar clãs pela compatibilidade com o seu DNA, entrar, candidatar-se, criar um clã (emblema gerado a partir da tag), gerenciar o elenco e acompanhar nível e meta semanal. |
+| **Clãs** | Explorar clãs pela compatibilidade com o seu DNA, entrar, candidatar-se, criar um clã (emblema personalizável: formato do escudo, padrão e cores, com a tag no centro), gerenciar o elenco e acompanhar nível e meta semanal. |
 | **Feed** | Posts de até 280 caracteres, reações (GG, Respeito, Rivalidade), comentários e abas para clã, aliados, rivais e Arena. Junta a atividade do usuário com os posts da comunidade. |
 | **Squads** | Depois da busca, o usuário joga uma **sessão** com 2 a 4 jogadores (escolhidos ou sorteados). No pós-partida marca cada colega como Aliado, Rival ou Neutro. |
 | **Centro de convites** | Sino no topo, com contador: convites de clã, respostas de candidatura e desafios da Arena. |
