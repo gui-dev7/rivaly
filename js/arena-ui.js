@@ -14,10 +14,12 @@
 import { escapeHtml, icon, formatNumber } from './ui.js';
 import { openModal } from './modal.js';
 import {
-    previewDuel, previewSquadMatch, previewClanMatch, playDuel, playSquadMatch, playClanMatch, tierFor,
+    previewDuel, previewSquadMatch, previewClanMatch, playDuel, playSquadMatch, playClanMatch, tierFor, SEASON_POINTS,
 } from './arena-store.js';
+import { myClan } from './clans-store.js';
 import { chanceMeterMarkup, reasonsListMarkup, tierBadgeMarkup } from './community-ui.js';
 import { refreshNavigationProgress } from './navigation.js';
+import { toast } from './notifications.js';
 import { prefersReducedMotion, wait } from './animations.js';
 
 const MODE_LABELS = { duel: 'Duelo', squad: 'Squad', clan: 'Clã vs Clã' };
@@ -127,8 +129,8 @@ export function openMatchResult(match, { onDone } = {}) {
                     ? `<p class="match-result__tier">${match.won ? 'Subiu' : 'Caiu'} para o tier ${tierBadgeMarkup(after)}</p>`
                     : `<p class="match-result__tier">Tier atual: ${tierBadgeMarkup(after)}</p>`}
                 <p class="match-result__copy">${match.won
-                    ? 'Boa. A vitória vale XP, pontos de temporada e XP para o seu clã.'
-                    : 'Faz parte. A partida ainda conta XP e um ponto de temporada. Quer revanche? O rival continua aqui.'}</p>
+                    ? `Boa. A vitória vale XP e ${SEASON_POINTS.win} pontos de temporada${myClan() ? ', e soma para a meta do seu clã' : ''}.`
+                    : `Faz parte. A partida ainda conta XP e ${SEASON_POINTS.loss} ponto de temporada.${match.mode === 'duel' ? ' Quer revanche? O adversário continua aqui.' : ''}`}</p>
             </div>
             ${mathCollapse('resultMath', match.reasons, 'Ver a conta do resultado')}
         `,
@@ -150,7 +152,17 @@ export function openDuelConfirm(playerId, { challengeId = null, onDone } = {}) {
 }
 
 export function openSquadMatchConfirm(sessionId, { onDone } = {}) {
-    openMatchConfirm(previewSquadMatch(sessionId), () => playSquadMatch(sessionId), { onDone, confirmLabel: 'Levar squad para a Arena' });
+    const prev = previewSquadMatch(sessionId);
+    if (!prev) {
+        toast({
+            title: 'Este squad já jogou na Arena.',
+            message: 'Cada sessão vai uma vez para a Arena. Jogue outra sessão em Squads para levar um time novo.',
+            type: 'info',
+        });
+        return false;
+    }
+    openMatchConfirm(prev, () => playSquadMatch(sessionId), { onDone, confirmLabel: 'Levar squad para a Arena' });
+    return true;
 }
 
 export function openClanMatchConfirm(clanId, { onDone } = {}) {

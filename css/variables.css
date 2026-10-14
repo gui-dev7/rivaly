@@ -189,8 +189,10 @@
     --radius-lg: 0;
     --radius-xl: 0;
     --radius-2xl: 0;
-    /* Só para o que é redondo de verdade: pontos de status e o "?" de dica. */
-    --radius-full: 999px;
+    /* Antes era 999px (pílulas e bolhas). A marca é de cantos retos e
+       loading sem bolha, então chips, barras, interruptores e pontos
+       também ficam retos. O token continua para não espalhar 0 pelo CSS. */
+    --radius-full: 0;
 
     /* ------------------------------------------------------------
        11. SHADOWS

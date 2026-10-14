@@ -298,7 +298,6 @@
     top: 8px;
     width: 8px;
     height: 8px;
-    border-radius: 2px;
     background: var(--color-primary);
 }
 
@@ -593,7 +592,6 @@
 .showcase__dot {
     width: 9px;
     height: 9px;
-    border-radius: 50%;
     background: var(--color-surface-hover);
 }
 

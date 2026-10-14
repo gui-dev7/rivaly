@@ -13,7 +13,7 @@
 
 import {
     CLANS, CLAN_CAPACITY, CLAN_POLICIES, PLAYSTYLES, RANK_LADDER, SQUAD_GAMES, GAMES,
-    getPlayerById, getGameById,
+    getPlayerById,
 } from './data.js';
 import {
     getClans, saveClans, getClanMembership, saveClanMembership, getClanProgress, saveClanProgress,
@@ -214,13 +214,17 @@ const EMBLEM_SHAPES = {
     chevron: 'M6 6h52v34L32 60 6 40z',
 };
 
+// O mesmo emblema pode aparecer várias vezes na página (card, ranking,
+// Passaporte); cada cópia ganha o próprio id de recorte, sem id repetido.
+let emblemSeq = 0;
+
 export function emblemSvg(tag, { size = 56, title = '' } = {}) {
     const clean = String(tag ?? '').toUpperCase().slice(0, 4) || '??';
     const hash = hashString(`emblem:${clean}`);
     const shapes = Object.keys(EMBLEM_SHAPES);
     const shape = EMBLEM_SHAPES[shapes[hash % shapes.length]];
     const pattern = (hash >> 3) % 4;
-    const id = `em-${hash.toString(36)}`;
+    const id = `em-${hash.toString(36)}-${(emblemSeq += 1).toString(36)}`;
 
     const patterns = [
         `<rect x="0" y="40" width="64" height="24" class="emblem__accent"/>`,
@@ -246,7 +250,8 @@ export function emblemSvg(tag, { size = 56, title = '' } = {}) {
    O mesmo esquema serve ao formulário (js/clans.js) e ao domínio.
    ============================================================ */
 
-export const NAME_PATTERN = /^[A-Za-zÀ-ÿ0-9 ]+$/;
+// Letras (com acento), números e espaço. Os intervalos pulam × e ÷.
+export const NAME_PATTERN = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9 ]+$/;
 export const TAG_PATTERN = /^[A-Z0-9]+$/;
 
 export const existingTags = () => allClans().map((clan) => clan.tag);

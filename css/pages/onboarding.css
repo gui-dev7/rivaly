@@ -26,6 +26,11 @@
     z-index: var(--z-sticky);
 }
 
+.ob-header__brand {
+    padding: 0;
+    margin-right: 0;
+}
+
 .ob-progress {
     display: flex;
     align-items: center;

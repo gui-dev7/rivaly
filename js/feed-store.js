@@ -13,11 +13,12 @@
  * diz isso na tela.
  */
 
-import { REACTIONS, FEED_DAILY_XP_LIMIT, getPlayerById } from './data.js';
+import { REACTIONS, FEED_DAILY_XP_LIMIT, XP_RULES, getPlayerById } from './data.js';
 import { getFeed, saveFeed, getActivity, getUser, getRelations, LIMITS } from './storage.js';
 import { simulatedPosts } from './community.js';
 import { allClans, myClan, addClanContribution } from './clans-store.js';
 import { awardXp, checkAchievements } from './gamification.js';
+import { logActivity } from './activity.js';
 import { rngFor, currentWeekKey, weekStart, previousWeek } from './rng.js';
 import {
     validateValue, required, maxLength, noHtml, notBlank, sanitizeText,
@@ -53,7 +54,9 @@ export const commentRules = () => [
    ============================================================ */
 
 // Entrar na conta é ruído, e "publicou no Feed" já é o próprio post.
-const HIDDEN_ACTIVITY = new Set(['account', 'feed']);
+// Marcar aliado ou rival fica no seu histórico, mas não vai para o Feed:
+// rivalidade aqui é respeito, não algo para expor (matriz da V2).
+const HIDDEN_ACTIVITY = new Set(['account', 'feed', 'relation']);
 
 function authorOf(id, clanIndex) {
     if (id === 'self') {
@@ -227,11 +230,14 @@ export function publishPost(text) {
     const slot = takeDailyXpSlot(feed);
     saveFeed({ ...feed, posts: [post, ...feed.posts], daily: slot.daily });
 
+    const xp = slot.allowed ? XP_RULES.feedPost.amount : 0;
+    const preview = post.text.length > 60 ? `${post.text.slice(0, 57)}…` : post.text;
+    logActivity('feed', `Publicou no Feed: “${preview}”`, { postId: post.id, xp });
     if (slot.allowed) awardXp('feedPost', { silent: true });
     addClanContribution(2, { xp: 3 });
     checkAchievements();
 
-    return { ok: true, post, xp: slot.allowed ? 20 : 0 };
+    return { ok: true, post, xp };
 }
 
 /** Liga/desliga uma reação. Devolve o novo estado e a contagem final. */
@@ -260,8 +266,14 @@ export function toggleReaction(postId, reactionId) {
         daily: slot.daily ?? feed.daily,
     });
 
-    if (slot.allowed) awardXp('feedReaction', { silent: true });
-    return { ok: true, active, xp: slot.allowed ? 5 : 0 };
+    // A atividade acompanha o XP: só a primeira vez que a reação entra no
+    // post (e dentro do limite diário) vira registro, para não virar ruído.
+    if (slot.allowed) {
+        const label = REACTIONS.find((reaction) => reaction.id === reactionId).label;
+        logActivity('feed', `Reagiu com ${label} a um post do Feed`, { postId, xp: XP_RULES.feedReaction.amount });
+        awardXp('feedReaction', { silent: true });
+    }
+    return { ok: true, active, xp: slot.allowed ? XP_RULES.feedReaction.amount : 0 };
 }
 
 /** Comenta em um post (até 140 caracteres, sem HTML). */

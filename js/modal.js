@@ -79,7 +79,7 @@ function ensureShell() {
             instance.show();
             return;
         }
-        shell.querySelector('[data-modal-content]').innerHTML = '';
+        shell.querySelector('[data-modal-content]').replaceChildren();
         if (returnFocus instanceof HTMLElement && document.body.contains(returnFocus)) {
             returnFocus.focus();
         }
@@ -125,9 +125,17 @@ export function openModal({ title, subtitle = '', body, footer = '', wide = fals
     replaced?.onClose?.();
 
     const token = ++tokenSeq;
-    const content = shell.querySelector('[data-modal-content]');
     const dialog = shell.querySelector('.modal-dialog');
     dialog.classList.toggle('modal-lg', wide);
+
+    // Cada conteúdo nasce num .modal-content novo. Os chamadores ligam
+    // listeners no `root` (delegação); se o elemento fosse reaproveitado,
+    // os listeners de diálogos anteriores continuariam vivos e disparariam
+    // de novo, com os dados antigos. Trocando o elemento, eles somem junto.
+    const content = document.createElement('div');
+    content.className = 'modal-content';
+    content.dataset.modalContent = '';
+    shell.querySelector('[data-modal-content]').replaceWith(content);
 
     content.innerHTML = `
         <div class="modal-header">

@@ -11,10 +11,11 @@
 import { escapeHtml, icon, formatNumber, formatRelativeTime } from './ui.js';
 import { openModal, closeModal } from './modal.js';
 import { toast } from './notifications.js';
-import { CLAN_POLICIES, PLAYSTYLES, rankLabel, regionLabel } from './data.js';
+import { CLAN_POLICIES, CLAN_CAPACITY, PLAYSTYLES, rankLabel, regionLabel } from './data.js';
 import {
     getClan, myClan, clanCompatibility, clanStats, clanRequirements, joinClan, applyToClan, applicationRules,
 } from './clans-store.js';
+import { buildFeed } from './feed-store.js';
 import { getActivity } from './storage.js';
 import {
     emblemMarkup, playerChipMarkup, roleLabel, focusGamesText, reasonsListMarkup, simulatedBadgeMarkup,
@@ -69,12 +70,22 @@ export function runClanAction(action, clanId) {
    DETALHE DO CLÃ
    ============================================================ */
 
+/**
+ * Atividade recente do clã: o que os membros postaram no Feed (posts da
+ * comunidade simulada, os mesmos que aparecem lá) e o seu histórico com
+ * o clã (entrou, candidatou-se, convidou alguém). Mais recentes primeiro.
+ */
 function clanActivity(clan) {
+    const memberIds = new Set(clan.roster.map((entry) => entry.id));
     const own = getActivity()
         .filter((entry) => entry.meta?.clanId === clan.id)
-        .slice(0, 4)
         .map((entry) => ({ text: entry.message, at: entry.at }));
-    return own;
+    const posts = buildFeed()
+        .filter((item) => item.type === 'post' && memberIds.has(item.author.id))
+        .map((item) => ({ text: `${item.author.isSelf ? 'Você' : item.author.name}: ${item.text}`, at: item.at }));
+    return [...own, ...posts]
+        .sort((a, b) => new Date(b.at) - new Date(a.at))
+        .slice(0, 4);
 }
 
 export function openClanDetail(clanId) {
@@ -125,17 +136,17 @@ export function openClanDetail(clanId) {
 
                 <div class="row g-4">
                     <div class="col-12 col-md-6">
-                        <h3 class="clan-detail__title">Elenco · ${clan.roster.length} de 8</h3>
+                        <h3 class="clan-detail__title">Elenco · ${clan.roster.length} de ${CLAN_CAPACITY}</h3>
                         <ul class="roster">${roster}</ul>
                     </div>
                     <div class="col-12 col-md-6">
                         <h3 class="clan-detail__title">Requisitos para você</h3>
                         ${reasonsListMarkup(requirements.map(({ ok, text }) => ({ ok, text })))}
                         <p class="clan-detail__min">Rank mínimo ${escapeHtml(rankLabel(clan.minRank))} · reputação ${clan.minReputation}+</p>
-                        ${activity.length ? `
-                            <h3 class="clan-detail__title mt-3">Sua história com o clã</h3>
-                            <ul class="clan-log">${activity.map((item) => `<li><span>${escapeHtml(item.text)}</span><time>${escapeHtml(formatRelativeTime(item.at))}</time></li>`).join('')}</ul>
-                        ` : ''}
+                        <h3 class="clan-detail__title mt-3">Atividade recente</h3>
+                        ${activity.length
+                            ? `<ul class="clan-log">${activity.map((item) => `<li><span>${escapeHtml(item.text)}</span><time datetime="${escapeHtml(item.at)}">${escapeHtml(formatRelativeTime(item.at))}</time></li>`).join('')}</ul>`
+                            : '<p class="clan-detail__min">Nenhum post dos membros nesta semana ainda. Os posts aparecem aqui e no Feed.</p>'}
                     </div>
                 </div>
                 <p class="clan-detail__sim">${simulatedBadgeMarkup()}</p>

@@ -190,6 +190,9 @@ export function buildContext() {
         allyCount: relations.filter((relation) => relation.type === 'ally').length,
         rivalCount: relations.filter((relation) => relation.type === 'rival').length,
         inClan: Boolean(membership?.clanId),
+        // Entrou num clã de outra pessoa (aberto, candidatura ou convite).
+        // Fundar o próprio clã é outra conquista (Bandeira Erguida).
+        joinedClan: Boolean(membership?.clanId) && membership.via !== 'create',
         clanMembership: membership,
         createdClan: Boolean(user?.rewards?.createClan),
         arenaRating: arena.rating,

@@ -171,9 +171,12 @@ export function previewDuel(playerId) {
 /** Sessões de squad que ainda podem ir para a Arena. */
 export const arenaReadySessions = () => getSessions().filter((session) => !session.arenaPlayed).slice(0, 6);
 
+/** Cada sessão vai uma vez só para a Arena, com o mesmo time. */
+export const sessionArenaPlayed = (sessionId) => Boolean(getSessions().find((item) => item.id === sessionId)?.arenaPlayed);
+
 export function previewSquadMatch(sessionId) {
     const session = getSessions().find((item) => item.id === sessionId);
-    if (!session) return null;
+    if (!session || session.arenaPlayed) return null;
     const arena = arenaState();
     const teamRatings = [arena.rating, ...session.teammates.map(ratingOf)];
     const teamRating = Math.round(teamRatings.reduce((sum, value) => sum + value, 0) / teamRatings.length);

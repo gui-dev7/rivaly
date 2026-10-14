@@ -27,7 +27,7 @@ import { communitySnapshot } from './community-summary.js';
 import { emblemMarkup, tierBadgeMarkup, playerChipMarkup } from './community-ui.js';
 import { relationList } from './sessions.js';
 import { ROLE_LABELS } from './clans-store.js';
-import { userAvatarMarkup, resolveAvatar } from './avatar-service.js';
+import { userAvatarMarkup } from './avatar-service.js';
 import { openAvatarPicker } from './avatar-picker.js';
 import { attachPointerLight, countUp } from './animations.js';
 import {
@@ -57,7 +57,7 @@ function renderCard() {
     // Key art strip behind the header. Only Steam titles ship a banner,
     // so fall through the current games until one has it; if none does the
     // card simply renders without it.
-    const bannerGame = games.find((game) => game.steamAppId);
+    const bannerGame = games.find((game) => game.steamId);
 
     const community = communitySnapshot();
     render($('#passportCardHost'), `
@@ -786,6 +786,15 @@ document.getElementById('main-content').addEventListener('click', (event) => {
             toast({ title: 'Avatar atualizado.', message: label, type: 'success' });
         });
     }
+});
+
+// Convite aceito no sino ou resposta de candidatura: o cartão e a seção
+// Comunidade acompanham na hora, sem recarregar a página.
+document.addEventListener('rivaly:community-changed', () => {
+    user = getUser();
+    renderCard();
+    renderCommunity();
+    afterRender(document.getElementById('main-content'));
 });
 
 /* ============================================================

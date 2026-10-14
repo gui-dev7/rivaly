@@ -199,7 +199,7 @@ render(document.getElementById('overviewStats'), [
         meta: `${Math.round(snapshot.percent)}% deste nível`,
         icon: 'bolt',
         accent: 'var(--color-primary)',
-        tooltip: 'O XP vem de ações reais: adicionar jogos, zerá-los, encontrar squads e completar seu Passaporte.',
+        tooltip: 'O XP vem de ações reais: Biblioteca, buscas e sessões de squad, Arena, clãs, Feed e o seu Passaporte.',
         count: snapshot.xp,
     }),
     statMarkup({
@@ -267,9 +267,8 @@ const squadHost = document.getElementById('suggestedSquad');
 // demo so conhece o catalogo curado. Sugerir squad para um jogo que ninguem
 // da base joga daria um resultado vazio de sentido, entao a sugestao fica
 // ancorada no primeiro jogo curado que o usuario esta jogando.
-const preferredGame = user.currentGames?.[0]
-    ?? summary.playing.map((entry) => entry.gameId).find((id) => getGameById(id))
-    ?? null;
+const preferredGame = [...(user.currentGames ?? []), ...summary.playing.map((entry) => entry.gameId)]
+    .find((id) => getGameById(id)) ?? null;
 
 if (!preferredGame) {
     render(squadHost, emptyStateMarkup({

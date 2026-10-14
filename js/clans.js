@@ -316,6 +316,10 @@ function renderCreate() {
         return;
     }
 
+    // O formulário já está na tela: redesenhar apagaria o que a pessoa
+    // está digitando (ex.: quando uma resposta de candidatura chega).
+    if ($('#createClanForm')) return;
+
     render($('#createHost'), `
         <form class="card create-clan" id="createClanForm" novalidate>
             <div class="card-body">
@@ -534,6 +538,15 @@ document.getElementById('main-content').addEventListener('click', async (event) 
 
     if (event.target.closest('#leaveClanBtn')) {
         const clan = myClan();
+        // Líder com elenco não sai direto: o aviso vem antes da confirmação.
+        if (clan && !clan.seeded && isLeader() && clan.roster.length > 1) {
+            toast({
+                title: 'Transfira a liderança antes de sair',
+                message: 'No elenco, abra "Gerenciar" ao lado de alguém e escolha "Transferir liderança". Depois disso, você pode sair.',
+                type: 'warning',
+            });
+            return;
+        }
         const alone = clan && !clan.seeded && clan.roster.length === 1;
         const ok = await confirmDialog({
             title: `Sair do [${clan?.tag}]?`,

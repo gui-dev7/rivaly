@@ -65,13 +65,19 @@
     <main class="auth" id="main-content">
         <!-- ---------- Narrative side ---------- -->
         <section class="auth__aside" aria-labelledby="authAsideTitle">
-            <a class="sidebar__brand auth__brand" href="index.html" aria-label="Voltar para a página inicial da RIVALY">
-                <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
-                <span class="brand-name">
-                    <span class="brand-name__top">RIVALY</span>
-                    <span class="brand-name__sub">Rival + Ally</span>
-                </span>
-            </a>
+            <nav class="navbar flex-nowrap p-0 auth__nav" aria-label="Navegação pública">
+                <a class="navbar-brand sidebar__brand auth__brand" href="index.html" aria-label="Página inicial da RIVALY">
+                    <span class="brand-mark" aria-hidden="true"><img class="brand-mark__img" data-brand="icon" src="/assets/brand/icon-rivaly.png" alt="" width="32" height="32" decoding="async"></span>
+                    <span class="brand-name">
+                        <span class="brand-name__top">RIVALY</span>
+                        <span class="brand-name__sub">Rival + Ally</span>
+                    </span>
+                </a>
+                <ul class="navbar-nav flex-row gap-3">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sitemap.html">Mapa do site</a></li>
+                </ul>
+            </nav>
 
             <div class="auth__aside-body">
                 <h1 class="auth__aside-title" id="authAsideTitle">

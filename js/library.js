@@ -13,7 +13,7 @@ import {
 } from './library-store.js';
 import { GAMES, LIBRARY_STATUSES, PLATFORMS, getGameById, genreLabel } from './data.js';
 import { searchGames, getGame, coverUrl, platformNames, releaseYear, genreNames } from './gamedb.js';
-import { toCatalogueGame, externalIdFor } from './external-games.js';
+import { toCatalogueGame } from './external-games.js';
 import { awardXp, checkAchievements } from './gamification.js';
 import { logActivity } from './activity.js';
 import { toast, toastInfo } from './notifications.js';

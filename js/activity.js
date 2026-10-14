@@ -10,6 +10,10 @@ import { getActivity, saveActivity } from './storage.js';
 
 const MAX_ENTRIES = 60;
 
+// Contador da página: dois registros no mesmo milissegundo (comum quando
+// uma ação dispara XP, nível e conquista juntos) não repetem o id.
+let sequence = 0;
+
 export const ACTIVITY_ICONS = {
     account: 'user',
     dna: 'dna',
@@ -37,7 +41,7 @@ export const ACTIVITY_ICONS = {
 export function logActivity(type, message, meta = {}) {
     const entries = getActivity();
     entries.unshift({
-        id: `act-${Date.now().toString(36)}-${entries.length}`,
+        id: `act-${Date.now().toString(36)}-${(sequence += 1).toString(36)}`,
         type,
         message,
         meta,

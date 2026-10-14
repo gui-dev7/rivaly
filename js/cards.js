@@ -12,10 +12,9 @@ import {
 } from './ui.js';
 import {
     LIBRARY_STATUSES, PLATFORMS, ROLES, SCHEDULES, PLAYSTYLES,
-    DNA_ATTRIBUTES, LANGUAGES, rankLabel, regionLabel, genreLabel,
+    DNA_ATTRIBUTES, LANGUAGES, RARITIES, rankLabel, regionLabel, genreLabel,
 } from './data.js';
 import { ACTIVITY_ICONS } from './activity.js';
-import { RARITIES } from './data.js';
 
 const labelOf = (collection, id) => collection.find((item) => item.id === id)?.label ?? id;
 

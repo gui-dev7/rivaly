@@ -125,7 +125,7 @@ export function isPersistent() {
     return storageAvailable;
 }
 
-/** Size in bytes of the raw stored value, or null when unreadable. */
+/** Size in bytes of the raw stored value (0 when the key is empty). */
 export function rawSize(key) {
     const raw = rawGet(key);
     if (raw === null || raw === undefined) return 0;
@@ -273,8 +273,9 @@ export const saveRelations = (relations) => write(KEYS.relations, relations);
    ------------------------------------------------------------------ */
 
 /**
- * Wipes every namespaced key. Accounts are preserved by default so a
- * "reset demo data" does not silently delete the user's login.
+ * Wipes every namespaced key. With `keepAccounts: true` (what Settings
+ * and the demo use) the login survives, so a reset never silently
+ * deletes the user's account.
  */
 export function resetAll({ keepAccounts = false } = {}) {
     const accounts = keepAccounts ? getAccounts() : null;

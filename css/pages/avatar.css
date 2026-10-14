@@ -280,6 +280,7 @@
 /* ---------- Trigger ---------- */
 .avatar-edit {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-md);
@@ -288,9 +289,12 @@
     background: var(--color-surface-inset);
 }
 
+/* No celular o texto não pode virar uma coluna de letras: ele ganha uma
+   largura mínima e o botão desce para a linha de baixo quando falta espaço. */
 .avatar-edit__body {
-    flex: 1;
+    flex: 1 1 8rem;
     min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .avatar-edit__title {

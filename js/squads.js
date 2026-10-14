@@ -63,8 +63,6 @@ const selection = new Set();
 
 $('#poolSize').textContent = String(PLAYERS.length);
 
-const labelOf = (collection, id) => collection.find((item) => item.id === id)?.label ?? id;
-
 /* ============================================================
    FORMULÁRIO
    Os valores iniciais vêm do Passaporte, então a primeira busca
@@ -754,12 +752,13 @@ sessionHost.addEventListener('click', async (event) => {
     }
     if (action === 'arena' && currentSession) {
         const { openSquadMatchConfirm } = await import('./arena-ui.js');
-        openSquadMatchConfirm(currentSession.id, {
-            onDone: () => {
-                button.disabled = true;
-                button.textContent = 'Squad já jogou na Arena';
-            },
-        });
+        const markPlayed = () => {
+            button.disabled = true;
+            button.textContent = 'Squad já jogou na Arena';
+        };
+        // Cada sessão vai uma vez para a Arena: se já foi, o botão trava.
+        const opened = openSquadMatchConfirm(currentSession.id, { onDone: markPlayed });
+        if (!opened) markPlayed();
     }
 });
 

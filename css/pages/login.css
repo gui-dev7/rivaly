@@ -34,6 +34,20 @@
 
 .auth__brand {
     padding: 0;
+    margin-right: 0;
+}
+
+/* Navbar simples da página pública: marca + Início + Mapa do site. */
+.auth__nav {
+    gap: var(--space-md);
+}
+
+.auth__nav .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
 }
 
 .auth__aside-body {

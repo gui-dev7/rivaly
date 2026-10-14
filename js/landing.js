@@ -8,7 +8,7 @@
 
 import { bootPublic, afterRender } from './app.js';
 import { gameMarkMarkup } from './cards.js';
-import { icon, escapeHtml, avatarSvg, formatNumber } from './ui.js';
+import { icon, escapeHtml, avatarSvg } from './ui.js';
 import { DNA_ATTRIBUTES, ROADMAP, ACHIEVEMENTS, ARCHETYPES, getGameById } from './data.js';
 import { WEIGHTS } from './compatibility.js';
 import { countUp, runSequence, initStickyHeader, prefersReducedMotion, wait } from './animations.js';

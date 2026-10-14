@@ -965,7 +965,7 @@ export const ACHIEVEMENTS = [
         id: 'recruit', name: 'Recruta', rarity: 'uncommon', icon: 'shield', xp: 0,
         description: 'Entrou em um clã.',
         hint: 'Entre em um clã aberto, seja aceito numa candidatura ou aceite um convite.',
-        check: (ctx) => ctx.inClan,
+        check: (ctx) => ctx.joinedClan,
     },
     {
         id: 'banner-raised', name: 'Bandeira Erguida', rarity: 'rare', icon: 'flag', xp: 0,
