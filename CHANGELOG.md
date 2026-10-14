@@ -2,7 +2,7 @@
 
 Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
-## [2.0.0] — 2026-10-13
+## [2.0.0] — 2026-10-14
 
 A V2 transforma Arena, Feed e Clãs (antes "em breve") em áreas reais, ligadas ao Passaporte, sobre uma comunidade simulada e explicável. Bootstrap 5.3 entra como infraestrutura visual.
 
@@ -26,6 +26,8 @@ A V2 transforma Arena, Feed e Clãs (antes "em breve") em áreas reais, ligadas 
 - Landing: seção da comunidade simulada, tabela "O jogador brasileiro em números" com fontes e bloco de vídeo que só aparece com a URL configurada.
 - Rodapé com créditos (RIVALY · Guilherme Oliveira Santos · RM576218 · FIAP 2026) e link para o mapa do site em todas as páginas.
 - Documentação em `docs/`.
+- Testes de unidade do domínio em `tests/` (`npm test`, com o executor nativo do Node).
+- Navbar simples no login e no onboarding.
 
 ### Alterado
 
@@ -60,6 +62,14 @@ A V2 transforma Arena, Feed e Clãs (antes "em breve") em áreas reais, ligadas 
 - `Math.random()` no seletor de avatar trocado por `crypto.getRandomValues`.
 - Números animados apareciam no formato americano (`4,585`); agora `4.585`.
 - Tempo relativo sem acento ("ha 5 min") e concordância de plural ("1 vitórias").
+- Listeners de diálogos anteriores disparavam de novo (ex.: salvar o jogador de um cartão já fechado); cada diálogo agora nasce num elemento novo.
+- A mesma sessão de squad podia ir mais de uma vez para a Arena.
+- Publicar post e reagir não geravam atividade; marcar aliado ou rival aparecia no Feed.
+- O formulário "Criar clã" era apagado quando uma resposta de candidatura chegava.
+- A conquista Recruta desbloqueava ao fundar um clã (agora só ao entrar em um).
+- A faixa de arte do Passaporte nunca aparecia (campo `steamAppId` inexistente, herdado da V1).
+- Chips, barras e interruptores ainda tinham cantos arredondados.
+- No celular, o bloco do avatar do onboarding espremia o texto.
 
 ## [1.0.0] — 2026
 

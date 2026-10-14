@@ -12,7 +12,7 @@ Todo o JavaScript é ES Modules sem framework. O Vite serve no desenvolvimento e
 | Montar um componente a partir de dados | [js/feed.js:99](../js/feed.js#L99) (`buildPostElement`) | Um post vira um `<article>` com autor, texto (via `textContent`), reações e comentários. |
 | Inserir sem recarregar a lista | [js/feed.js:423](../js/feed.js#L423) | O comentário novo entra com `append` no fim da lista daquele post e o contador muda; o resto do Feed fica como está. |
 | Trocar o conteúdo de um contêiner | [js/feed.js:197](../js/feed.js#L197) | `replaceChildren` troca a lista quando a aba muda. |
-| `classList` | [js/feed.js:358](../js/feed.js#L358), [js/squads.js:445](../js/squads.js#L445) | Liga e desliga o estado ativo da reação e o card de jogador selecionado no squad. |
+| `classList` | [js/feed.js:358](../js/feed.js#L358), [js/squads.js:443](../js/squads.js#L443) | Liga e desliga o estado ativo da reação e o card de jogador selecionado no squad. |
 | `dataset` | [js/feed.js:101](../js/feed.js#L101) | O id do post fica em `data-post` e é lido de volta na delegação de eventos. |
 | `textContent` em tempo real | [js/feed.js:266](../js/feed.js#L266) (`updateComposer`) | O contador "N restantes" muda a cada tecla; a contagem de reações muda sem re-renderizar ([js/feed.js:357](../js/feed.js#L357)). |
 | Contador e estado vazio | [js/sitemap.js:104](../js/sitemap.js#L104) (`render`) | A busca do mapa do site atualiza o contador de resultados e, quando nada combina, mostra o estado vazio com "Limpar busca". |
@@ -28,12 +28,12 @@ Todo o JavaScript é ES Modules sem framework. O Vite serve no desenvolvimento e
 | `keydown` (atalho) | [js/feed.js:287](../js/feed.js#L287) | Ctrl+Enter (ou ⌘+Enter) publica sem tirar a mão do teclado. |
 | `keydown` (setas) | [js/arena.js:444](../js/arena.js#L444) | Setas esquerda e direita trocam a aba do ranking, como o padrão de abas da WAI-ARIA. |
 | `keydown` (Esc) | [js/sitemap.js:138](../js/sitemap.js#L138) | Esc limpa a busca do mapa do site e atualiza o contador. |
-| Busca em tempo real | [js/clans.js:448](../js/clans.js#L448), [js/sitemap.js:126](../js/sitemap.js#L126) | A lista de clãs e o mapa do site filtram enquanto a pessoa digita. |
-| `change` em filtros | [js/clans.js:452](../js/clans.js#L452), [js/arena.js:433](../js/arena.js#L433) | Filtros de clã (jogo, estilo, política) e filtro de jogo do ranking. |
-| Transformar a entrada | [js/clans.js:398](../js/clans.js#L398) | A tag do clã vira maiúscula enquanto é digitada e o emblema é redesenhado na hora. |
-| Delegação de eventos | [js/feed.js:350](../js/feed.js#L350), [js/arena.js:461](../js/arena.js#L461), [js/clans.js:465](../js/clans.js#L465) | Um único listener no contêiner atende reações, comentários e ações de cada card, inclusive os criados depois. |
+| Busca em tempo real | [js/clans.js:452](../js/clans.js#L452), [js/sitemap.js:126](../js/sitemap.js#L126) | A lista de clãs e o mapa do site filtram enquanto a pessoa digita. |
+| `change` em filtros | [js/clans.js:456](../js/clans.js#L456), [js/arena.js:433](../js/arena.js#L433) | Filtros de clã (jogo, estilo, política) e filtro de jogo do ranking. |
+| Transformar a entrada | [js/clans.js:402](../js/clans.js#L402) | A tag do clã vira maiúscula enquanto é digitada e o emblema é redesenhado na hora. |
+| Delegação de eventos | [js/feed.js:350](../js/feed.js#L350), [js/arena.js:461](../js/arena.js#L461), [js/clans.js:469](../js/clans.js#L469) | Um único listener no contêiner atende reações, comentários e ações de cada card, inclusive os criados depois. |
 | Delegação global | [js/navigation.js:281](../js/navigation.js#L281) (`initPlayerCards`) | Qualquer elemento com `data-player-card` em qualquer página abre o cartão do jogador. |
-| Evento customizado | [js/clan-ui.js:31](../js/clan-ui.js#L31) → [js/navigation.js:273](../js/navigation.js#L273) | `rivaly:invites-changed` avisa o centro de convites, que atualiza o contador sem acoplamento entre módulos. |
+| Evento customizado | [js/clan-ui.js:32](../js/clan-ui.js#L32) → [js/navigation.js:273](../js/navigation.js#L273) | `rivaly:invites-changed` avisa o centro de convites, que atualiza o contador sem acoplamento entre módulos. |
 | Eventos do Bootstrap | [js/modal.js:50](../js/modal.js#L50) a [js/modal.js:75](../js/modal.js#L75) | `show`, `shown`, `hide` e `hidden.bs.modal` controlam a máquina de estados do diálogo único. |
 | `DOMContentLoaded` | [js/protocol-check.js:19](../js/protocol-check.js#L19) | Mostra o aviso quando a página foi aberta por `file://`. |
 
@@ -52,9 +52,9 @@ Todo o JavaScript é ES Modules sem framework. O Vite serve no desenvolvimento e
 | Foco no primeiro erro | [js/validation.js:242](../js/validation.js#L242) (`focusFirstInvalid`) | Leva o foco ao campo que precisa de correção. |
 | Login e cadastro | [js/login.js:132](../js/login.js#L132), [js/login.js:178](../js/login.js#L178), [js/login.js:255](../js/login.js#L255) | Esquemas de entrar e criar conta (e-mail, senha, confirmação com `matches`) e a chamada no `submit`. |
 | Onboarding | [js/onboarding.js:182](../js/onboarding.js#L182) | Esquema por etapa, com grupos de checkbox validados como um campo só. |
-| Criar clã | [js/clans-store.js:254](../js/clans-store.js#L254) (`clanSchema`), [js/clans-store.js:350](../js/clans-store.js#L350) | Nome, tag única (`unique`), política e lema; o store revalida com `validateData` mesmo se a tela falhar. |
-| Candidatura | [js/clan-ui.js:208](../js/clan-ui.js#L208), [js/clans-store.js:313](../js/clans-store.js#L313) | Mensagem de 20 a 280 caracteres, sem HTML, com contador. |
-| Post e comentário | [js/feed-store.js:37](../js/feed-store.js#L37), [js/feed.js:270](../js/feed.js#L270), [js/feed.js:407](../js/feed.js#L407) | O botão "Publicar" só habilita com texto válido; comentário até 140 caracteres. |
+| Criar clã | [js/clans-store.js:259](../js/clans-store.js#L259) (`clanSchema`), [js/clans-store.js:355](../js/clans-store.js#L355) | Nome, tag única (`unique`), política e lema; o store revalida com `validateData` mesmo se a tela falhar. |
+| Candidatura | [js/clan-ui.js:219](../js/clan-ui.js#L219), [js/clans-store.js:318](../js/clans-store.js#L318) | Mensagem de 20 a 280 caracteres, sem HTML, com contador. |
+| Post e comentário | [js/feed-store.js:38](../js/feed-store.js#L38), [js/feed.js:270](../js/feed.js#L270), [js/feed.js:407](../js/feed.js#L407) | O botão "Publicar" só habilita com texto válido; comentário até 140 caracteres. |
 | Biblioteca e Passaporte | [js/library.js:452](../js/library.js#L452), [js/passport.js:683](../js/passport.js#L683) | Os diálogos de adicionar jogo e editar Passaporte usam o mesmo módulo. |
 | Entrada não confiável | [js/login.js:52](../js/login.js#L52) (`safeRedirect`) | O `?redirect=` do login só aceita páginas do próprio site. |
 
@@ -71,24 +71,24 @@ Todo o JavaScript é ES Modules sem framework. O Vite serve no desenvolvimento e
 | Valor derivado com breakdown | [js/community.js:62](../js/community.js#L62) (`seededRating`) | Rating de cada jogador semeado a partir de rank, reputação e partidas, com a conta. |
 | Fluxo com efeitos | [js/sessions.js:119](../js/sessions.js#L119) (`playSession`), [js/sessions.js:254](../js/sessions.js#L254) (`ratePlayer`) | Simula a sessão, grava, dá XP, registra atividade e devolve o resultado para a tela. |
 | Regra de negócio reutilizável | [js/gamification.js:145](../js/gamification.js#L145) (`awardOnceFor`) | XP só uma vez por par regra + alvo (evita farm). |
-| Migração | [js/storage.js:319](../js/storage.js#L319) (`migrateToV2`) | Só cria chaves que não existem; os dados da V1 continuam. |
-| `async`/`await` | [js/squads.js:482](../js/squads.js#L482) (`runSessionFlow`) | Espera a sequência de loading (`await runSequence`) antes de mostrar o placar; `confirmDialog` também devolve uma `Promise<boolean>`. |
+| Migração | [js/storage.js:320](../js/storage.js#L320) (`migrateToV2`) | Só cria chaves que não existem; os dados da V1 continuam. |
+| `async`/`await` | [js/squads.js:480](../js/squads.js#L480) (`runSessionFlow`) | Espera a sequência de loading (`await runSequence`) antes de mostrar o placar; `confirmDialog` também devolve uma `Promise<boolean>`. |
 
 ## 5. Arrays
 
 | Item | Onde | O que mostra |
 |---|---|---|
-| `filter` | [js/feed-store.js:151](../js/feed-store.js#L151) (`filterFeed`) | Cada aba do Feed (Meu clã, Aliados, Rivais, Arena) é um filtro sobre a mesma lista. |
+| `filter` | [js/feed-store.js:154](../js/feed-store.js#L154) (`filterFeed`) | Cada aba do Feed (Meu clã, Aliados, Rivais, Arena) é um filtro sobre a mesma lista. |
 | `filter` + `some` | [js/sitemap.js:74](../js/sitemap.js#L74) (`search`) | A busca procura o termo em título, descrição, grupo e página pai, sem acento e sem diferenciar maiúscula. |
-| `sort` com critério de desempate | [js/arena-store.js:348](../js/arena-store.js#L348) | Ranking por pontos da temporada e, no empate, por rating. |
+| `sort` com critério de desempate | [js/arena-store.js:351](../js/arena-store.js#L351) | Ranking por pontos da temporada e, no empate, por rating. |
 | `sort` por valor calculado | [js/clans.js:228](../js/clans.js#L228) | Clãs do mais compatível para o menos. |
-| `reduce` | [js/arena-store.js:179](../js/arena-store.js#L179), [js/compatibility.js:324](../js/compatibility.js#L324) | Média de rating do time; soma dos fatores da nota de compatibilidade. |
+| `reduce` | [js/arena-store.js:182](../js/arena-store.js#L182), [js/compatibility.js:324](../js/compatibility.js#L324) | Média de rating do time; soma dos fatores da nota de compatibilidade. |
 | `map` + `filter` | [js/validation.js:93](../js/validation.js#L93) | Aplica as regras e descarta as que passaram. |
 | `flatMap` | [js/site-map.js:155](../js/site-map.js#L155) (`SITE_PAGES`) | Achata a árvore de grupos em uma lista de páginas. |
-| Spread + `sort` | [js/feed-store.js:143](../js/feed-store.js#L143) | Junta posts e atividades em uma linha do tempo única, do mais novo para o mais antigo. |
+| Spread + `sort` | [js/feed-store.js:146](../js/feed-store.js#L146) | Junta posts e atividades em uma linha do tempo única, do mais novo para o mais antigo. |
 | `slice` para paginação | [js/arena.js:346](../js/arena.js#L346) | Histórico da Arena em páginas de tamanho fixo. |
-| `slice` para limite | [js/feed-store.js:279](../js/feed-store.js#L279) | Guarda só os últimos 20 comentários por post. |
-| Agrupamento | [js/feed-store.js:176](../js/feed-store.js#L176) (`groupActivity`) | Atividades seguidas viram um bloco só no Feed. |
+| `slice` para limite | [js/feed-store.js:291](../js/feed-store.js#L291) | Guarda só os últimos 20 comentários por post. |
+| Agrupamento | [js/feed-store.js:179](../js/feed-store.js#L179) (`groupActivity`) | Atividades seguidas viram um bloco só no Feed. |
 | Amostra ponderada | [js/rng.js:80](../js/rng.js#L80) (`weightedSample`) | Sorteia o squad aleatório pesando pela compatibilidade. |
 
 ## 6. Bootstrap 5.3.8 (local)
@@ -102,9 +102,9 @@ Todo o JavaScript é ES Modules sem framework. O Vite serve no desenvolvimento e
 | Offcanvas | [dashboard.html:68](../dashboard.html#L68), [dashboard.html:180](../dashboard.html#L180) | A barra lateral é `offcanvas-lg`: fixa a partir de 992 px, gaveta abaixo disso (também aberta pelo "Mais" da barra inferior). |
 | Dropdown | [dashboard.html:199](../dashboard.html#L199), [dashboard.html:203](../dashboard.html#L203) | Centro de convites no topo, com aceitar, recusar e "Por quê?" em cada item. |
 | **Botões** | [css/components.css:10](../css/components.css#L10) a [css/components.css:24](../css/components.css#L24), [css/components.css:237](../css/components.css#L237) | `btn-primary`, `btn-outline-light`, `btn-danger` e os demais sobre `--bs-btn-*`, com aliases da V1 (`btn--primary`) e estado `is-loading`. |
-| **Modais** | [js/modal.js:48](../js/modal.js#L48), [js/modal.js:119](../js/modal.js#L119), [js/modal.js:184](../js/modal.js#L184) | `bootstrap.Modal` por baixo de `openModal` e `confirmDialog`; usado na chance de vitória ([js/arena-ui.js:145](../js/arena-ui.js#L145)) e no cartão do jogador ([js/player-card.js:60](../js/player-card.js#L60)). |
-| **Cards** | [feed.html:211](../feed.html#L211), [js/clans.js:235](../js/clans.js#L235), [js/cards.js:110](../js/cards.js#L110) | Composer do Feed, cards de clã (`card h-100`) e cards de jogador com `card-body` e `card-footer`. |
-| **Formulários** | [login.html:114](../login.html#L114), [login.html:120](../login.html#L120), [clans.html:231](../clans.html#L231), [clans.html:242](../clans.html#L242), [settings.html:298](../settings.html#L298) | `input-group`, `invalid-feedback`, `form-select`, `form-check` e `form-switch`. |
+| **Modais** | [js/modal.js:48](../js/modal.js#L48), [js/modal.js:119](../js/modal.js#L119), [js/modal.js:192](../js/modal.js#L192) | `bootstrap.Modal` por baixo de `openModal` e `confirmDialog`; usado na chance de vitória ([js/arena-ui.js:147](../js/arena-ui.js#L147)) e no cartão do jogador ([js/player-card.js:60](../js/player-card.js#L60)). |
+| **Cards** | [feed.html:211](../feed.html#L211), [js/clans.js:235](../js/clans.js#L235), [js/cards.js:109](../js/cards.js#L109) | Composer do Feed, cards de clã (`card h-100`) e cards de jogador com `card-body` e `card-footer`. |
+| **Formulários** | [login.html:120](../login.html#L120), [login.html:126](../login.html#L126), [clans.html:231](../clans.html#L231), [clans.html:242](../clans.html#L242), [settings.html:298](../settings.html#L298) | `input-group`, `invalid-feedback`, `form-select`, `form-check` e `form-switch`. |
 | Abas e pílulas | [arena.html:230](../arena.html#L230), [arena.html:276](../arena.html#L276), [feed.html:231](../feed.html#L231) | Modos da Arena (`nav-pills`), ranking Jogadores/Clãs e abas do Feed (`nav-tabs`). |
 | Accordion | [arena.html:313](../arena.html#L313), [sitemap.html:270](../sitemap.html#L270) | "Como o rating funciona" e "Como as áreas se conectam". |
 | Tabela | [arena.html:290](../arena.html#L290), [index.html:411](../index.html#L411), [js/settings.js:183](../js/settings.js#L183) | Ranking com `table-responsive`, `table-hover` e a linha do usuário em `table-active` ([js/arena.js:279](../js/arena.js#L279)). |

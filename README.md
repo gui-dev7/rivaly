@@ -141,6 +141,7 @@ npm install
 npm run dev        # http://localhost:5173 (ou: start.bat / ./start.sh)
 npm run build      # gera dist/ com as 15 páginas
 npm run preview    # serve dist/ com os mesmos cabeçalhos de segurança do vercel.json
+npm test           # testes de unidade do domínio (node:test, sem dependências)
 ```
 
 Sem Node, `python -m http.server 5500` na raiz também abre o site, mas as imagens de `public/` (marca e capas locais) só aparecem pelo Vite ou pela Vercel.
@@ -210,6 +211,7 @@ No celular, a barra inferior tem Início, Passaporte, Squads, Arena e **Mais** (
 │   └── <página>.js           controllers (DOM e eventos)
 ├── public/                   marca, capturas, capas locais, sitemap.xml, robots.txt
 ├── tools/                    sync-chrome.mjs, sitemap-doc.mjs, fetch-assets.mjs
+├── tests/                    testes de unidade do domínio (Elo, temporada, RNG, validação)
 ├── docs/                     decisões, mapa do site, evidências de JS, voz e tom, roteiro
 └── vercel.json               cabeçalhos de segurança (CSP)
 ```
