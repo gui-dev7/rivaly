@@ -55,9 +55,9 @@ export const TOUR_STEPS = [
         text: 'Convites de clã, respostas de candidatura e desafios da Arena chegam neste sino, com o número de pendências.',
     },
     {
-        page: 'dashboard.html', target: '#overviewStats',
-        title: 'Visão geral',
-        text: 'Seis indicadores do seu perfil: nível, experiência, Pontuação Gamer, reputação, jogos e medalhas. Todos saem dos seus dados; nada aqui é enfeite.',
+        page: 'dashboard.html', target: '.hud',
+        title: 'Seu nível em destaque',
+        text: 'O número grande é o seu nível; cada bloco da barra é 5% do caminho até o próximo. Ao lado, experiência, Pontuação Gamer, reputação, jogos e medalhas. Tudo sai dos seus dados.',
     },
     {
         page: 'dashboard.html', target: '.dna-summary',
@@ -136,6 +136,11 @@ export const TOUR_STEPS = [
         page: 'squads.html', target: '#sessionBar',
         title: 'Jogar uma sessão',
         text: 'Marque de 2 a 4 jogadores ou peça um squad aleatório. Depois da partida você marca cada colega como Aliado, Rival ou Neutro, e um colega com clã pode convidar você.',
+    },
+    {
+        page: 'squads.html', target: '#agendaSection',
+        title: 'Agenda da semana',
+        text: 'Marque os dias e períodos em que você joga. A RIVALY soma a sua agenda com a do squad e mostra o horário em que mais gente está livre.',
     },
 
     /* ---------- ARENA ---------- */

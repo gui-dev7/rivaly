@@ -213,18 +213,25 @@
             <!-- chrome:topbar:end -->
 
             <main class="page page-enter" id="main-content">
-                <!-- Saudação -->
-                <section class="greeting" aria-labelledby="greetingTitle">
-                    <div class="greeting__text">
-                        <h1 class="greeting__title" id="greetingTitle">Bem-vindo de volta.</h1>
-                        <p class="greeting__sub" id="greetingSub">Pronto para jogar?</p>
+                <!-- Saudação: o nível do Passaporte em destaque (HUD) -->
+                <section class="hud" aria-labelledby="greetingTitle">
+                    <div class="hud__level" id="hudLevel">
+                        <p class="hud__caption">Nível</p>
+                        <p class="hud__number numeric" id="hudNumber">1</p>
+                        <p class="hud__archetype" id="hudArchetype"></p>
+                        <div class="hud__xp">
+                            <div class="hud__segments" id="hudSegments" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progresso até o próximo nível"></div>
+                            <p class="hud__xp-text" id="hudXpText"></p>
+                        </div>
                     </div>
-                    <div class="greeting__actions">
-                        <a class="btn btn-outline-light" href="library.html?action=add">
-                            <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                            Adicionar jogo
-                        </a>
-                        <a class="btn btn-primary" href="squads.html">Encontrar meu squad</a>
+                    <div class="hud__side">
+                        <h1 class="hud__title" id="greetingTitle">Bem-vindo de volta.</h1>
+                        <p class="hud__sub" id="greetingSub">Pronto para jogar?</p>
+                        <dl class="ledger" id="overviewStats"></dl>
+                        <div class="hud__actions">
+                            <a class="btn btn-primary" href="squads.html">Encontrar meu squad</a>
+                            <a class="link" href="library.html?action=add">Adicionar jogo à Biblioteca</a>
+                        </div>
                     </div>
                 </section>
 
@@ -237,14 +244,6 @@
                         <h2 class="section-head__title" id="nextStepTitle">Próximo passo</h2>
                     </div>
                     <div id="nextStep"></div>
-                </section>
-
-                <!-- Visão geral -->
-                <section aria-labelledby="overviewTitle">
-                    <div class="section-head">
-                        <h2 class="section-head__title" id="overviewTitle">Visão geral</h2>
-                    </div>
-                    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-3 stagger" id="overviewStats"></div>
                 </section>
 
                 <!-- Duas colunas -->

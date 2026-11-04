@@ -1915,8 +1915,15 @@ body.is-locked {
         margin: 0;
     }
 
+    /* Telas estreitas: o rótulo sobe para a própria linha, em vez de
+       espremer a palavra ("Colecionador") ao lado da barra. */
     .dna-bar {
-        grid-template-columns: 84px 1fr 34px;
+        grid-template-columns: 1fr 34px;
+        row-gap: var(--space-3xs);
+    }
+
+    .dna-bar__label {
+        grid-column: 1 / -1;
     }
 }
 
@@ -2236,15 +2243,14 @@ body.is-touring {
         min-height: 40px;
     }
 
-    /* O rotulo do DNA encostava na barra em telas estreitas. */
     .dna-bar {
-        grid-template-columns: 76px 1fr 32px;
-        gap: var(--space-xs);
+        grid-template-columns: 1fr 32px;
+        gap: var(--space-3xs) var(--space-xs);
     }
 
     .dna-bar__label {
+        grid-column: 1 / -1;
         min-width: 0;
-        overflow-wrap: anywhere;
     }
 
     /* Tres estatisticas lado a lado quebravam o rotulo e desalinhavam

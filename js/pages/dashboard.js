@@ -13,7 +13,7 @@ import { archetypeOf, profileCompletion, missingProfileFields } from '../domain/
 import { listHydrated, librarySummary } from '../domain/library-store.js';
 import { getRecentActivity } from '../domain/activity.js';
 import { findMatches } from '../domain/compatibility.js';
-import { statMarkup, gameRowMarkup, squadRowMarkup, badgeMarkup, activityItemMarkup, dnaListMarkup } from '../ui/cards.js';
+import { gameRowMarkup, squadRowMarkup, badgeMarkup, activityItemMarkup, dnaListMarkup } from '../ui/cards.js';
 import { countUp } from '../ui/animations.js';
 import { getGameById } from '../domain/data.js';
 import { communitySnapshot, nextStep } from '../domain/community-summary.js';
@@ -183,59 +183,61 @@ document.addEventListener('rivaly:invites-changed', renderNextStep);
    OVERVIEW
    ============================================================ */
 
+/* HUD: o número do nível domina; a barra é segmentada como num jogo
+   (20 blocos, 5% cada). O restante do Passaporte vira um "ledger". */
+const SEGMENTS = 20;
+// Qualquer progresso acende ao menos um bloco: 3% não pode parecer zero.
+const filled = snapshot.percent > 0 ? Math.max(1, Math.floor((snapshot.percent / 100) * SEGMENTS)) : 0;
+document.getElementById('hudNumber').textContent = String(snapshot.level);
+document.getElementById('hudNumber').dataset.count = String(snapshot.level);
+document.getElementById('hudArchetype').textContent = archetype?.name ? `${user.nickname} · ${archetype.name}` : user.nickname;
+const segmentsHost = document.getElementById('hudSegments');
+segmentsHost.setAttribute('aria-valuenow', String(Math.round(snapshot.percent)));
+segmentsHost.innerHTML = Array.from({ length: SEGMENTS }, (_, i) =>
+    `<span class="hud__seg${i < filled ? ' is-on' : ''}" style="--i:${i}"></span>`).join('');
+document.getElementById('hudXpText').textContent =
+    `${formatNumber(snapshot.xp)} XP · faltam ${formatNumber(snapshot.remaining)} para o nível ${snapshot.level + 1}`;
+
+const ledgerRow = ({ label, value, meta = '', tooltip = '', count = null }) => `
+    <div class="ledger__row">
+        <dt>${escapeHtml(label)}${tooltip ? ` <button type="button" class="tip" data-tooltip="${escapeHtml(tooltip)}" aria-label="${escapeHtml(tooltip)}">?</button>` : ''}</dt>
+        <dd><span class="ledger__value numeric"${count !== null ? ` data-count="${count}"` : ''}>${escapeHtml(String(value))}</span>${meta ? `<span class="ledger__meta">${escapeHtml(meta)}</span>` : ''}</dd>
+    </div>`;
+
 render(document.getElementById('overviewStats'), [
-    statMarkup({
-        label: 'Nível',
-        value: snapshot.level,
-        meta: `${formatNumber(snapshot.remaining)} XP para o nível ${snapshot.level + 1}`,
-        icon: 'arrow-up',
-        accent: 'var(--color-primary)',
-        tooltip: 'Os níveis vêm do XP. Cada nível custa 500 XP a mais que o anterior.',
-        count: snapshot.level,
-    }),
-    statMarkup({
+    ledgerRow({
         label: 'Experiência',
         value: formatNumber(snapshot.xp),
-        meta: `${Math.round(snapshot.percent)}% deste nível`,
-        icon: 'bolt',
-        accent: 'var(--color-primary)',
-        tooltip: 'O XP vem de ações reais: Biblioteca, buscas e sessões de squad, Arena, clãs, Feed e o seu Passaporte.',
+        meta: `${Math.floor(snapshot.percent)}% deste nível`,
+        tooltip: 'O XP vem de ações reais: Biblioteca, buscas e sessões de squad, Arena, clãs, Feed e o seu Passaporte. Cada nível custa 500 XP a mais que o anterior.',
         count: snapshot.xp,
     }),
-    statMarkup({
+    ledgerRow({
         label: 'Pontuação Gamer',
         value: formatNumber(snapshot.gamerScore),
-        meta: 'Força geral do Passaporte',
-        icon: 'spark',
-        accent: 'var(--color-primary)',
+        meta: 'força geral do Passaporte',
         tooltip: 'Um número único que combina nível, XP, raridade das conquistas, tamanho da biblioteca, horas jogadas, reputação e atividade de squad.',
         count: snapshot.gamerScore,
     }),
-    statMarkup({
+    ledgerRow({
         label: 'Reputação',
         value: snapshot.reputation,
-        meta: 'Ganha com atividade',
-        icon: 'shield',
-        accent: 'var(--color-accent)',
+        meta: 'de 100',
         tooltip: 'Começa em 50 e cresce com seu nível, conquistas, jogos zerados, tamanho do squad e o quanto o perfil está completo. Limite de 100.',
         count: snapshot.reputation,
     }),
-    statMarkup({
+    ledgerRow({
         label: 'Jogos',
         value: snapshot.libraryCount,
         meta: `${formatHours(summary.hours)} registradas`,
-        icon: 'controller',
-        accent: 'var(--color-text-muted)',
         count: snapshot.libraryCount,
     }),
-    statMarkup({
+    ledgerRow({
         label: 'Medalhas',
         value: `${snapshot.achievementsUnlocked}/${snapshot.achievementsTotal}`,
-        meta: 'Conquistas desbloqueadas',
-        icon: 'trophy',
-        accent: 'var(--color-primary)',
+        meta: 'conquistas',
     }),
-].map((stat) => colWrap(stat)).join(''));
+].join(''));
 
 /* ============================================================
    CURRENTLY PLAYING
