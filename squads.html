@@ -225,7 +225,7 @@
 
                 <div class="row g-4 squads__layout">
                     <!-- ---------- Busca ---------- -->
-                    <section class="col-12 col-lg-4 col-xl-3 squads__search" aria-labelledby="searchTitle">
+                    <section class="col-12 col-lg-4 col-xxl-3 squads__search" aria-labelledby="searchTitle">
                         <form class="card card--accented squad-form" id="squadForm" novalidate>
                             <h2 class="card__title" id="searchTitle">Filtros de busca</h2>
 
@@ -276,7 +276,7 @@
                     </section>
 
                     <!-- ---------- Resultados ---------- -->
-                    <section class="col-12 col-lg-8 col-xl-9 squads__results" aria-labelledby="resultsTitle">
+                    <section class="col-12 col-lg-8 col-xxl-9 squads__results" aria-labelledby="resultsTitle">
                         <div class="section-head">
                             <h2 class="section-head__title" id="resultsTitle">Resultados</h2>
                             <span class="section-head__meta text-muted" id="resultsMeta"></span>
@@ -307,6 +307,16 @@
                         <span class="section-head__meta text-muted" id="sessionMeta"></span>
                     </div>
                     <div id="sessionHost" aria-live="polite"></div>
+                </section>
+
+                <!-- ---------- Agenda da semana (matriz 7 × 5) ---------- -->
+                <section class="squads__agenda" id="agendaSection" aria-labelledby="agendaTitle">
+                    <div class="section-head">
+                        <h2 class="section-head__title" id="agendaTitle">Agenda da semana</h2>
+                        <span class="section-head__meta text-muted" id="agendaMeta"></span>
+                    </div>
+                    <p class="section-intro">Marque quando você costuma jogar. A RIVALY soma a sua agenda com a de quem está no squad e mostra o horário em que mais gente está livre.</p>
+                    <div id="agendaHost"></div>
                 </section>
 
                 <!-- ---------- Squad salvo ---------- -->

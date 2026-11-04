@@ -38,6 +38,9 @@ export const KEYS = {
     invites: `${NAMESPACE}:invites`,
     sessions: `${NAMESPACE}:sessions`,
     relations: `${NAMESPACE}:relations`,
+
+    /* --- V3 --- */
+    availability: `${NAMESPACE}:availability`,
 };
 
 /** Caps so localStorage never grows without bound (see activity.js). */
@@ -267,6 +270,10 @@ export const saveSessions = (sessions) => write(KEYS.sessions, sessions.slice(0,
 /* --- Relações: { [playerId]: { type, praises, updatedAt } } --- */
 export const getRelations = () => read(KEYS.relations, {});
 export const saveRelations = (relations) => write(KEYS.relations, relations);
+
+/* --- V3: Agenda da semana (matriz 7 × 5 de 0/1; null = ainda não editada) --- */
+export const getAvailability = () => read(KEYS.availability, null);
+export const saveAvailability = (matrix) => write(KEYS.availability, matrix);
 
 /* ------------------------------------------------------------------
    Lifecycle

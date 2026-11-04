@@ -20,7 +20,7 @@ import {
     getGameById, getPlayerById, rankLabel,
 } from '../domain/data.js';
 import { findMatches, WEIGHTS } from '../domain/compatibility.js';
-import { getUser, getSquads, saveSquads } from '../core/storage.js';
+import { getUser, getSquads, saveSquads, getAvailability, saveAvailability } from '../core/storage.js';
 import { updateUser } from '../domain/profile.js';
 import { awardXp, checkAchievements } from '../domain/gamification.js';
 import { logActivity } from '../domain/activity.js';
@@ -40,6 +40,10 @@ import {
     $, render, escapeHtml, icon, emptyStateMarkup, avatarMarkup, formatRelativeTime,
 } from '../ui/ui.js';
 import { runSequence, countUp, prefersReducedMotion, wait } from '../ui/animations.js';
+import {
+    defaultUserAvailability, isValidMatrix, toggleCell, squadHeatmap, countFilled,
+} from '../domain/availability.js';
+import { agendaEditorMarkup, agendaHeatMarkup, bestSlotText } from '../ui/agenda-ui.js';
 
 const user = bootApp({
     page: 'squads',
@@ -453,6 +457,7 @@ function syncPickControls() {
     else hint.textContent = `Squad pronto: ${count} jogadores. Pode chamar mais ${MAX_TEAMMATES - count}.`;
 
     button.textContent = count >= MIN_TEAMMATES ? `Jogar com este squad (${count})` : 'Jogar com este squad';
+    renderAgenda();
 }
 
 document.getElementById('main-content').addEventListener('change', (event) => {
@@ -693,6 +698,7 @@ function renderSessionResult(session) {
         </div>
     `);
     afterRender(sessionHost);
+    renderAgenda();
 }
 
 /** Aplica a avaliação de um card na hora em que algo muda. */
@@ -784,6 +790,94 @@ document.getElementById('main-content').addEventListener('click', (event) => {
     if (action === 'breakdown') openBreakdown(player);
     if (action === 'save') saveTeammate(player);
     if (action === 'unsave') unsaveTeammate(player);
+});
+
+/* ============================================================
+   AGENDA DA SEMANA (matriz 7 dias × 5 períodos)
+   Com quem cruzar: os jogadores marcados agora; senão, o time da
+   última sessão; senão, os 4 primeiros do squad salvo.
+   ============================================================ */
+
+const agendaHost = $('#agendaHost');
+
+function myAgenda() {
+    const stored = getAvailability();
+    return isValidMatrix(stored) ? stored : defaultUserAvailability(getUser());
+}
+
+function agendaTeam() {
+    if (selection.size > 0) return { ids: [...selection], source: 'os jogadores marcados' };
+    if (currentSession) return { ids: currentSession.teammates, source: 'o time da última sessão' };
+    const saved = getSquads().map((entry) => entry.playerId).slice(0, MAX_TEAMMATES);
+    if (saved.length > 0) return { ids: saved, source: 'o seu squad salvo' };
+    return { ids: [], source: '' };
+}
+
+function renderAgenda() {
+    if (!agendaHost) return;
+    const mine = myAgenda();
+    const { ids, source } = agendaTeam();
+    const players = ids.map(getPlayerById).filter(Boolean);
+    const map = squadHeatmap(mine, players);
+
+    $('#agendaMeta').textContent = `${countFilled(mine)} de 35 períodos marcados`;
+
+    render(agendaHost, `
+        <div class="row g-4">
+            <div class="col-12 col-xl-5">
+                <div class="card agenda-card">
+                    <div class="card-body">
+                        <h3 class="agenda-card__title">Sua agenda</h3>
+                        <p class="form-text">Toque para marcar ou desmarcar. Fica salvo neste navegador.</p>
+                        ${agendaEditorMarkup(mine)}
+                        <div class="agenda-card__foot">
+                            <button type="button" class="btn btn-link btn-sm px-0" data-agenda-action="reset">Voltar aos horários do Passaporte</button>
+                            <span class="form-text" id="agendaStatus" aria-live="polite"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-7">
+                <div class="card agenda-card agenda-card--heat">
+                    <div class="card-body">
+                        <h3 class="agenda-card__title">Quando o squad está livre</h3>
+                        ${players.length === 0 ? `
+                            <p class="form-text">Marque jogadores nos resultados, jogue uma sessão ou salve parceiros para cruzar os horários.</p>
+                        ` : `
+                            <div class="squad-chips mb-2">${players.map((player) => playerChipMarkup(player.id)).join('')}</div>
+                            <p class="form-text">Cruzando você com ${escapeHtml(source)}. Cada número é quantos de ${map.size} estão livres.</p>
+                        `}
+                        ${agendaHeatMarkup(map)}
+                        <p class="agenda-card__best">${icon('clock', { size: 16 })} <span>${escapeHtml(bestSlotText(map))}</span></p>
+                        <div class="agenda-legend" aria-hidden="true">
+                            <span>Ninguém</span>
+                            <i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i>
+                            <span>Todos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `);
+    afterRender(agendaHost);
+}
+
+agendaHost?.addEventListener('click', (event) => {
+    const cell = event.target.closest('[data-agenda-cell]');
+    if (cell) {
+        const [row, col] = cell.dataset.agendaCell.split('-').map(Number);
+        saveAvailability(toggleCell(myAgenda(), row, col));
+        renderAgenda();
+        const again = agendaHost.querySelector(`[data-agenda-cell="${row}-${col}"]`);
+        again?.focus();
+        $('#agendaStatus').textContent = 'Agenda salva.';
+        return;
+    }
+    if (event.target.closest('[data-agenda-action="reset"]')) {
+        saveAvailability(defaultUserAvailability(getUser()));
+        renderAgenda();
+        $('#agendaStatus').textContent = 'Agenda refeita a partir do Passaporte.';
+    }
 });
 
 /* ============================================================

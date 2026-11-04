@@ -10,7 +10,9 @@
 /* ------------------------------------------------------------
    SEARCH FORM
    ------------------------------------------------------------ */
-@media (min-width: 992px) {
+/* Só fixa o filtro quando ele cabe inteiro na tela; em telas baixas o
+   botão "Encontrar jogadores" ficava abaixo da dobra e inalcançável. */
+@media (min-width: 992px) and (min-height: 820px) {
     .squads__search {
         position: sticky;
         top: calc(var(--topbar-height) + var(--space-md));
@@ -674,4 +676,161 @@
     .saved-list {
         grid-template-columns: minmax(0, 1fr);
     }
+}
+
+/* ------------------------------------------------------------
+   AGENDA DA SEMANA — matriz 7 dias × 5 períodos
+   Editor (sua agenda) e mapa de calor (soma do squad) usam a
+   mesma tabela; a intensidade do amarelo é o número de pessoas.
+   ------------------------------------------------------------ */
+.squads__agenda {
+    margin-top: var(--space-2xl);
+}
+
+.agenda-card {
+    height: 100%;
+}
+
+.agenda-card__title {
+    margin-bottom: var(--space-2xs);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    letter-spacing: 0.01em;
+}
+
+.agenda {
+    width: 100%;
+    margin-top: var(--space-sm);
+    border-collapse: separate;
+    border-spacing: 4px;
+    table-layout: fixed;
+}
+
+.agenda th {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.agenda tbody th {
+    width: 2.6rem;
+    text-align: left;
+    color: var(--color-text-secondary);
+}
+
+.agenda td {
+    padding: 0;
+    height: 2.25rem;
+}
+
+.agenda__cell {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 2.25rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-inset);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+.agenda__cell:hover {
+    border-color: var(--color-primary-dim);
+}
+
+.agenda__cell:active {
+    transform: scale(0.94);
+}
+
+.agenda__cell.is-on {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+}
+
+.agenda__cell:focus-visible {
+    outline: 2px solid var(--color-primary-strong);
+    outline-offset: 2px;
+}
+
+.agenda__heat {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-inset);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    text-align: center;
+    vertical-align: middle;
+    color: var(--color-text);
+}
+
+.agenda__heat[data-level="1"],
+.agenda-legend i[data-level="1"] { background: rgba(var(--rgb-primary), 0.16); }
+.agenda__heat[data-level="2"],
+.agenda-legend i[data-level="2"] { background: rgba(var(--rgb-primary), 0.36); }
+.agenda__heat[data-level="3"],
+.agenda-legend i[data-level="3"] { background: rgba(var(--rgb-primary), 0.62); color: rgb(var(--rgb-ink)); }
+.agenda__heat[data-level="4"],
+.agenda-legend i[data-level="4"] { background: var(--color-primary); color: rgb(var(--rgb-ink)); }
+
+.agenda__heat.is-best {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
+}
+
+.agenda-card__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    margin-top: var(--space-xs);
+}
+
+.agenda-card__best {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-xs);
+    margin: var(--space-sm) 0 0;
+    padding: var(--space-sm) var(--space-md);
+    border-left: 3px solid var(--color-primary);
+    background: var(--color-primary-ghost);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+}
+
+.agenda-card__best svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-primary);
+}
+
+.agenda-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: var(--space-xs);
+    font-size: var(--text-2xs);
+    color: var(--color-text-muted);
+}
+
+.agenda-legend i {
+    width: 1.25rem;
+    height: 0.6rem;
+    border: 1px solid var(--color-border);
+}
+
+.agenda-legend span:first-child { margin-right: 4px; }
+.agenda-legend span:last-child { margin-left: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .agenda__cell { transition: none; }
+    .agenda__cell:active { transform: none; }
 }
