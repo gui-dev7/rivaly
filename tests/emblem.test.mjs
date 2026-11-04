@@ -6,9 +6,9 @@ import { seedUser } from './helpers.mjs';
 import {
     createClan, myClan, setClanEmblem, emblemSvg, defaultEmblem, resolveEmblem, leaveClan,
     EMBLEM_SHAPES, EMBLEM_PATTERNS, EMBLEM_PALETTES,
-} from '../js/clans-store.js';
-import { CLANS } from '../js/data.js';
-import { saveClanMembership } from '../js/storage.js';
+} from '../js/domain/clans-store.js';
+import { CLANS } from '../js/domain/data.js';
+import { saveClanMembership } from '../js/core/storage.js';
 
 const base = { name: 'Time Teste', tag: 'TST', focusGame: 'valorant', playstyle: 'competitive', policy: 'open', motto: '', minRank: 'Unranked' };
 

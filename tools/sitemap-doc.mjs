@@ -10,14 +10,14 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SITE_MAP, SITE_PAGES } from '../js/site-map.js';
+import { SITE_MAP, SITE_PAGES } from '../js/core/site-map.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const lines = [
     '# Mapa do site da RIVALY',
     '',
-    'Gerado a partir de `js/site-map.js` por `tools/sitemap-doc.mjs`. É a mesma árvore usada pela navegação (sidebar, offcanvas, barra inferior e rodapé) e pela página `sitemap.html`.',
+    'Gerado a partir de `js/core/site-map.js` por `tools/sitemap-doc.mjs`. É a mesma árvore usada pela navegação (sidebar, offcanvas, barra inferior e rodapé) e pela página `sitemap.html`.',
     '',
     `Total: ${SITE_PAGES.length} páginas em ${SITE_MAP.length} grupos. Páginas marcadas com (conta) exigem uma conta local; sem sessão, o mapa leva ao login e volta para a página escolhida.`,
     '',

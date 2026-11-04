@@ -2,11 +2,11 @@ import './setup.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { seedFrom, mulberry32, rngFor, isoWeek, weekStart } from '../js/rng.js';
+import { seedFrom, mulberry32, rngFor, isoWeek, weekStart } from '../js/core/rng.js';
 import {
     required, minLength, maxLength, pattern, email, matches, unique, noHtml, notBlank, numberRange, oneOf,
     validateValue, validateData, sanitizeText,
-} from '../js/validation.js';
+} from '../js/core/validation.js';
 
 /* ---------------- rng.js ---------------- */
 

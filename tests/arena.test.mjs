@@ -3,15 +3,15 @@ import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { seedUser } from './helpers.mjs';
-import { getArena, saveArena, getSessions, LIMITS } from '../js/storage.js';
+import { getArena, saveArena, getSessions, LIMITS } from '../js/core/storage.js';
 import {
     kFactor, expectedScore, calculateWinChance, ratingDeltas, updateRating, tierFor, nextTier, tierProgress,
     arenaState, previewDuel, playDuel, playSquadMatch, previewSquadMatch, previewClanMatch, playClanMatch,
     renderRankingData, matchHistory, START_RATING, SEASON_POINTS,
-} from '../js/arena-store.js';
-import { playSession } from '../js/sessions.js';
-import { createClan } from '../js/clans-store.js';
-import { currentWeekKey } from '../js/rng.js';
+} from '../js/domain/arena-store.js';
+import { playSession } from '../js/domain/sessions.js';
+import { createClan } from '../js/domain/clans-store.js';
+import { currentWeekKey } from '../js/core/rng.js';
 
 beforeEach(() => seedUser());
 

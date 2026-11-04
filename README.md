@@ -32,11 +32,11 @@ Projeto individual do desafio Happy Game (FIAP, Fase 2). Autor: Guilherme Olivei
 
 ## Comunidade simulada
 
-A RIVALY **não tem servidor nem outros usuários reais**. Os outros jogadores são 33 perfis semeados (`js/data.js`) e 7 clãs formados por eles. A interface diz isso em toda tela da comunidade (selo "Comunidade simulada", com explicação no tooltip).
+A RIVALY **não tem servidor nem outros usuários reais**. Os outros jogadores são 33 perfis semeados (`js/domain/data.js`) e 7 clãs formados por eles. A interface diz isso em toda tela da comunidade (selo "Comunidade simulada", com explicação no tooltip).
 
-Tudo o que esses jogadores "fazem" (aceitar ou recusar uma candidatura, convidar você para um clã, desafiar você na Arena, postar no Feed, ganhar uma partida) sai de um **motor determinístico e explicável** (`js/community.js`):
+Tudo o que esses jogadores "fazem" (aceitar ou recusar uma candidatura, convidar você para um clã, desafiar você na Arena, postar no Feed, ganhar uma partida) sai de um **motor determinístico e explicável** (`js/domain/community.js`):
 
-- **Sem `Math.random()` no domínio.** Os sorteios vêm de `js/rng.js` (mulberry32), semeados com o id do usuário, o id da entidade e a **semana ISO**. O mesmo cenário sempre dá o mesmo resultado, e a comunidade muda de uma semana para a outra.
+- **Sem `Math.random()` no domínio.** Os sorteios vêm de `js/core/rng.js` (mulberry32), semeados com o id do usuário, o id da entidade e a **semana ISO**. O mesmo cenário sempre dá o mesmo resultado, e a comunidade muda de uma semana para a outra.
 - **Toda decisão devolve `{ decision, reasons[], score, threshold }`.** A tela mostra os motivos, inclusive o número sorteado, em "Por quê?" e "Ver a conta".
 - **Respostas não são instantâneas.** Candidaturas e convites enviados ganham um intervalo simulado (12 s), persistido; a resposta chega no centro de convites na próxima visita ou quando o temporizador passa por ela.
 
@@ -110,7 +110,7 @@ chance           = 1 / (1 + e^(−(nós − eles) / 6))
 
 Nível: avançar do nível L para L+1 custa `1000 + (L − 1) × 500` XP. Clã: chegar ao nível N exige `120 × (N − 1)²` XP; a meta semanal é 60 pontos por integrante.
 
-**Reputação** e **Pontuação Gamer** não mudaram na V2 (ver `js/gamification.js`). O rating de Arena é uma métrica separada.
+**Reputação** e **Pontuação Gamer** não mudaram na V2 (ver `js/domain/gamification.js`). O rating de Arena é uma métrica separada.
 
 ### Conquistas
 
@@ -125,7 +125,7 @@ HTML5 · CSS3 · JavaScript (ES Modules) · Bootstrap 5.3.8
 ```
 
 - **Bootstrap 5.3.8**, baixado e servido localmente em `vendor/bootstrap/` (`bootstrap.min.css` e `bootstrap.bundle.min.js`), sem CDN. `css/bootstrap-theme.css` liga as variáveis `--bs-*` aos tokens da marca.
-- **Sem React, Tailwind, jQuery ou backend.** Persistência só no navegador, via `js/storage.js` (namespace `rivaly:`, schema 2).
+- **Sem React, Tailwind, jQuery ou backend.** Persistência só no navegador, via `js/core/storage.js` (namespace `rivaly:`, schema 2).
 - **Fontes locais**: Chakra Petch e Jersey 10 (`css/fonts.css`).
 - **Imagens externas** permitidas na CSP: capas da Steam CDN e do IGDB (via GameDB), avatares do DiceBear. Emblemas de clã, avatares dos jogadores semeados e fallbacks de capa são gerados no navegador.
 - **Vite** é só ferramenta de desenvolvimento e build (`devDependency`).
@@ -170,7 +170,7 @@ A conta é local: não há servidor, recuperação de senha nem sincronização 
 
 ## Mapa do site
 
-Fonte única: `js/site-map.js`. A mesma árvore alimenta a navegação, a página `sitemap.html` e o `docs/mapa-do-site.md`.
+Fonte única: `js/core/site-map.js`. A mesma árvore alimenta a navegação, a página `sitemap.html` e o `docs/mapa-do-site.md`.
 
 ```text
 RIVALY

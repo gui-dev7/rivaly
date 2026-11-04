@@ -4,7 +4,7 @@ O que já existe, o que a V2 entregou e o que continua no futuro. As fases estã
 
 ## Entregue na V2 (comunidade simulada)
 
-A V2 trouxe a camada social, **sem backend**. Os outros jogadores são perfis semeados e o comportamento deles sai de um motor determinístico que explica cada decisão (`js/community.js`).
+A V2 trouxe a camada social, **sem backend**. Os outros jogadores são perfis semeados e o comportamento deles sai de um motor determinístico que explica cada decisão (`js/domain/community.js`).
 
 - [x] Sessão de squad: escolher de 2 a 4 jogadores ou sortear, com o placar e a conta do resultado.
 - [x] Pós-partida: Aliado, Rival ou Neutro, elogios e ações contextuais.

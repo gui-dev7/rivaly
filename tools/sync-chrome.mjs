@@ -8,14 +8,14 @@
  * visível no código-fonte. Escrever esse markup à mão em quinze páginas
  * garantiria que, em algum momento, uma delas ficasse diferente das outras.
  *
- * Este script resolve isso: lê js/site-map.js (a fonte única) e substitui,
+ * Este script resolve isso: lê js/core/site-map.js (a fonte única) e substitui,
  * em cada página, apenas o que estiver entre marcadores como
  *
  *   <!-- chrome:app-nav:start --> ... <!-- chrome:app-nav:end -->
  *
  * Páginas sem um marcador simplesmente não recebem aquele bloco. O script é
  * idempotente: rodar duas vezes produz o mesmo arquivo. Nada disso roda no
- * navegador; em tempo de execução, js/navigation.js só marca a página atual
+ * navegador; em tempo de execução, js/core/navigation.js só marca a página atual
  * (aria-current) e preenche o que depende do usuário (XP, convites).
  */
 
@@ -23,8 +23,8 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { NAV_GROUPS, SITE_PAGES, BOTTOM_NAV_IDS, creditsLine, pageById } from '../js/site-map.js';
-import { icon } from '../js/ui.js';
+import { NAV_GROUPS, SITE_PAGES, BOTTOM_NAV_IDS, creditsLine, pageById } from '../js/core/site-map.js';
+import { icon } from '../js/ui/ui.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 

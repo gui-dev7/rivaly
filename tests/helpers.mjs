@@ -3,8 +3,8 @@
  */
 
 import { resetStorage } from './setup.mjs';
-import { initStorage, saveUser, saveSession, getUser } from '../js/storage.js';
-import { createUser } from '../js/profile.js';
+import { initStorage, saveUser, saveSession, getUser } from '../js/core/storage.js';
+import { createUser } from '../js/domain/profile.js';
 
 /**
  * Limpa o armazenamento e grava um Passaporte completo, parecido com o de

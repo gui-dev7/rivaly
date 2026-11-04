@@ -1,6 +1,6 @@
 # Mapa do site da RIVALY
 
-Gerado a partir de `js/site-map.js` por `tools/sitemap-doc.mjs`. É a mesma árvore usada pela navegação (sidebar, offcanvas, barra inferior e rodapé) e pela página `sitemap.html`.
+Gerado a partir de `js/core/site-map.js` por `tools/sitemap-doc.mjs`. É a mesma árvore usada pela navegação (sidebar, offcanvas, barra inferior e rodapé) e pela página `sitemap.html`.
 
 Total: 14 páginas em 5 grupos. Páginas marcadas com (conta) exigem uma conta local; sem sessão, o mapa leva ao login e volta para a página escolhida.
 
