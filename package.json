@@ -1,9 +1,9 @@
 {
   "name": "rivaly",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "RIVALY V2 — plataforma de identidade gamer com Passaporte, DNA, Squads, Arena, Clãs e Feed. HTML5, CSS3, JavaScript puro e Bootstrap 5.3 local.",
+  "description": "RIVALY V3 — plataforma de identidade gamer com Passaporte, DNA, Squads, Agenda da semana, Arena, Clãs e Feed. HTML5, CSS3, JavaScript puro e Bootstrap 5.3 local.",
   "scripts": {
     "dev": "vite",
     "host": "vite --host",

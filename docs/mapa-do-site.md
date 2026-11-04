@@ -21,6 +21,7 @@ RIVALY
 │   ├── Squads (squads.html) (conta)
 │   │   ├── Buscar squad
 │   │   ├── Jogar uma sessão
+│   │   ├── Agenda da semana
 │   │   └── Seu squad
 │   ├── Arena (arena.html) (conta)
 │   │   ├── Jogar
@@ -71,12 +72,13 @@ Onde o Passaporte encontra outros jogadores. A comunidade é simulada e explica 
 | Squads (conta) | `squads.html` | Encontre parceiros compatíveis e jogue uma sessão com eles. |
 | ↳ Buscar squad | `squads.html#searchTitle` | Sete fatores ponderados e a conta completa de cada resultado. |
 | ↳ Jogar uma sessão | `squads.html#resultsTitle` | Escolha o squad ou peça um sorteio ponderado por compatibilidade. |
+| ↳ Agenda da semana | `squads.html#agendaTitle` | Seus horários numa matriz de dias e períodos, cruzados com os do squad. |
 | ↳ Seu squad | `squads.html#savedTitle` | Os parceiros que você salvou. |
 | Arena (conta) | `arena.html` | Duelos, partidas de squad e Clã vs Clã com rating no estilo Elo. |
 | ↳ Jogar | `arena.html#playTitle` | Duelo, Squad ou Clã vs Clã, com a chance de vitória antes de confirmar. |
 | ↳ Ranking | `arena.html#rankingTitle` | Tabela de jogadores e de clãs da temporada. |
 | ↳ Histórico | `arena.html#historyTitle` | Suas partidas, com a conta de cada resultado. |
-| ↳ Como o rating funciona | `arena.html#rulesTitle` | A fórmula da expectativa e do ganho de rating. |
+| ↳ Como o rating funciona | `arena.html#rulesTitle` | A fórmula da expectativa, do ganho de rating e do bônus de equilíbrio. |
 | Clãs (conta) | `clans.html` | Explore, entre, crie e gerencie um clã com identidade própria. |
 | ↳ Meu clã | `clans.html#myClanTitle` | Elenco, meta semanal e gestão para líderes e oficiais. |
 | ↳ Explorar clãs | `clans.html#exploreTitle` | Filtros, busca e compatibilidade de cada clã com você. |

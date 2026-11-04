@@ -58,6 +58,7 @@ export const SITE_MAP = [
                 children: [
                     { id: 'squads-search', title: 'Buscar squad', href: 'squads.html#searchTitle', description: 'Sete fatores ponderados e a conta completa de cada resultado.' },
                     { id: 'squads-session', title: 'Jogar uma sessão', href: 'squads.html#resultsTitle', description: 'Escolha o squad ou peça um sorteio ponderado por compatibilidade.' },
+                    { id: 'squads-agenda', title: 'Agenda da semana', href: 'squads.html#agendaTitle', description: 'Seus horários numa matriz de dias e períodos, cruzados com os do squad.' },
                     { id: 'squads-saved', title: 'Seu squad', href: 'squads.html#savedTitle', description: 'Os parceiros que você salvou.' },
                 ],
             },
@@ -68,7 +69,7 @@ export const SITE_MAP = [
                     { id: 'arena-play', title: 'Jogar', href: 'arena.html#playTitle', description: 'Duelo, Squad ou Clã vs Clã, com a chance de vitória antes de confirmar.' },
                     { id: 'arena-ranking', title: 'Ranking', href: 'arena.html#rankingTitle', description: 'Tabela de jogadores e de clãs da temporada.' },
                     { id: 'arena-history', title: 'Histórico', href: 'arena.html#historyTitle', description: 'Suas partidas, com a conta de cada resultado.' },
-                    { id: 'arena-rules', title: 'Como o rating funciona', href: 'arena.html#rulesTitle', description: 'A fórmula da expectativa e do ganho de rating.' },
+                    { id: 'arena-rules', title: 'Como o rating funciona', href: 'arena.html#rulesTitle', description: 'A fórmula da expectativa, do ganho de rating e do bônus de equilíbrio.' },
                 ],
             },
             {

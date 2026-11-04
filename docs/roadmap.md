@@ -1,6 +1,6 @@
 # Roteiro da RIVALY
 
-O que já existe, o que a V2 entregou e o que continua no futuro. As fases estão ordenadas por dependência técnica: quase tudo o que falta depende de um backend.
+O que já existe, o que a V2 e a V3 entregaram e o que continua no futuro. As fases estão ordenadas por dependência técnica: quase tudo o que falta depende de um backend.
 
 ## Entregue na V2 (comunidade simulada)
 
@@ -13,6 +13,13 @@ A V2 trouxe a camada social, **sem backend**. Os outros jogadores são perfis se
 - [x] Feed: posts, reações (GG, Respeito, Rivalidade), comentários e abas por clã, aliados, rivais e Arena.
 - [x] Centro de convites: convites de clã, respostas de candidatura e desafios.
 - [x] Bootstrap 5.3 local como infraestrutura visual, mapa do site, página 404 e CSP.
+
+## Entregue na V3 (organização, matemática e agenda)
+
+- [x] `js/` em pastas por responsabilidade (`pages`, `core`, `domain`, `ui`).
+- [x] `formulas.js`: funções de 1º e 2º grau, Bhaskara e bônus de equilíbrio da Arena, com testes.
+- [x] Agenda da semana: matriz 7 × 5, mapa de calor do squad e melhor horário.
+- [x] Início com o nível em destaque (HUD).
 
 ## Fase 1: fundação técnica, dados e autenticação
 
@@ -52,4 +59,6 @@ A V2 trouxe a camada social, **sem backend**. Os outros jogadores são perfis se
 
 - [ ] Outros idiomas na plataforma.
 - [ ] IA contextual: recomendações que leem o Passaporte e sugerem o próximo jogo.
+- [ ] Pesos da compatibilidade aprendidos (aprendizado supervisionado) a partir das avaliações pós-partida: hoje os 7 pesos são fixos; com jogadores reais, "Aliado" e "Rival" viram rótulos para ajustar os pesos.
+- [ ] Moderação de texto no Feed com processamento de linguagem natural, sempre com revisão humana.
 - [ ] Chatbot de dúvidas.

@@ -10,7 +10,23 @@ A RIVALY reúne num só registro quem a pessoa é como jogadora: plataformas, jo
 Biblioteca → preferências → DNA Gamer → compatibilidade → Squads → Arena e Clãs → Feed → XP e conquistas → Passaporte
 ```
 
-Projeto individual do desafio Happy Game (FIAP, Fase 2). Autor: Guilherme Oliveira Santos, RM576218, 2026.
+Projeto individual do desafio Happy Game (FIAP, Fases 1 a 3). Autor: Guilherme Oliveira Santos, RM576218, 2026.
+
+---
+
+## O que há de novo na V3
+
+| Área | O que mudou |
+|---|---|
+| **Início** | O nível do Passaporte vira o elemento dominante da página (HUD): número em fonte pixel, barra de XP segmentada em 20 blocos e um ledger com experiência, Pontuação Gamer, reputação, jogos e medalhas. Substitui a saudação genérica e os seis cards desalinhados. |
+| **Agenda da semana** | Em Squads, a sua agenda é uma **matriz 7 dias × 5 períodos**. A RIVALY soma a sua matriz com a de quem está no squad (marcados, última sessão ou squad salvo), mostra o mapa de calor e o melhor horário. |
+| **Bônus de equilíbrio** | Na Arena, `B(p) = 40 · 4p(1 − p)`: uma parábola com vértice em 50% de chance. Partidas equilibradas rendem até 40 XP a mais; atropelar quem é muito mais fraco não rende extra. Aparece no modal antes de confirmar. |
+| **`js/domain/formulas.js`** | Toda a matemática num módulo puro e testado: funções de 1º grau (passo de XP, ΔR do Elo, pontos de temporada, soma ponderada), de 2º grau (XP acumulado, nível do clã, bônus de equilíbrio), Bhaskara e vértice. |
+| **Estrutura de pastas** | `js/` dividido em `pages/`, `core/`, `domain/` e `ui/`. Regras de negócio sem DOM ficam em `domain/` e rodam nos testes do Node. |
+| **Correções** | Filtro de Squads só fica fixo quando cabe na tela (o botão "Encontrar jogadores" ficava inalcançável em telas baixas); coluna do filtro mais larga entre 1200 e 1399 px; rótulos do DNA Gamer não quebram mais no meio da palavra no celular. |
+| **Testes** | 39 testes de unidade (eram 24): fórmulas, matriz de agenda, Elo, temporada, RNG e validação. |
+
+Onde cada conteúdo da Fase 3 (estruturas de controle, laços, matrizes, funções de 1º e 2º grau) aparece no código: [`docs/evidencias-fase3.md`](docs/evidencias-fase3.md).
 
 ---
 
@@ -105,10 +121,11 @@ chance           = 1 / (1 + e^(−(nós − eles) / 6))
 | **Aliado ou Rival declarado** (uma vez por jogador) | 30 |
 | **Entrar em um clã** (uma vez por clã) / **criar clã** (uma vez) | 150 / 200 |
 | **Vitória na Arena** / **derrota na Arena** | 90 / 35 |
+| **Bônus de equilíbrio** na Arena, `40 · 4p(1 − p)` (vale ganhando ou perdendo) | 0 a 40 |
 | **Post** / **reação** no Feed (até 6 por dia, somados) | 20 / 5 |
 | Conquista desbloqueada | 40 |
 
-Nível: avançar do nível L para L+1 custa `1000 + (L − 1) × 500` XP. Clã: chegar ao nível N exige `120 × (N − 1)²` XP; a meta semanal é 60 pontos por integrante.
+Nível: avançar do nível L para L+1 custa `500L + 500` XP (1º grau); o acumulado até o nível L é `250L² + 250L − 500` (2º grau), e o nível sai do XP por Bhaskara. Clã: chegar ao nível N exige `120 × (N − 1)²` XP; a meta semanal é 60 pontos por integrante. Tudo em `js/domain/formulas.js`.
 
 **Reputação** e **Pontuação Gamer** não mudaram na V2 (ver `js/domain/gamification.js`). O rating de Arena é uma métrica separada.
 
@@ -197,21 +214,16 @@ No celular, a barra inferior tem Início, Passaporte, Squads, Arena e **Mais** (
 │   ├── community.css         componentes da comunidade (selo, emblema, cartão do jogador)
 │   └── pages/                um arquivo por página
 ├── js/
-│   ├── storage.js            a única porta para o localStorage (schema 2 + migração)
-│   ├── site-map.js           arquitetura de informação (fonte única)
-│   ├── data.js               jogos, 33 jogadores, 7 clãs, conquistas, regras de XP
-│   ├── rng.js                PRNG determinístico + semana ISO
-│   ├── community.js          motor da comunidade simulada
-│   ├── clans-store.js · arena-store.js · feed-store.js · sessions.js · invites.js · partners.js
-│   ├── validation.js         regras de formulário e feedback inline
-│   ├── compatibility.js · gamification.js · gamer-dna.js · profile.js · auth.js
-│   ├── modal.js              diálogo sobre bootstrap.Modal (mesma API da V1)
-│   ├── navigation.js         estado da navegação, XP e centro de convites
-│   ├── community-ui.js · arena-ui.js · clan-ui.js · player-card.js
-│   └── <página>.js           controllers (DOM e eventos)
+│   ├── protocol-check.js     aviso de file:// (script clássico, fora do bundle)
+│   ├── pages/                um controller por página (DOM e eventos)
+│   ├── core/                 storage (a única porta do localStorage), app, auth, rng,
+│   │                         navigation, site-map (fonte única da navegação), validation, demo
+│   ├── domain/               regras sem DOM: formulas (1º/2º grau), availability (matriz),
+│   │                         compatibility, gamification, data, community, arena/clans/feed-store…
+│   └── ui/                   modal, cards, notifications, tour, agenda-ui, arena-ui, clan-ui…
 ├── public/                   marca, capturas, capas locais, sitemap.xml, robots.txt
 ├── tools/                    sync-chrome.mjs, sitemap-doc.mjs, fetch-assets.mjs
-├── tests/                    testes de unidade do domínio (Elo, temporada, RNG, validação)
+├── tests/                    testes de unidade do domínio (fórmulas, agenda, Elo, RNG, validação)
 ├── docs/                     decisões, mapa do site, evidências de JS, voz e tom, roteiro
 └── vercel.json               cabeçalhos de segurança (CSP)
 ```
@@ -225,10 +237,11 @@ No celular, a barra inferior tem Início, Passaporte, Squads, Arena e **Mais** (
 | `docs/decisoes-v2.md` | Design rationale: decisão, problema na V1, justificativa e implementação |
 | `docs/mapa-do-site.md` | A árvore do site em texto |
 | `docs/evidencias-js.md` | Onde estão DOM, eventos, validação, funções, arrays e cada componente do Bootstrap |
+| `docs/evidencias-fase3.md` | Estruturas de controle, laços, matrizes, funções de 1º e 2º grau e o equivalente em Java |
 | `docs/voz-e-tom.md` | Quadro de voz e tom |
 | `docs/ux-writing-antes-depois.md` | Textos reais da V1 e da V2, com o motivo de cada mudança |
 | `docs/roadmap.md` | O que a V2 entregou e o que continua no futuro |
-| `CHANGELOG.md` | Mudanças da v1.0 para a v2.0 |
+| `CHANGELOG.md` | Mudanças da v1.0 até a v3.0 |
 
 ---
 

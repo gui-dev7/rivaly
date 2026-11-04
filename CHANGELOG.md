@@ -2,6 +2,32 @@
 
 Formato inspirado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [3.0.0] — 2026-11-04
+
+A V3 organiza o código, junta a matemática do produto num módulo testado, traz a primeira matriz do projeto (Agenda da semana) e redesenha o Início em torno do nível do Passaporte.
+
+### Adicionado
+
+- **Agenda da semana** em Squads: matriz 7 dias × 5 períodos editável (botões com `aria-pressed`), mapa de calor do squad (soma das matrizes), melhor horário e interseção de horários. Cruza com os jogadores marcados, a última sessão ou o squad salvo.
+- `js/domain/availability.js`: `createMatrix`, `sumMatrices`, `intersect`, `countFilled`, `bestSlots`, agenda determinística dos jogadores simulados (com `do-while`) e agenda padrão a partir do Passaporte. Chave `rivaly:availability` no storage (sem migração: `null` = ainda não editada).
+- `js/domain/formulas.js`: `linear`, `quadratic`, `bhaskara`, `vertex`, `weightedSum`, curva de XP, nível do clã, Elo, pontos de temporada e **bônus de equilíbrio** `B(p) = 40 · 4p(1 − p)`.
+- **Bônus de equilíbrio** na Arena: mostrado no modal antes da partida (valor e barra), explicado em "Ver a conta" e no accordion "Como o rating funciona", somado ao XP nas vitórias e nas derrotas.
+- Início: **HUD** com o nível em destaque, barra de XP segmentada (20 blocos, animação única que respeita movimento reduzido) e ledger de indicadores.
+- `docs/evidencias-fase3.md`: estruturas de controle, laços, vetores e matrizes, funções de 1º e 2º grau e o equivalente em Java.
+- Testes: `tests/formulas.test.mjs` (8) e `tests/availability.test.mjs` (7). Total: 39.
+- Mapa do site e tutorial guiado com a Agenda da semana.
+
+### Alterado
+
+- `js/` reorganizado em `pages/`, `core/`, `domain/` e `ui/` (com `git mv`, imports, HTML, testes, tools e docs atualizados).
+- `gamification.js`, `arena-store.js` e `clans-store.js` passam a usar `formulas.js` e reexportam as mesmas funções; a compatibilidade usa `weightedSum` em vez de somar valores já arredondados.
+- Início: a saudação com dois botões e os seis cards de "Visão geral" (alturas e cores desencontradas) deram lugar ao HUD.
+
+### Corrigido
+
+- Squads: o filtro fixo era mais alto que telas de até ~800 px e o botão "Encontrar jogadores" ficava fora de alcance; agora só fixa quando cabe. Entre 1200 e 1399 px a coluna do filtro ficou mais larga e os campos não cortam mais o texto.
+- DNA Gamer no celular: o rótulo ("Competitivo", "Colecionador") quebrava no meio da palavra; agora fica numa linha acima da barra.
+
 ## [2.0.0] — 2026-10-14
 
 A V2 transforma Arena, Feed e Clãs (antes "em breve") em áreas reais, ligadas ao Passaporte, sobre uma comunidade simulada e explicável. Bootstrap 5.3 entra como infraestrutura visual.
