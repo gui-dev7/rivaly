@@ -15,6 +15,7 @@ import { escapeHtml, icon, formatNumber } from './ui.js';
 import { openModal } from './modal.js';
 import {
     previewDuel, previewSquadMatch, previewClanMatch, playDuel, playSquadMatch, playClanMatch, tierFor, SEASON_POINTS,
+    BALANCE_BONUS_MAX,
 } from '../domain/arena-store.js';
 import { myClan } from '../domain/clans-store.js';
 import { chanceMeterMarkup, reasonsListMarkup, tierBadgeMarkup } from './community-ui.js';
@@ -56,7 +57,31 @@ function scenariosMarkup(prev) {
                 <tr class="scenarios__win"><th scope="row">Vitória</th><td class="numeric">+${prev.winDelta}</td><td class="numeric">${formatNumber(win)} · ${escapeHtml(tierFor(win).label)}</td></tr>
                 <tr class="scenarios__loss"><th scope="row">Derrota</th><td class="numeric">${prev.lossDelta}</td><td class="numeric">${formatNumber(loss)} · ${escapeHtml(tierFor(loss).label)}</td></tr>
             </tbody>
-        </table>`;
+        </table>
+        ${balanceMarkup(prev)}`;
+}
+
+/**
+ * Bônus de equilíbrio: B(p) = 40 · 4p(1 − p). A barra mostra onde a
+ * chance desta partida cai na parábola; o topo (50%) paga o máximo.
+ */
+function balanceMarkup(prev) {
+    const bonus = prev.balanceBonus ?? 0;
+    const percent = Math.round((bonus / BALANCE_BONUS_MAX) * 100);
+    const note = bonus >= BALANCE_BONUS_MAX * 0.9
+        ? 'Partida equilibrada: vale o bônus quase inteiro.'
+        : prev.chance > 0.5
+            ? 'Adversário mais fraco: o bônus cai para não premiar partidas fáceis.'
+            : 'Adversário mais forte: o bônus cai, mas a vitória sobe mais o rating.';
+    return `
+        <div class="balance" role="group" aria-label="Bônus de equilíbrio">
+            <div class="balance__head">
+                <span class="balance__label">Bônus de equilíbrio</span>
+                <span class="balance__value numeric">+${bonus} XP</span>
+            </div>
+            <div class="balance__track" aria-hidden="true"><span class="balance__fill" style="width:${percent}%"></span></div>
+            <p class="balance__note">${escapeHtml(note)} Vale nas duas pontas: ganhando ou perdendo.</p>
+        </div>`;
 }
 
 function mathCollapse(id, reasons, label = 'Ver a conta') {

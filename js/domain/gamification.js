@@ -16,35 +16,18 @@ import {
 import { XP_RULES, ACHIEVEMENTS, RARITIES } from './data.js';
 import { logActivity } from './activity.js';
 import { profileCompletion } from './profile.js';
+import { totalXpForLevel, levelFromXp } from './formulas.js';
 import { toast, showAchievement, showLevelUp } from '../ui/notifications.js';
 
 /* ============================================================
-   LEVEL CURVE
+   LEVEL CURVE — ver formulas.js
    ------------------------------------------------------------
-   XP required to advance FROM level L to L+1:
-       step(L) = 1000 + (L - 1) * 500
-         L1→L2 = 1000    L2→L3 = 1500    L3→L4 = 2000 …
-
-   Cumulative XP required to REACH level L:
-       total(L) = (L - 1) * (250L + 500)
-
-   The inverse is solved analytically rather than by looping, so
-   arbitrarily large XP values resolve in constant time.
+   Passo do nível L (1º grau):        step(L)  = 500L + 500
+   XP acumulado até o nível L (2º):   total(L) = 250L² + 250L − 500
+   Nível a partir do XP: Bhaskara, em tempo constante.
    ============================================================ */
 
-export const xpStepForLevel = (level) => 1000 + (Math.max(1, level) - 1) * 500;
-
-export const totalXpForLevel = (level) => {
-    const safe = Math.max(1, Math.floor(level));
-    return (safe - 1) * (250 * safe + 500);
-};
-
-export function levelFromXp(xp) {
-    const safeXp = Math.max(0, Number(xp) || 0);
-    // 250L² + 250L - 500 = xp  →  solve for L, then floor.
-    const level = (-250 + Math.sqrt(62500 + 1000 * (500 + safeXp))) / 500;
-    return Math.max(1, Math.floor(level));
-}
+export { xpStepForLevel, totalXpForLevel, levelFromXp } from './formulas.js';
 
 /** Everything the UI needs to draw an XP bar. */
 export function levelProgress(xp) {

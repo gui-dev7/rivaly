@@ -26,6 +26,7 @@ import {
 import { addInvite, registerInviteHandler, RESPONSE_DELAY_MS, listInvites } from './invites.js';
 import { awardOnce, awardOnceFor, buildContext, checkAchievements } from './gamification.js';
 import { logActivity } from './activity.js';
+import { clanLevelFromXp, clanXpForLevel } from './formulas.js';
 import { currentWeekKey } from '../core/rng.js';
 import { hashString, escapeHtml } from '../ui/ui.js';
 import {
@@ -123,11 +124,11 @@ export function clanCompatibility(clan, user = getUser()) {
    NÍVEL, META SEMANAL E ESTATÍSTICAS
    ============================================================ */
 
-/** XP necessário para chegar ao nível N: 120 × (N − 1)². */
+/** XP necessário para chegar ao nível N: 120 × (N − 1)² (2º grau, em formulas.js). */
 export function clanLevel(xp) {
-    const level = 1 + Math.floor(Math.sqrt(Math.max(0, xp) / 120));
-    const floor = 120 * (level - 1) ** 2;
-    const ceiling = 120 * level ** 2;
+    const level = clanLevelFromXp(xp);
+    const floor = clanXpForLevel(level);
+    const ceiling = clanXpForLevel(level + 1);
     return {
         level,
         xp,

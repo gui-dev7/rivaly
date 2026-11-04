@@ -23,6 +23,7 @@ import {
     PLAYERS, RANK_LADDER, SCHEDULES, PLAYSTYLES, COMPLEMENTARY_ROLES,
     getGameById, LANGUAGES, ROLES, rankLabel, genreLabel,
 } from './data.js';
+import { weightedSum } from './formulas.js';
 
 export const WEIGHTS = {
     game: 20,
@@ -321,7 +322,8 @@ export function calculateTotalCompatibility(player, criteria, user = null) {
         };
     });
 
-    const total = Math.round(breakdown.reduce((sum, part) => sum + part.earned, 0));
+    // Soma ponderada Σ peso × nota (1º grau em cada fator), em formulas.js.
+    const total = Math.round(weightedSum(parts.map((part) => part.weight), parts.map((part) => part.score / 100)));
 
     return {
         total,

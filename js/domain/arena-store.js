@@ -25,18 +25,16 @@ import { addInvite, registerInviteHandler, completeInvite, listInvites } from '.
 import { awardXp, checkAchievements } from './gamification.js';
 import { logActivity } from './activity.js';
 import { rngFor, currentWeekKey } from '../core/rng.js';
+import {
+    ELO, kFactor, expectedScore, ratingDelta, SEASON_POINTS, seasonPoints, balanceBonus, BALANCE_BONUS_MAX,
+} from './formulas.js';
 
-export const START_RATING = 1000;
-export const SEASON_POINTS = { win: 3, loss: 1 };
+export const START_RATING = ELO.start;
+export { SEASON_POINTS, kFactor, expectedScore, balanceBonus, BALANCE_BONUS_MAX };
 
 /* ============================================================
-   FÓRMULAS (puras)
+   FÓRMULAS (puras, em formulas.js)
    ============================================================ */
-
-export const kFactor = (matches) => (matches < 10 ? 40 : 32);
-
-export const expectedScore = (rating, opponentRating) =>
-    1 / (1 + 10 ** ((opponentRating - rating) / 400));
 
 /** Chance de vitória (0–1) pela expectativa Elo. */
 export const calculateWinChance = (rating, opponentRating) => expectedScore(rating, opponentRating);
@@ -45,19 +43,14 @@ export const calculateWinChance = (rating, opponentRating) => expectedScore(rati
 export function ratingDeltas(rating, opponentRating, matches) {
     const k = kFactor(matches);
     const expected = expectedScore(rating, opponentRating);
-    return {
-        k,
-        expected,
-        win: Math.round(k * (1 - expected)),
-        loss: Math.round(k * (0 - expected)),
-    };
+    return { k, expected, win: ratingDelta(k, expected, 1), loss: ratingDelta(k, expected, 0) };
 }
 
 /** R' = R + K × (S − E) */
 export function updateRating(rating, opponentRating, matches, won) {
     const { k, expected } = ratingDeltas(rating, opponentRating, matches);
-    const delta = Math.round(k * ((won ? 1 : 0) - expected));
-    return { before: rating, after: Math.max(100, rating + delta), delta, k, expected };
+    const delta = ratingDelta(k, expected, won ? 1 : 0);
+    return { before: rating, after: Math.max(ELO.floor, rating + delta), delta, k, expected };
 }
 
 export function tierFor(rating) {
@@ -107,7 +100,7 @@ export function seededSeason(player, week = currentWeekKey(), now = new Date()) 
     let wins = 0;
     for (let i = 0; i < played; i += 1) if (rng.next() < winRate) wins += 1;
     const losses = played - wins;
-    return { wins, losses, points: wins * SEASON_POINTS.win + losses * SEASON_POINTS.loss };
+    return { wins, losses, points: seasonPoints(wins, losses) };
 }
 
 /* ============================================================
@@ -146,11 +139,13 @@ function preview({ mode, opponent, myRating, opponentRating, extraReasons = [] }
         k: deltas.k,
         winDelta: deltas.win,
         lossDelta: deltas.loss,
+        balanceBonus: balanceBonus(deltas.expected),
         reasons: [
             ...extraReasons,
             `Expectativa: 1 / (1 + 10^((${opponentRating} − ${myRating}) / 400)) = ${(deltas.expected * 100).toFixed(1)}%.`,
             `K = ${deltas.k} (${arena.matches < 10 ? `partida ${arena.matches + 1} de 10 com K maior` : 'depois das 10 primeiras partidas'}).`,
             `Vitória: ${deltas.k} × (1 − ${deltas.expected.toFixed(3)}) = +${deltas.win}. Derrota: ${deltas.k} × (0 − ${deltas.expected.toFixed(3)}) = ${deltas.loss}.`,
+            `Bônus de equilíbrio: ${BALANCE_BONUS_MAX} × 4 × ${deltas.expected.toFixed(3)} × (1 − ${deltas.expected.toFixed(3)}) = +${balanceBonus(deltas.expected)} XP (máximo de ${BALANCE_BONUS_MAX} com 50% de chance).`,
         ],
     };
 }
@@ -249,6 +244,7 @@ function resolveMatch(prev, { challengeId = null, sessionId = null } = {}) {
         myRating: prev.myRating,
         opponentRating: prev.opponentRating,
         rating: { before: arena.rating, after, delta },
+        balanceBonus: prev.balanceBonus ?? 0,
         expected: prev.chance,
         k: prev.k,
         draw,
@@ -289,10 +285,11 @@ function resolveMatch(prev, { challengeId = null, sessionId = null } = {}) {
     const label = prev.opponent.type === 'clan' ? `[${prev.opponent.tag}] ${prev.opponent.name}` : prev.opponent.name;
     const modeLabel = { duel: 'Duelo', squad: 'Squad', clan: 'Clã vs Clã' }[prev.mode];
     logActivity('arena', `${won ? 'Venceu' : 'Perdeu'} na Arena (${modeLabel}) contra ${label}: ${match.score}, rating ${after}`, {
-        xp: won ? 90 : 35, matchId: match.id, won,
+        xp: (won ? 90 : 35) + match.balanceBonus, matchId: match.id, won,
     });
 
     awardXp(won ? 'arenaWin' : 'arenaMatch', { silent: true });
+    if (match.balanceBonus > 0) awardXp('arenaBalance', { multiplier: match.balanceBonus, silent: true });
     addClanContribution(won ? (prev.mode === 'clan' ? 40 : 20) : 5, { xp: won ? 40 : 8 });
     checkAchievements({ achievementContext: won ? `${modeLabel} contra ${label}` : '' });
 

@@ -1029,6 +1029,7 @@ export const XP_RULES = {
     createClan: { amount: 200, label: 'Clã criado' },
     arenaWin: { amount: 90, label: 'Vitória na Arena' },
     arenaMatch: { amount: 35, label: 'Partida de Arena disputada' },
+    arenaBalance: { amount: 1, label: 'Bônus de equilíbrio na Arena' },
     feedPost: { amount: 20, label: 'Post publicado no Feed' },
     feedReaction: { amount: 5, label: 'Reação no Feed' },
 };
